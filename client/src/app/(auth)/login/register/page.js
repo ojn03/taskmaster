@@ -1,83 +1,133 @@
 "use client"
 import Link from 'next/link'
-import { useRef } from 'react'
-
-
-
+import React from 'react'
+import { useForm } from 'react-hook-form';
+import { toastError,toastSuccess } from '@/utils/functions';
 
 //todo add icons to inputs
-//todo add validation
 //todo use tailwindcomponents and fowbite
 
-const PVal = /(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&*\(\)\-_\+=\{\}\[\]\|\\:;"'<>,\.\/\? ]).{1,}/.source
-//minlength prop of 8 added to input
+const Register = () => {
+    const PVal = /(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&*\(\)\-_\+=\{\}\[\]\|\\:;"'<>,\.\/\? ]).{8,45}/
 
-const usernameVal = /[a-zA-Z0-9_]{1,}/.source
-//minlength prop of 4 added to input
-//max length prop of 30 added to input
+    const usernameVal = /^[a-zA-Z0-9_]{5,45}$/
+    const emailVal = /^[a-z0-9._%+-]+@[a-z0-9.\-]+\.[a-z]{2,4}$/
 
-const emailVal = /^[a-z0-9._%+-]+@[a-z0-9.\-]+\.[a-z]{2,4}$/.source
+    const testdata = {
+        "firstName": "yaboi",
+        "lastName": "queloque",
+        "email": "oj1@mail.com",
+        "username": "asdcadas",
+        "password": "AAAaaa123!"
+    }
+    const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
+    const onSubmit = async (data) => {
 
-const Register = (e) => {
+        try {
+            console.log(data)
+            //response is an array
+            const response = await fetch("http://localhost:5001/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            }).then(res => res.json())
+            if (response.error) {
+                toastError({ message: response.error })
+                return;
+            }
+            toastSuccess({ message: "account created" });
 
-
-    const handleSub = (e) => {
-        e.preventDefault();
-        //validate inputs
-        if(document.getElementById('password').value !== document.getElementById('confirm_password').value){
-            // do something
-            return;
-        }
-        const submitForm = async () => {
-            const form = new FormData(e.target)
-            const res = await fetch('//register', {
-                method: 'POST',
-                body: form
-            })
-            const json = await res.json()
-            console.log(json)
-           
+        } catch (err) {
+            console.error(err.message)
         }
     }
 
-    const ref = useRef(null)
-    const inputStyle = 'p-2 rounded-sm shadow-md border border-gray-300 focus:outline-none focus:ring-1  focus:ring-indigo-600 focus:border-transparent  '
+    const inputStyle = 'p-2 rounded-sm shadow-md border border-gray-300 focus:outline-none focus:ring-1  focus:ring-slate-600 focus:border-transparent  '
     return (
 
         <div className='flex flex-col w-1/2 justify-center h-full items-center m-auto'>
-            <form onSubmit={handleSub} ref={ref} className='rounded-md h-2/5 flex flex-col justify-center bg-light gap-3 p-5'>
+            <form onSubmit={handleSubmit(onSubmit)} className='rounded-md h-fit flex flex-col justify-center bg-light gap-3 p-5'>
                 <div className='flex gap-2'>
-                    <input required type='text' placeholder='first name'
-                        maxLength={30}
+
+                    {/* FIRST NAME */}
+                    <input required type='text' name='first name' placeholder='first name'
+                        maxLength={45}
+                        {...register('firstName', { required: true })}
                         className={inputStyle}
                     />
 
-                    <input required type='text' placeholder='last name'
-                        maxLength={30}
+                    {/* LAST name */}
+                    <input required type='text' name='last name' placeholder='last name'
+                        maxLength={45}
+                        {...register('lastName')}
                         className={inputStyle} />
                 </div>
-                <input required type='email' placeholder='email'
-                title={'must be a valid email address'}
-                maxLength={48} 
-                pattern={emailVal}
-                className={inputStyle} />
-                <input required type='text' placeholder='username'
-                    title={'must be between 5 and 30 characters long and can only contain letters, numbers and underscores'}
+
+                {/* EMAIL */}
+                <input required type='email' name="email" placeholder='email'
+                    maxLength={95}
+                    {...register('email', {
+                        required: true,
+                        pattern: {
+                            value: emailVal,
+                            message: "invalid email format"
+                        }
+                    })}
+                    className={inputStyle} />
+                {errors.email && <p className='text-xs font-light text-red-900'>{errors.email.message}</p>}
+
+
+                {/* USERNAME */}
+                <input required type='text' name='username' placeholder='username'
+                    minLength={5} maxLength={45}
+                    {...register('username',
+                        {
+                            required: true,
+                            pattern: {
+                                value: usernameVal,
+                                message: "username can only contain letters, numbers and underscores"
+                            }
+                        },)}
                     className={inputStyle}
-                    minLength={5} maxLength={30} pattern={usernameVal} />
-                <input required  id='password' type='password' placeholder='password' title='include 1 special symbol, 1 number, 1 uppercase and 1 lowercase letter'
+                />
+                {errors.username && <p className='text-xs font-light text-red-900'>{errors.username.message}</p>}
+
+                {/* PASSWORD */}
+                <input required name='password' type='password' placeholder='password'
+                    {...register('password',
+                        {
+                            required: true,
+                            pattern: { value: PVal, message: "password must include at least 1 special symbol, number, uppercase and lowercase letter" }
+                        })}
                     className={inputStyle}
-                     minLength={9} maxLength={30} pattern={PVal}/>
-                <input required type='password' id='confirm_password' placeholder='confirm password'  
-                className={inputStyle} /> <span id='message'></span>
-                <button type='submit' className=' text-light bg-indigo-600/90 p-2 w-1/2 mt-3 mx-auto rounded-[4px] border-2 border-transparent  hover:bg-indigo-700 hover:border-indigo-700 transition-colors duration-300 shadow-lg'>
+                    minLength={8} maxLength={45}
+                />
+                {errors.password && <p className='text-xs font-light text-red-900'>{errors.password.message}</p>}
+
+                {/* CONFIRM PASSWORD */}
+                <input required type='password' name='confirm_password' placeholder='confirm password'
+                    {...register('confirmPass', {
+                        required: true,
+                        validate: (val) => {
+                            if (watch('password') != val) {
+                                return "passwords do not match";
+                            }
+                        },
+
+                    })}
+                    className={inputStyle}
+                />
+                {errors.confirmPass && <p className='text-xs font-light text-red-900'>{errors.confirmPass.message}</p>}
+
+                <button type='submit' className=' text-light bg-slate-600/90 p-2 w-1/2 mt-3 mx-auto rounded-[4px] border-2 border-transparent  hover:bg-slate-700 hover:border-slate-700 transition-colors duration-300 shadow-lg'>
                     Register
                 </button>
             </form>
-            <div className='mt-4'>
-                <p className='text-md font-semibold text-[#DDE546]'> Already have an account? </p>
-                <Link href='/login' className='block w-fit text-center mx-auto text-light underline underline-offset-[3px]'>sign in</Link>
+            <button onClick={() => onSubmit(testdata)} className='bg-red-500'> test fetch</button>
+            <div className='mt-2 text-light'>
+                <p className='text-md font-semibold '> Already have an account? </p>
+                <Link href='/login' className='block w-fit text-center mx-auto text-light underline'>sign in</Link>
             </div>
         </div>
     )
