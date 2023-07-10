@@ -12,7 +12,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className='h-full w-full'>
-      <body className={`bg-gradient-radial from-slate-500 via-slate-600 to-slate-800 h-full w-full ${inter.className}`}>
+      <body className={`bg-gradient-radial from-amber-500 via-amber-600 to-amber-800 h-full w-full ${inter.className}`}>
         {children}
         <ToastContainer />
       </body>

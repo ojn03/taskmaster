@@ -74,8 +74,11 @@ CREATE TABLE "History"(
   "date_id" serial PRIMARY KEY,
   "date" date NOT NULL,
   "time" time NOT NULL,
-  "event_id" int REFERENCES "Event"(event_id),
+  "event_id" int REFERENCES "Event"(event_id), --maybe use name instead of id
   "proj_id" int REFERENCES "Project"(proj_id)
+
+    --add user_id and proj_id to track who created the event and what project it belongs to
+
 );
 
 CREATE TABLE "Ticket"(

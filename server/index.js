@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 const pool = require('./db');
 const bcrypt = require('bcrypt');
+require('dotenv').config({path:'../.env.local'})
 
 // middleware
 app.use(cors());
@@ -15,13 +16,12 @@ app.use(express.json()); //req.body will be undefined without this
 //todo make queries atomic
 
 //regex patterns for input validation
-const pVal = /(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&*\(\)\-_\+=\{\}\[\]\|\\:;"'<>,\.\/\? ]).{8,45}/
-const usernameVal = /[a-zA-Z0-9_]{5,45}/
-const emailVal = /^[a-z0-9._%+-]+@[a-z0-9.\-]+\.[a-z]{2,4}$/
+const pVal = new RegExp('^'+process.env.NEXT_PUBLIC_P_VAL+'$')
+const usernameVal = new RegExp('^'+process.env.NEXT_PUBLIC_U_VAL+'$')
+const emailVal = new RegExp('^'+process.env.NEXT_PUBLIC_E_VAL+'$')
 
 app.post('/register', async (req, res) => {
     try {
-        console.log(req.body)
         const { firstName: first, lastName: last, username, email, password } = req.body
         const hash = await bcrypt.hash(password, 10)
         //validate inputs
@@ -53,8 +53,6 @@ app.post('/register', async (req, res) => {
 app.post('/login', async function (req, res) {
     try {
         const { username, email, password } = req.body
-        console.log(req.body);
-        console.log(username, email, password);
 
         const queryLogin =
             // if username provided with no email, use username
@@ -89,6 +87,8 @@ app.post('/login', async function (req, res) {
         res.json({ 'error': 'error 500: ' + error.message })
     }
 })
+
+
 
 app.listen(5001, () => {
     console.log('Server is running on port 5001');

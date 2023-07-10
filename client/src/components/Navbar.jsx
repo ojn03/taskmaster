@@ -2,9 +2,9 @@ import React from 'react'
 
 const buttonStyle = 'bg-dark text-light'
 
-const Navbar = () => {
+const Navbar = (className) => {
     return (
-        <div className='flex flex-col gap-3 bg-light w-1/6 p-3'>
+        <div className={'flex flex-col gap-3 h-full w-full p-3 bg-white'}>
             <button className={buttonStyle}>
                 DashBoard
             </button>

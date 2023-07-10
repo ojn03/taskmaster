@@ -6,12 +6,12 @@ import { toastError,toastSuccess } from '@/utils/functions';
 
 //todo add icons to inputs
 //todo use tailwindcomponents and fowbite
+//todo add input labels
 
 const Register = () => {
-    const PVal = /(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&*\(\)\-_\+=\{\}\[\]\|\\:;"'<>,\.\/\? ]).{8,45}/
-
-    const usernameVal = /^[a-zA-Z0-9_]{5,45}$/
-    const emailVal = /^[a-z0-9._%+-]+@[a-z0-9.\-]+\.[a-z]{2,4}$/
+    const pVal = new RegExp('^'+process.env.NEXT_PUBLIC_P_VAL+'$')
+    const usernameVal = new RegExp('^'+process.env.NEXT_PUBLIC_U_VAL+'$')
+    const emailVal = new RegExp('^'+process.env.NEXT_PUBLIC_E_VAL+'$')
 
     const testdata = {
         "firstName": "yaboi",
@@ -25,7 +25,6 @@ const Register = () => {
     const onSubmit = async (data) => {
 
         try {
-            console.log(data)
             //response is an array
             const response = await fetch("http://localhost:5001/register", {
                 method: "POST",
@@ -98,7 +97,7 @@ const Register = () => {
                     {...register('password',
                         {
                             required: true,
-                            pattern: { value: PVal, message: "password must include at least 1 special symbol, number, uppercase and lowercase letter" }
+                            pattern: { value: pVal, message: "password must include at least 1 special symbol, number, uppercase and lowercase letter" }
                         })}
                     className={inputStyle}
                     minLength={8} maxLength={45}
@@ -124,7 +123,7 @@ const Register = () => {
                     Register
                 </button>
             </form>
-            <button onClick={() => onSubmit(testdata)} className='bg-red-500'> test fetch</button>
+            {/* <button onClick={() => onSubmit(testdata)} className='bg-red-500'> test fetch</button> */}
             <div className='mt-2 text-light'>
                 <p className='text-md font-semibold '> Already have an account? </p>
                 <Link href='/login' className='block w-fit text-center mx-auto text-light underline'>sign in</Link>
