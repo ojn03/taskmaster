@@ -1,0 +1,30 @@
+{
+    "type": "array",
+    "length":3,
+
+    "content": {
+        "type": "object",
+        "role_id": {
+            "type": "number",
+            "id":{},
+            "subtype": "i32"
+        },
+        "name": {
+            "type": "string",
+            "faker": {
+                "generator": "profession"
+            }
+        },
+        "description": {
+            "type": "string",
+            "faker": {
+                "generator": "bs"
+            }
+        },
+        "proj_id": {
+            "type": "same_as",
+            "ref": "Project.content.proj_id"
+        }
+
+    }
+}

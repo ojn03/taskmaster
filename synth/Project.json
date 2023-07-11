@@ -1,0 +1,25 @@
+{
+    "type": "array",
+    "length": 1,
+    "content": {
+        "type": "object",
+        "proj_id": {
+            "type": "number",
+            "id":{},
+            "subtype": "i32"
+        },
+        "name": {
+            "type": "string",
+            "faker": {
+                "generator": "company_name"
+            }
+        },
+        "description": {
+            "type": "string",
+            "faker": {
+                "generator": "catch_phrase"
+            }
+        }
+
+    }
+}

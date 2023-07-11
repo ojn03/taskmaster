@@ -4,6 +4,12 @@ const cors = require('cors');
 const pool = require('./db');
 const bcrypt = require('bcrypt');
 require('dotenv').config({path:'../.env.local'})
+const redis = require('ioredis');
+
+//todo paginate queries
+//todo cache queries
+//look into orms
+
 
 // middleware
 app.use(cors());

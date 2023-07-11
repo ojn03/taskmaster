@@ -1,0 +1,24 @@
+{
+    "type": "array",
+    "length": 2,
+    "content": {
+        "type": "object",
+        "sprint_id": {
+            "type": "number",
+            "id": {},
+            "subtype": "i32"
+        },
+        "name": {
+            "type": "string",
+            "faker": {
+                "generator": "color"
+            }
+        },
+        "description": {
+            "type": "string",
+            "faker": {
+                "generator": "bs"
+            }
+        }
+    }
+}

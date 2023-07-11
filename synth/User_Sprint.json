@@ -1,0 +1,18 @@
+{
+    "type": "array",
+    "length": 5,
+    "content": {
+        "type": "unique",
+        "content": {
+            "type": "object",
+            "user_id": {
+                "type": "same_as",
+                "ref": "User.content.user_id"
+            },
+            "sprint_id": {
+                "type": "same_as",
+                "ref": "Sprint.content.sprint_id"
+            }
+        }
+    }
+}

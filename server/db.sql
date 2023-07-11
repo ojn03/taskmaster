@@ -15,28 +15,28 @@ CREATE TABLE "UserInfo"(
 
 CREATE TABLE "Request"(
   "req_id" serial PRIMARY KEY,
-  "request details" varchar(100) NOT NULL,
-  "from_user" int REFERENCES "User"(user_id),
-  "to_user" int REFERENCES "User"(user_id)
+  "description" varchar(100) NOT NULL,
+  "from_user" int NOT NULL REFERENCES "User"(user_id),
+  "to_user" int NOT NULL REFERENCES  "User"(user_id)
 );
 
 CREATE TABLE "Project"(
   "proj_id" serial PRIMARY KEY,
   "name" varchar(50) NOT NULL,
-  "desc" varchar(250) NOT NULL
+  "description" varchar(250) NOT NULL
 );
 
 CREATE TABLE "Role"(
   "role_id" serial PRIMARY KEY,
   "name" varchar(50) NOT NULL,
   "description" varchar(100) NOT NULL,
-  "proj_id" int REFERENCES "Project"(proj_id)
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
 
 CREATE TABLE "Privelege"(
   "priv_id" serial PRIMARY KEY,
   "name" varchar(50) NOT NULL,
-  "desc" varchar(100) NOT NULL
+  "description" varchar(100) NOT NULL
 );
 
 CREATE TABLE "Role_Priveleges"(
@@ -55,27 +55,27 @@ CREATE TABLE "Priv_User_Project"(
 CREATE TABLE "Sprint"(
   "sprint_id" serial PRIMARY KEY,
   "name" varchar(50) NOT NULL,
-  "desc" varchar(100) NOT NULL
+  "description" varchar(100) NOT NULL
 );
 
 CREATE TABLE "User_Sprint"(
   "user_id" int REFERENCES "User"(user_id),
-  "sp_id" int REFERENCES "Sprint"(sprint_id),
+  "sprint_id" int REFERENCES "Sprint"(sprint_id),
   PRIMARY KEY ("user_id", "sp_id")
 );
 
 CREATE TABLE "Event"(
   "event_id" serial PRIMARY KEY,
   "name" varchar(50) NOT NULL,
-  "desc" varchar(100) NOT NULL
+  "description" varchar(100) NOT NULL
 );
 
 CREATE TABLE "History"(
   "date_id" serial PRIMARY KEY,
   "date" date NOT NULL,
   "time" time NOT NULL,
-  "event_id" int REFERENCES "Event"(event_id), --maybe use name instead of id
-  "proj_id" int REFERENCES "Project"(proj_id)
+  "event_id" int NOT NULL REFERENCES "Event"(event_id), --maybe use name instead of id
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 
     --add user_id and proj_id to track who created the event and what project it belongs to
 
@@ -106,8 +106,8 @@ CREATE TABLE "Comment"(
   "comment_id" serial PRIMARY KEY,
   "comment" varchar(250) NOT NULL,
   "datePosted" date NOT NULL,
-  "user_id" int REFERENCES "User"(user_id),
-  "tick_id" int REFERENCES "Ticket"(tick_id)
+  "user_id" int NOT NULL REFERENCES "User"(user_id),
+  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id)
 );
 
 --PROCEDURES--

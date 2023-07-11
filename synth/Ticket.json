@@ -1,0 +1,47 @@
+{
+    "type": "array",
+    "length": 10,
+    "content": {
+        "type": "object",
+        "tick_id": {
+            "type": "number",
+            "id": {},
+            "subtype": "i32"
+        },
+        "name": {
+            "type": "string",
+            "faker": {
+                "generator": "first_name"
+            }
+        },
+        "description": {
+            "type": "string",
+            "faker": {
+                "generator": "bs"
+            }
+        },
+        "priority": {
+            "type": "number",
+            "range": {
+                "low": 0,
+                "high": 5,
+                "step": 1
+            },
+            "subtype": "i32"
+
+        },
+        "proj_id": {
+            "type": "same_as",
+            "ref": "Project.content.proj_id"
+        },
+        "progress": {
+            "type": "number",
+            "range": {
+                "low": 0,
+                "high": 3,
+                "step": 1
+            },
+            "subtype": "i32"
+          }
+    }
+}

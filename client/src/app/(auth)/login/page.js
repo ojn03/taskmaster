@@ -21,7 +21,6 @@ const Login = () => {
 
     const onSubmit = async (data) => {
         try {
-            console.log(data)
             //response is an array
             const response = await fetch("http://localhost:5001/login", {
                 method: "POST",

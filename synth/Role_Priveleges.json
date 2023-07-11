@@ -1,0 +1,18 @@
+{
+    "type": "array",
+    "length": 5,
+    "content": {
+        "type": "unique",
+        "content": {
+            "type": "object",
+            "priv_id": {
+                "type": "same_as",
+                "ref": "Privelege.content.priv_id"
+            },
+            "role_id": {
+                "type": "same_as",
+                "ref": "Role.content.role_id"
+            }
+        }
+    }
+}

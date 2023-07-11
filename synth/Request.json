@@ -1,0 +1,28 @@
+{
+    "type": "array",
+    "length": 2,
+    "content": {
+        "type": "object",
+        "req_id": {
+            "type": "number",
+            "id": {},
+            "subtype": "i32"
+        },
+        "to_user": {
+            "type": "same_as",
+            "ref": "User.content.user_id"
+        },
+        "from_user": {
+            "type": "same_as",
+            "ref": "User.content.user_id"
+        },
+        "description": {
+            "type": "string",
+            "faker": {
+                "generator": "bs"
+            }
+        }
+
+
+    }
+}

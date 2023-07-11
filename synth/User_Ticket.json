@@ -1,0 +1,18 @@
+{
+  "type": "array",
+  "length": 3,
+  "content": {
+    "type": "unique",
+    "content": {
+      "type": "object",
+      "tick_id": {
+        "type": "same_as",
+        "ref": "Ticket.content.tick_id"
+      },
+      "user_id": {
+        "type": "same_as",
+        "ref": "User.content.user_id"
+      }
+    }
+  }
+}
