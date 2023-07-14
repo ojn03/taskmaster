@@ -1,30 +1,31 @@
 {
-    "type": "array",
-    "length": 10,
-    "content": {
-      "type": "object",
-      "comment": {
-        "type": "string",
-"faker":{
-    "generator":"catch_phrase"
-}      },
-      "comment_id": {
-        "type": "number",
-        "id": {},
-        "subtype": "i32"
-      },
-      "datePosted": {
-        "type": "date_time",
-        "format": "%Y-%m-%d",
-        "subtype": "naive_date"
-      },
-      "tick_id": {
-        "type": "same_as",
-        "ref": "Ticket.content.tick_id"
-      },
-      "user_id": {
-        "type": "same_as",
-        "ref": "User.content.user_id"
+  "type": "array",
+  "length": 10,
+  "content": {
+    "type": "object",
+    "comment": {
+      "type": "string",
+      "faker": {
+        "generator": "catch_phrase"
       }
+    },
+    "comment_id": {
+      "type": "number",
+      "id": {},
+      "subtype": "i32"
+    },
+    "datePosted": {
+      "type": "date_time",
+      "format": "%Y-%m-%d",
+      "subtype": "naive_date"
+    },
+    "tick_id": {
+      "type": "same_as",
+      "ref": "Ticket.content.tick_id"
+    },
+    "user_id": {
+      "type": "same_as",
+      "ref": "User.content.user_id"
     }
   }
+}

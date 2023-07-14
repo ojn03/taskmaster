@@ -3,7 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form';
-import { toastError, toastSuccess } from '@/utils/functions';
+import { toastError, toastSuccess } from '@/lib/functions';
 //todo implement without usestate
 //todo add icons to inputs
 //todo add validation

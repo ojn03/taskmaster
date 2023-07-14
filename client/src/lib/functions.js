@@ -27,3 +27,30 @@ export const toastSuccess = ({ message }) => {
         theme: "colored",
     });
 }
+
+export const getTickets = async ({ projid }) => {
+    try {
+        const response = await fetch(`http://localhost:5001/tickets/${projid}`, { cache: 'no-store' })
+        const data = await response.json()
+        return data;
+
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
+
+export const getProjects = async ({ userid }) => {
+    try {
+        const response = await fetch(`http://localhost:5001/projects/${userid}`, { cache: 'no-store' })
+        const data = await response.json()
+        return data;
+
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
+

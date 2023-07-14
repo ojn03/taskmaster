@@ -1,6 +1,6 @@
 {
     "type": "array",
-    "length": 5,
+    "length": 2,
     "content": {
         "type": "object",
         "priv_id": {

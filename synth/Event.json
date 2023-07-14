@@ -1,6 +1,6 @@
 {
     "type": "array",
-    "length":10,
+    "length":1,
     "content": {
         "type": "object",
         "event_id": {

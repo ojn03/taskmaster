@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import React from 'react'
 import { useForm } from 'react-hook-form';
-import { toastError,toastSuccess } from '@/utils/functions';
+import { toastError,toastSuccess } from '@/lib/functions';
 
 //todo add icons to inputs
 //todo use tailwindcomponents and fowbite
