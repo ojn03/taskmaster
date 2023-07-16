@@ -71,7 +71,7 @@ CREATE TABLE "Event"(
 );
 
 CREATE TABLE "History"(
-  "date_id" serial PRIMARY KEY,
+  "date_id" serial PRIMARY KEY, --todo change to history_id
   "date" date NOT NULL,
   "time" time NOT NULL,
   "event_id" int NOT NULL REFERENCES "Event"(event_id), --maybe use name instead of id
@@ -81,7 +81,7 @@ CREATE TABLE "History"(
 
 CREATE TABLE "Ticket"(
   "tick_id" serial PRIMARY KEY,
-  "name" varchar(50) NOT NULL,
+  "name" varchar(50) NOT NULL, --todo change to title
   "description" varchar(250) NOT NULL,
   "progress" int CHECK ("progress" BETWEEN 0 AND 2),
   "priority" int CHECK ("priority" BETWEEN 0 AND 4),

@@ -28,6 +28,7 @@ export const toastSuccess = ({ message }) => {
     });
 }
 
+//todo fix caching
 export const getTickets = async ({ projid }) => {
     try {
         const response = await fetch(`http://localhost:5001/tickets/${projid}`, { cache: 'no-store' })
@@ -53,4 +54,14 @@ export const getProjects = async ({ userid }) => {
     }
 }
 
+export const getHistory = async ({ projid }) => {
+    try {
+        const response = await fetch(`http://localhost:5001/history/${projid}`, { cache: 'no-store' })
+        const data = await response.json()
+        return data;
 
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}

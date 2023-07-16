@@ -12,8 +12,8 @@ const red = new Redis(redisUrl);
 console.log("redis connected at", redisUrl);
 
 //todo paginate queries
-//todo cache queries
 //look into orms
+//todo add sessions, session verification, cookies, etc
 
 // middleware
 app.use(cors());
@@ -111,7 +111,6 @@ app.post("/login", async function (req, res) {
 });
 
 //projects
-
 app.get("/projects/:userid", cacheProjects, queryProjects);
 
 function cacheProjects(req, res, next) {
@@ -198,6 +197,55 @@ function queryTickets(req, res) {
 		}
 	);
 }
+
+//history
+
+
+app.get("/history/:projid",  queryHistory);
+
+function cacheHistory(req, res, next) {
+    red.get(`history: ${req.params.projid}`, (err, data) => {
+        console.time("cache");
+        if (err) {
+            console.error(err.message);
+            res.json({ error: "error 500: " + err.message });
+            console.timeEnd("cache");
+        }
+        if (data != null) {
+            res.json(JSON.parse(data));
+            console.timeEnd("cache");
+            console.log("cache hit");
+        } else {
+            next();
+        }
+    });
+}
+
+function queryHistory(req, res) {
+
+    pool.query(
+        'SELECT * FROM "History" WHERE proj_id = $1',
+        [req.params.projid],
+        (err, response) => {
+            if (err) {
+                console.error(err.message);
+                res.json({ error: "error 500: " + err.message });
+                // console.timeEnd("cache");
+            } else {
+                red.setex(
+                    `history: ${req.params.projid}`,
+                    600,
+                    JSON.stringify(response.rows)
+                );
+                res.json(response.rows);
+                // console.timeEnd("cache");
+                console.log("cache miss");
+            }
+        }
+    );
+}
+
+
 
 app.listen(5001, () => {
 	console.log("Server is running on port 5001");

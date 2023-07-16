@@ -6,10 +6,9 @@ import { useForm } from 'react-hook-form';
 import { toastError, toastSuccess } from '@/lib/functions';
 //todo implement without usestate
 //todo add icons to inputs
-//todo add validation
 //todo add forgot password
 //todo add remember me
-//sign in as demo user
+//todo sign in as demo user
 //todo make username and email radio buttons
 //todo use tailwindcomponents and fowbite
 //todo add loading stage (and animations) for data fetching
