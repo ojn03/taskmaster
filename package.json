@@ -17,6 +17,9 @@
     "pg-promise": "^11.5.0",
     "react-hook-form": "^7.45.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "prettier": "^3.0.0",
+    "prettier-plugin-sql": "^0.15.1"
+  },
   "description": ""
 }

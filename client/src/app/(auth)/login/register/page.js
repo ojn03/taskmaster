@@ -2,16 +2,16 @@
 import Link from 'next/link'
 import React from 'react'
 import { useForm } from 'react-hook-form';
-import { toastError,toastSuccess } from '@/lib/functions';
+import { toastError, toastSuccess } from '@/lib/functions';
 
 //todo add icons to inputs
 //todo use tailwindcomponents and fowbite
 //todo add input labels
 
 const Register = () => {
-    const pVal = new RegExp('^'+process.env.NEXT_PUBLIC_P_VAL+'$')
-    const usernameVal = new RegExp('^'+process.env.NEXT_PUBLIC_U_VAL+'$')
-    const emailVal = new RegExp('^'+process.env.NEXT_PUBLIC_E_VAL+'$')
+    const pVal = new RegExp('^' + process.env.NEXT_PUBLIC_P_VAL + '$')
+    const usernameVal = new RegExp('^' + process.env.NEXT_PUBLIC_U_VAL + '$')
+    const emailVal = new RegExp('^' + process.env.NEXT_PUBLIC_E_VAL + '$')
 
     const testdata = {
         "firstName": "yaboi",
@@ -42,11 +42,13 @@ const Register = () => {
         }
     }
 
-    const inputStyle = 'p-2 rounded-sm shadow-md border border-gray-300 focus:outline-none focus:ring-1  focus:ring-slate-600 focus:border-transparent  '
+    const inputStyle = 'p-2 rounded-sm shadow-md border border-slate-300 focus:outline-none focus:ring-1  focus:ring-slate-600 focus:border-transparent  '
     return (
 
         <div className='flex flex-col w-1/2 justify-center h-full items-center m-auto'>
-            <form onSubmit={handleSubmit(onSubmit)} className='rounded-md h-fit flex flex-col justify-center bg-light gap-3 p-5'>
+
+            {/* registration form */}
+            <form onSubmit={handleSubmit(onSubmit)} className='rounded-md h-fit flex flex-col justify-center  gap-3 p-5'>
                 <div className='flex gap-2'>
 
                     {/* FIRST NAME */}
@@ -119,14 +121,16 @@ const Register = () => {
                 />
                 {errors.confirmPass && <p className='text-xs font-light text-red-900'>{errors.confirmPass.message}</p>}
 
-                <button type='submit' className=' text-light bg-slate-600/90 p-2 w-1/2 mt-3 mx-auto rounded-[4px] border-2 border-transparent  hover:bg-slate-700 hover:border-slate-700 transition-colors duration-300 shadow-lg'>
+                {/* REGISTER BUTTON */}
+                <button type='submit' className=' text-light bg-dark p-2 w-1/2  mx-auto rounded-[4px] border-2 border-transparent  hover:bg-slate-700 transition-colors duration-300 shadow-lg'>
                     Register
                 </button>
             </form>
+            {/* TEST FETCH BUTTON */}
             {/* <button onClick={() => onSubmit(testdata)} className='bg-red-500'> test fetch</button> */}
-            <div className='mt-2 text-light'>
-                <p className='text-md font-semibold '> Already have an account? </p>
-                <Link href='/login' className='block w-fit text-center mx-auto text-light underline'>sign in</Link>
+            <div className='mt-2 text-dark'>
+                <p className='text-base leading-4 font-semibold'> Already have an account? </p>
+                <Link href='/login' className='block w-fit text-center mx-auto underline'>sign in</Link>
             </div>
         </div>
     )

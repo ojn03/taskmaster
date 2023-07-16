@@ -26,7 +26,7 @@ module.exports = {
       },
       colors: {
         "light": "#f5f5f5",
-        'dark': '#4e46e5',
+        'dark': '#10172a',
         "darker": "#5b51a3",
         "action": "#ff5249",
       },

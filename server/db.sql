@@ -17,7 +17,7 @@ CREATE TABLE "Request"(
   "req_id" serial PRIMARY KEY,
   "description" varchar(100) NOT NULL,
   "from_user" int NOT NULL REFERENCES "User"(user_id),
-  "to_user" int NOT NULL REFERENCES  "User"(user_id)
+  "to_user" int NOT NULL REFERENCES "User"(user_id)
 );
 
 CREATE TABLE "Project"(
@@ -76,9 +76,7 @@ CREATE TABLE "History"(
   "time" time NOT NULL,
   "event_id" int NOT NULL REFERENCES "Event"(event_id), --maybe use name instead of id
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
-
-    --add user_id and proj_id to track who created the event and what project it belongs to
-
+  --add user_id and proj_id to track who created the event and what project it belongs to
 );
 
 CREATE TABLE "Ticket"(
@@ -217,15 +215,28 @@ END
 $$;
 
 -- end loginUsername
-
-create or replace function emailToHash(em varchar(100))
-returns varchar(250)
-as $$
-declare
+CREATE OR REPLACE FUNCTION emailToHash(em varchar(100))
+  RETURNS varchar (
+    250
+)
+    AS $$
+DECLARE
   id integer;
-begin
-  select user_id from "User" where email = em into id;
-  return (select "hash" from "UserInfo" where user_id = id);
-end
-$$ language plpgsql;
+BEGIN
+  SELECT
+    user_id
+  FROM
+    "User"
+  WHERE
+    email = em INTO id;
+  RETURN (
+    SELECT
+      "hash"
+    FROM
+      "UserInfo"
+    WHERE
+      user_id = id);
+END
+$$
+LANGUAGE plpgsql;
 
