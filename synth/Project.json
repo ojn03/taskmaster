@@ -1,6 +1,6 @@
 {
     "type": "array",
-    "length": 1,
+    "length": 2,
     "content": {
         "type": "object",
         "proj_id": {

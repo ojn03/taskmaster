@@ -1,19 +1,22 @@
 export const columns = [
 	{
 		accessorKey: "name",
-		header: "Title"
+		header: "Title",
+		size: 50
 	},
 	{
 		accessorKey: "description",
 		header: "Description",
-		size: 300
+		size: 400
 	},
 	{
 		accessorKey: "progress",
-		header: "Progress"
+		header: "Progress",
+		size: 50
 	},
 	{
 		accessorKey: "priority",
-		header: "Priority"
+		header: "Priority",
+		size: 50
 	}
 ];

@@ -1,6 +1,6 @@
 {
     "type": "array",
-    "length": 5,
+    "length": 15,
     "content": {
         "type": "unique",
         "content": {

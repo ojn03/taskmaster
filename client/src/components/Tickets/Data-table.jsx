@@ -34,20 +34,14 @@ export function DataTable({ columns, data, ...props }) {
 	return (
 		<div className="bg-dark/90 text-light rounded-md ">
 			<Table>
-				<TableHeader
-					classname="overflow-scroll"
-					style={{ tableLayout: "fixed", width: "100%" }}
-				>
+				<TableHeader classname="overflow-scroll">
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map((header) => {
 								return (
 									<TableHead
 										style={{
-											width:
-												header.getSize() === Number.MAX_SAFE_INTEGER
-													? "auto"
-													: header.getSize()
+											width: header.getSize()
 										}}
 										key={header.id}
 									>
@@ -72,7 +66,7 @@ export function DataTable({ columns, data, ...props }) {
 								data-state={row.getIsSelected() && "selected"}
 							>
 								{row.getVisibleCells().map((cell) => (
-									<TableCell key={cell.id} >
+									<TableCell key={cell.id}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}

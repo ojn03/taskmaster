@@ -14,6 +14,7 @@ console.log("redis connected at", redisUrl);
 //todo paginate queries
 //look into orms
 //todo add sessions, session verification, cookies, etc
+//todo refactor code to remove duplicate code
 
 // middleware
 app.use(cors());
@@ -29,6 +30,7 @@ const pVal = new RegExp("^" + process.env.NEXT_PUBLIC_P_VAL + "$");
 const usernameVal = new RegExp("^" + process.env.NEXT_PUBLIC_U_VAL + "$");
 const emailVal = new RegExp("^" + process.env.NEXT_PUBLIC_E_VAL + "$");
 
+//REGISTER
 app.post("/register", async (req, res) => {
 	try {
 		const {
@@ -38,7 +40,7 @@ app.post("/register", async (req, res) => {
 			email,
 			password
 		} = req.body;
-		const hash = await bcrypt.hash(password, 10);
+
 		//validate inputs
 		if (
 			//check if any are empty
@@ -46,16 +48,17 @@ app.post("/register", async (req, res) => {
 			!last ||
 			!username ||
 			!email ||
-			!hash ||
+			!password ||
 			// regex validation
+			!pVal.test(password) ||
 			!usernameVal.test(username) ||
 			!emailVal.test(email)
 		) {
 			res.json({ error: "invalid input" });
 			return;
 		}
-
-		//check if email or username already exists else insert info into db
+		const hash = await bcrypt.hash(password, 10);
+		//check if email or username already exists else register info into db
 		const QueryRegister = {
 			text: "CALL register($1, $2, $3, $4, $5, $6)",
 			values: [email, username, first, last, hash, null]
@@ -110,142 +113,94 @@ app.post("/login", async function (req, res) {
 	}
 });
 
-//projects
-app.get("/projects/:userid", cacheProjects, queryProjects);
-
-function cacheProjects(req, res, next) {
-	red.get(`projects: ${req.params.userid}`, (err, data) => {
-		console.time("cache");
-		if (err) {
-			console.error(err.message);
-			res.json({ error: "error 500: " + err.message });
-			console.timeEnd("cache");
-		}
-		if (data != null) {
-			res.json(JSON.parse(data));
-			console.timeEnd("cache");
-			console.log("cache hit");
-		} else {
-			next();
-		}
-	});
-}
-
-function queryProjects(req, res) {
-	pool.query(
-		'SELECT * FROM "Project" WHERE user_id = $1',
-		[req.params.userid],
-		(err, response) => {
+// cache middleware for get requests with 1 param
+function cacheDB(paramName, cacheLocation) {
+	return function (req, res, next) {
+		red.get(`${cacheLocation}:${req.params[paramName]}`, (err, data) => {
+			console.time(cacheLocation);
 			if (err) {
 				console.error(err.message);
 				res.json({ error: "error 500: " + err.message });
-				console.timeEnd("cache");
+				console.timeEnd(cacheLocation);
+			}
+			if (data != null) {
+				res.json(JSON.parse(data));
+				console.timeEnd(cacheLocation);
+				console.log("cache hit");
+			} else {
+				next();
+			}
+		});
+	};
+}
+
+//DB Query for get requests with 1 param
+function queryDB(querytext, paramName, cacheLocation) {
+	return function (req, res) {
+		console.log(querytext, paramName, cacheLocation);
+		console.log(req.params[paramName]);
+		pool.query(querytext, [req.params[paramName]], (err, response) => {
+			if (err) {
+				console.error(err.message);
+				res.json({ error: "error 500: " + err.message });
+				console.timeEnd(cacheLocation);
 			} else {
 				red.setex(
-					`projects: ${req.params.userid}`,
+					`${cacheLocation}:${req.params[paramName]}`,
 					600,
 					JSON.stringify(response.rows)
 				);
 				res.json(response.rows);
-				console.timeEnd("cache");
+				console.timeEnd(cacheLocation);
 				console.log("cache miss");
 			}
-		}
-	);
+		});
+	};
 }
+
+//projects
+//get all the project info for a given user
+const projectsRoute = "/projects/:userid";
+const projectsQuery =
+	'select * from "Project" join "Priv_User_Project" on "Project".proj_id = "Priv_User_Project".proj_id where "Priv_User_Project".user_id = $1';
+//'SELECT * FROM "Project" WHERE proj_id IN (SELECT proj_id FROM "Priv_User_Project" WHERE user_id = $1)',
+//'select *  from "Project" join (select * from "Priv_User_Project" where user_id = $1) as pup on "Project".proj_id = "pup".proj_id;',
+app.get(
+	projectsRoute,
+	cacheDB("userid", "projects"),
+	queryDB("userid", "projects", projectsQuery)
+);
 
 //tickets
-app.get("/tickets/:projid", cacheTickets, queryTickets);
-
-function cacheTickets(req, res, next) {
-	red.get(`tickets: ${req.params.projid}`, (err, data) => {
-		console.time("cache");
-		if (err) {
-			console.error(err.message);
-			res.json({ error: "error 500: " + err.message });
-			console.timeEnd("cache");
-		}
-		if (data != null) {
-			res.json(JSON.parse(data));
-			console.timeEnd("cache");
-			console.log("cache hit");
-		} else {
-			next();
-		}
-	});
-}
-
-function queryTickets(req, res) {
-	pool.query(
-		'SELECT * FROM "Ticket" WHERE proj_id = $1',
-		[req.params.projid],
-		(err, response) => {
-			if (err) {
-				console.error(err.message);
-				res.json({ error: "error 500: " + err.message });
-				console.timeEnd("cache");
-			} else {
-				red.setex(
-					`tickets: ${req.params.projid}`,
-					600,
-					JSON.stringify(response.rows)
-				);
-				res.json(response.rows);
-				console.timeEnd("cache");
-				console.log("cache miss");
-			}
-		}
-	);
-}
+//get all the tickets for a given project
+const ticketsRoute = "/tickets/:projid";
+const ticketsQuery = 'SELECT * FROM "Ticket" WHERE proj_id = $1';
+app.get(
+	ticketsRoute,
+	cacheDB("projid", "tickets"),
+	queryDB(ticketsQuery, "projid", "tickets")
+);
 
 //history
+//get the history for a given project
+const historyRoute = "/history/:projid";
+const historyQuery = 'SELECT * FROM "History" WHERE proj_id = $1';
+app.get(
+	historyRoute,
+	cacheDB("projid", "history"),
+	queryDB(historyQuery, "projid", "history")
+);
 
-
-app.get("/history/:projid",  queryHistory);
-
-function cacheHistory(req, res, next) {
-    red.get(`history: ${req.params.projid}`, (err, data) => {
-        console.time("cache");
-        if (err) {
-            console.error(err.message);
-            res.json({ error: "error 500: " + err.message });
-            console.timeEnd("cache");
-        }
-        if (data != null) {
-            res.json(JSON.parse(data));
-            console.timeEnd("cache");
-            console.log("cache hit");
-        } else {
-            next();
-        }
-    });
-}
-
-function queryHistory(req, res) {
-
-    pool.query(
-        'SELECT * FROM "History" WHERE proj_id = $1',
-        [req.params.projid],
-        (err, response) => {
-            if (err) {
-                console.error(err.message);
-                res.json({ error: "error 500: " + err.message });
-                // console.timeEnd("cache");
-            } else {
-                red.setex(
-                    `history: ${req.params.projid}`,
-                    600,
-                    JSON.stringify(response.rows)
-                );
-                res.json(response.rows);
-                // console.timeEnd("cache");
-                console.log("cache miss");
-            }
-        }
-    );
-}
-
-
+//all users
+//gets all the users of a given project
+const usersRoute = "/users/:projid";
+const usersQuery =
+	'SELECT * FROM "User" WHERE user_id IN (SELECT user_id FROM "Priv_User_Project" WHERE proj_id = $1)';
+app.get(
+	usersRoute,
+	cacheDB("projid", "users"),
+	queryDB(usersQuery, "projid", "users")
+);
 
 app.listen(5001, () => {
 	console.log("Server is running on port 5001");

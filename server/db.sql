@@ -240,3 +240,39 @@ END
 $$
 LANGUAGE plpgsql;
 
+--to test query speed and efficiency
+CREATE OR REPLACE FUNCTION "runtime"(PAR_sql text, OUT sql_runtime real)
+  AS $$
+DECLARE
+  run_time_start timestamp with time zone;
+  run_time_end timestamp with time zone;
+BEGIN
+  SELECT
+    clock_timestamp() INTO run_time_start;
+  EXECUTE PAR_sql;
+  SELECT
+    clock_timestamp() INTO run_time_end;
+  SELECT
+    EXTRACT(EPOCH FROM (run_time_end - run_time_start)) INTO sql_runtime;
+END;
+$$
+LANGUAGE plpgsql
+VOLATILE;
+
+CREATE OR REPLACE FUNCTION "runtime"(PAR_sql text, OUT sql_runtime real)
+  AS $$
+DECLARE
+  run_time_start timestamp with time zone;
+  run_time_end timestamp with time zone;
+BEGIN
+  SELECT
+    clock_timestamp() INTO run_time_start;
+  EXECUTE PAR_sql;
+  SELECT
+    clock_timestamp() INTO run_time_end;
+  SELECT
+    EXTRACT(EPOCH FROM (run_time_end - run_time_start)) INTO sql_runtime;
+END;
+$$
+LANGUAGE plpgsql
+VOLATILE;
