@@ -1,4 +1,5 @@
 -- commands used to create sql db
+-- todo fix array lengths in synth schemas
 CREATE TABLE "User"(
   "user_id" serial PRIMARY KEY,
   "first" varchar(50) NOT NULL,
@@ -7,7 +8,7 @@ CREATE TABLE "User"(
 );
 
 CREATE TABLE "UserInfo"(
-  "user_id" int  primary key REFERENCES "User"(user_id),
+  "user_id" int PRIMARY KEY REFERENCES "User"(user_id),
   "username" varchar(50) UNIQUE NOT NULL,
   "hash" varchar(250) NOT NULL
 );
@@ -16,7 +17,7 @@ CREATE TABLE "Request"(
   "req_id" serial PRIMARY KEY,
   "description" varchar(100) NOT NULL,
   "from_user" int NOT NULL REFERENCES "User"(user_id),
-  "to_user" int NOT NULL REFERENCES  "User"(user_id)
+  "to_user" int NOT NULL REFERENCES "User"(user_id)
 );
 
 CREATE TABLE "Project"(
@@ -32,6 +33,14 @@ CREATE TABLE "Role"(
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
 
+CREATE TABLE "Role_User_Project"(
+  "role_id" int NOT NULL REFERENCES "Role"(role_id),
+  "user_id" int NOT NULL REFERENCES "User"(user_id),
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id),
+  PRIMARY KEY ("proj_id", "user_id")
+  --todo fix duplication of proj_id. Roleid already has proj_id
+);
+
 CREATE TABLE "Privelege"(
   "priv_id" serial PRIMARY KEY,
   "name" varchar(50) NOT NULL,
@@ -39,61 +48,72 @@ CREATE TABLE "Privelege"(
 );
 
 CREATE TABLE "Role_Priveleges"(
-  "role_id" int REFERENCES "Role"(role_id),
-  "priv_id" int REFERENCES "Privelege"(priv_id)
+  "role_id" int NOT NULL REFERENCES "Role"(role_id),
+  "priv_id" int NOT NULL REFERENCES "Privelege"(priv_id),
+  PRIMARY KEY ("role_id", "priv_id")
 );
 
-CREATE TABLE "Priv_User_Project"(
-  "priv_id" int REFERENCES "Privelege"(priv_id),
-  "proj_id" int REFERENCES "Project"(proj_id),
-  "user_id" int REFERENCES "User"(user_id)
+CREATE TABLE "Team"(
+  "team_id" serial PRIMARY KEY,
+  "name" varchar(50) NOT NULL,
+  "description" varchar(100) NOT NULL,
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
+);
+
+CREATE TABLE "Team_User_Project"(
+  "team_id" int NOT NULL REFERENCES "Team"(team_id),
+  "user_id" int NOT NULL REFERENCES "User"(user_id),
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id),
+  PRIMARY KEY ("user_id", "proj_id")
+  --TODO dupliation of proj_id
 );
 
 CREATE TABLE "Sprint"(
   "sprint_id" serial PRIMARY KEY,
   "name" varchar(50) NOT NULL,
-  "description" varchar(100) NOT NULL
+  "description" varchar(100) NOT NULL,
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
 
 CREATE TABLE "User_Sprint"(
-  "user_id" int REFERENCES "User"(user_id),
-  "sprint_id" int REFERENCES "Sprint"(sprint_id)
+  "user_id" int not null REFERENCES "User"(user_id),
+  "sprint_id" int not null REFERENCES "Sprint"(sprint_id),
+  PRIMARY KEY ("user_id", "sprint_id")
 );
 
 CREATE TABLE "Event"(
   "event_id" serial PRIMARY KEY,
-  "name" varchar(50) NOT NULL,
-  "description" varchar(100) NOT NULL
+  "name" varchar(50) NOT NULL
 );
 
 CREATE TABLE "History"(
-  "date_id" serial PRIMARY KEY,
+  "history_id" serial PRIMARY KEY,
   "date" date NOT NULL,
   "time" time NOT NULL,
-  "event_id" int NOT NULL REFERENCES "Event"(event_id), --maybe use name instead of id
+  "event_id" int NOT NULL REFERENCES "Event"(event_id),
+  "user_id" int NOT NULL REFERENCES "User"(user_id),
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
-
-    --add user_id and proj_id to track who created the event and what project it belongs to
-
 );
 
 CREATE TABLE "Ticket"(
   "tick_id" serial PRIMARY KEY,
-  "name" varchar(50) NOT NULL,
+  "title" varchar(50) NOT NULL,
   "description" varchar(250) NOT NULL,
-  "progress" int CHECK ("progress" BETWEEN 0 AND 2),
-  "priority" int CHECK ("priority" BETWEEN 0 AND 4),
-  "proj_id" int REFERENCES "Project"(proj_id)
+  "progress" int not null CHECK ("progress" BETWEEN 0 AND 2),
+  "priority" int not null CHECK ("priority" BETWEEN 0 AND 4),
+  "proj_id" int not null REFERENCES "Project"(proj_id)
 );
 
 CREATE TABLE "User_Ticket"(
-  "tick_id" int REFERENCES "Ticket"(tick_id),
-  "user_id" int REFERENCES "User"(user_id)
+  "tick_id" int not null REFERENCES "Ticket"(tick_id),
+  "user_id" int not null REFERENCES "User"(user_id),
+  PRIMARY KEY ("tick_id", "user_id")
 );
 
 CREATE TABLE "Sprint_Ticket"(
-  "sprint_id" int REFERENCES "Sprint"(sprint_id),
-  "tick_id" int REFERENCES "Ticket"(tick_id)
+  "sprint_id" int not null REFERENCES "Sprint"(sprint_id),
+  "tick_id" int not null REFERENCES "Ticket"(tick_id),
+  PRIMARY KEY ("sprint_id", "tick_id")
 );
 
 CREATE TABLE "Comment"(
@@ -103,3 +123,10 @@ CREATE TABLE "Comment"(
   "user_id" int NOT NULL REFERENCES "User"(user_id),
   "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id)
 );
+
+CREATE TABLE "User_Proj"(
+  "user_id" int REFERENCES "User"(user_id),
+  "proj_id" int REFERENCES "Project"(proj_id),
+  PRIMARY KEY ("user_id", "proj_id")
+);
+

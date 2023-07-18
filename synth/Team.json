@@ -1,10 +1,10 @@
 {
     "type": "array",
-    "length":3,
+    "length":1,
 
     "content": {
         "type": "object",
-        "role_id": {
+        "team_id": {
             "type": "number",
             "id":{},
             "subtype": "i32"

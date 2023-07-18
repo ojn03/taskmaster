@@ -1,17 +1,17 @@
 {
 	"type": "array",
-	"length": 6,
+	"length": 5,
 	"content": {
 		"type": "unique",
 		"content": {
 			"type": "object",
-			"tick_id": {
+			"user_id": {
 				"type": "same_as",
-				"ref": "Ticket.content.tick_id"
+				"ref": "User.content.user_id"
 			},
-			"sprint_id": {
+			"proj_id": {
 				"type": "same_as",
-				"ref": "Sprint.content.sprint_id"
+				"ref": "Project.content.proj_id"
 			}
 		}
 	}

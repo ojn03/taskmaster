@@ -1,0 +1,22 @@
+{
+	"type": "array",
+	"length": 5,
+	"content": {
+		"type": "unique",
+		"content": {
+			"type": "object",
+			"user_id": {
+				"type": "same_as",
+				"ref": "User_Proj.content.user_id"
+			},
+			"proj_id": {
+				"type": "same_as",
+				"ref": "User_Proj.content.proj_id"
+			},
+			"team_id": {
+				"type": "same_as",
+				"ref": "Team.content.team_id"
+			}
+		}
+	}
+}

@@ -1,0 +1,22 @@
+{
+	"type": "array",
+	"length": 5,
+	"content": {
+		"type": "unique",
+		"content": {
+			"type": "object",
+			"proj_id": {
+				"type": "same_as",
+				"ref": "User_Proj.content.proj_id"
+			},
+			"user_id": {
+				"type": "same_as",
+				"ref": "User_Proj.content.user_id"
+			},
+			"role_id": {
+				"type": "same_as",
+				"ref": "Role.content.role_id"
+			}
+		}
+	}
+}

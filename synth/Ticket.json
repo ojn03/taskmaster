@@ -8,7 +8,7 @@
             "id": {},
             "subtype": "i32"
         },
-        "name": {
+        "title": {
             "type": "string",
             "faker": {
                 "generator": "first_name"

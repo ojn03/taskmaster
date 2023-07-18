@@ -1,31 +1,24 @@
 {
-    "type": "array",
-    "length":1,
-    "content": {
-        "type": "object",
-        "event_id": {
-            "type": "number",
-            "id": {},
-            "subtype": "i32"
-
-        },
-        "name": {
-            "type": "string",
-            "format": {
-                "format": "event {num}",
-                "arguments": {
-                    "num": {
-                        "type": "number",
-                        "id":{}
-                    }
-                }
-            }
-        },
-        "description": {
-            "type": "string",
-            "faker": {
-                "generator": "bs"
-            }
-        }
-    }
+	"type": "array",
+	"length": 1,
+	"content": {
+		"type": "object",
+		"event_id": {
+			"type": "number",
+			"id": {},
+			"subtype": "i32"
+		},
+		"name": {
+			"type": "string",
+			"format": {
+				"format": "event {num}",
+				"arguments": {
+					"num": {
+						"type": "number",
+						"id": {}
+					}
+				}
+			}
+		}
+	}
 }

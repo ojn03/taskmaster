@@ -14,7 +14,6 @@ console.log("redis connected at", redisUrl);
 //todo paginate queries
 //look into orms
 //todo add sessions, session verification, cookies, etc
-//todo refactor code to remove duplicate code
 
 // middleware
 app.use(cors());
@@ -22,7 +21,7 @@ app.use(express.json()); //req.body will be undefined without this
 
 //ROUTES//
 
-//REGISTRATION still testing
+//REGISTRATION 
 //todo make queries atomic
 
 //regex patterns for input validation
