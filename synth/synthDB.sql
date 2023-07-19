@@ -47,7 +47,7 @@ CREATE TABLE "Privelege"(
   "description" varchar(100) NOT NULL
 );
 
-CREATE TABLE "Role_Priveleges"(
+CREATE TABLE "Role_Privelege"(
   "role_id" int NOT NULL REFERENCES "Role"(role_id),
   "priv_id" int NOT NULL REFERENCES "Privelege"(priv_id),
   PRIMARY KEY ("role_id", "priv_id")
@@ -76,21 +76,21 @@ CREATE TABLE "Sprint"(
 );
 
 CREATE TABLE "User_Sprint"(
-  "user_id" int not null REFERENCES "User"(user_id),
-  "sprint_id" int not null REFERENCES "Sprint"(sprint_id),
+  "user_id" int NOT NULL REFERENCES "User"(user_id),
+  "sprint_id" int NOT NULL REFERENCES "Sprint"(sprint_id),
   PRIMARY KEY ("user_id", "sprint_id")
 );
 
 CREATE TABLE "Event"(
   "event_id" serial PRIMARY KEY,
-  "name" varchar(50) NOT NULL
+  "event_title" varchar(50) unique NOT NULL
 );
 
 CREATE TABLE "History"(
   "history_id" serial PRIMARY KEY,
   "date" date NOT NULL,
   "time" time NOT NULL,
-  "event_id" int NOT NULL REFERENCES "Event"(event_id),
+  "event_title" varchar(50) NOT NULL REFERENCES "Event"(event_title),
   "user_id" int NOT NULL REFERENCES "User"(user_id),
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
@@ -99,20 +99,20 @@ CREATE TABLE "Ticket"(
   "tick_id" serial PRIMARY KEY,
   "title" varchar(50) NOT NULL,
   "description" varchar(250) NOT NULL,
-  "progress" int not null CHECK ("progress" BETWEEN 0 AND 2),
-  "priority" int not null CHECK ("priority" BETWEEN 0 AND 4),
-  "proj_id" int not null REFERENCES "Project"(proj_id)
+  "progress" int NOT NULL CHECK ("progress" BETWEEN 0 AND 2),
+  "priority" int NOT NULL CHECK ("priority" BETWEEN 0 AND 4),
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
 
 CREATE TABLE "User_Ticket"(
-  "tick_id" int not null REFERENCES "Ticket"(tick_id),
-  "user_id" int not null REFERENCES "User"(user_id),
+  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id),
+  "user_id" int NOT NULL REFERENCES "User"(user_id),
   PRIMARY KEY ("tick_id", "user_id")
 );
 
 CREATE TABLE "Sprint_Ticket"(
-  "sprint_id" int not null REFERENCES "Sprint"(sprint_id),
-  "tick_id" int not null REFERENCES "Ticket"(tick_id),
+  "sprint_id" int NOT NULL REFERENCES "Sprint"(sprint_id),
+  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id),
   PRIMARY KEY ("sprint_id", "tick_id")
 );
 
@@ -124,6 +124,7 @@ CREATE TABLE "Comment"(
   "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id)
 );
 
+--extra table for synth generation
 CREATE TABLE "User_Proj"(
   "user_id" int REFERENCES "User"(user_id),
   "proj_id" int REFERENCES "Project"(proj_id),

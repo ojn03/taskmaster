@@ -11,6 +11,7 @@ const red = new Redis(redisUrl);
 
 console.log("redis connected at", redisUrl);
 
+//todo move server to nextjs
 //todo paginate queries
 //look into orms
 //todo add sessions, session verification, cookies, etc
@@ -21,7 +22,7 @@ app.use(express.json()); //req.body will be undefined without this
 
 //ROUTES//
 
-//REGISTRATION 
+//REGISTRATION
 //todo make queries atomic
 
 //regex patterns for input validation
@@ -157,6 +158,58 @@ function queryDB(querytext, paramName, cacheLocation) {
 	};
 }
 
+//DB Query for get requests with 2 params
+function query2(params, querytext, cacheLocation) {
+	return function (req, res) {
+		console.log(querytext, params, cacheLocation);
+		console.log(req.params[params[0]], req.params[params[1]]);
+		pool.query(
+			querytext,
+			[req.params[params[0]], req.params[params[1]]],
+			(err, response) => {
+				if (err) {
+					console.error(err.message);
+					res.json({ error: "error 500: " + err.message });
+					console.timeEnd(cacheLocation);
+				} else {
+					red.setex(
+						`${cacheLocation}:${req.params[params[0]]}:${req.params[params[1]]}`,
+						600,
+						JSON.stringify(response.rows)
+					);
+					res.json(response.rows);
+					console.timeEnd(cacheLocation);
+					console.log("cache miss");
+				}
+			}
+		);
+	};
+}
+
+// cache middleware for get requests with 2 params
+function cache2(params, cacheLocation) {
+	return function (req, res, next) {
+		red.get(
+			`${cacheLocation}:${req.params[params[0]]}:${req.params[params[1]]}`,
+			(err, data) => {
+				console.time(cacheLocation);
+				if (err) {
+					console.error(err.message);
+					res.json({ error: "error 500: " + err.message });
+					console.timeEnd(cacheLocation);
+				}
+				if (data != null) {
+					res.json(JSON.parse(data));
+					console.timeEnd(cacheLocation);
+					console.log("cache hit");
+				} else {
+					next();
+				}
+			}
+		);
+	};
+}
+
 //projects
 //get all the project info for a given user
 const projectsRoute = "/projects/:userid";
@@ -192,13 +245,22 @@ app.get(
 
 //all users
 //gets all the users of a given project
-const usersRoute = "/users/:projid";
+const usersRoute = "/user/:projid";
 const usersQuery =
-	'SELECT * FROM "User" WHERE user_id IN (SELECT user_id FROM "Priv_User_Project" WHERE proj_id = $1)';
+	'SELECT * FROM "User" WHERE user_id IN (SELECT user_id FROM "Role_User_Project" WHERE proj_id = $1)';
 app.get(
 	usersRoute,
 	cacheDB("projid", "users"),
 	queryDB(usersQuery, "projid", "users")
+);
+
+//gets first, last, email and roles of all members of a team given user in the team and the project id
+const teamRoute = "/team/:userid/:projid";
+const teamQuery = 'SELECT * FROM getTeam($1, $2)' ;
+app.get(
+	teamRoute,
+	cache2(["projid", "userid"], "team"),
+	query2(["projid", "userid"], teamQuery, "team")
 );
 
 app.listen(5001, () => {

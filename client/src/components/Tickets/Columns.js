@@ -1,6 +1,6 @@
 export const columns = [
 	{
-		accessorKey: "name",
+		accessorKey: "title",
 		header: "Title",
 		size: 50
 	},

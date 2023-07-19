@@ -1,6 +1,6 @@
 {
     "type": "array",
-    "length": 20,
+    "length": 2000,
     "content": {
         "type": "object",
         "tick_id": {

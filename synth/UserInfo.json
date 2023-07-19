@@ -1,6 +1,6 @@
 {
     "type": "array",
-    "length": 10,
+    "length": 1000,
     "content": {
         "type": "object",
         "user_id": {

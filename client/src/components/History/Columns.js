@@ -8,7 +8,7 @@ export const columns = [
 		header: "Time",
 	},
 	{
-		accessorKey: "event_id",
+		accessorKey: "event_title",
 		header: "Event"
 	},
 ];

@@ -1,5 +1,5 @@
 import React from 'react'
-import { DataTable } from './Data-table'
+import { DataTable } from '../Data-table'
 import {columns} from './Columns'
 const History = ({history}) => {
   return (

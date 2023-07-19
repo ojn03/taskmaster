@@ -1,6 +1,6 @@
 {
 	"type": "array",
-	"length": 1,
+	"length": 10,
 	"content": {
 		"type": "object",
 		"event_id": {
@@ -8,7 +8,7 @@
 			"id": {},
 			"subtype": "i32"
 		},
-		"name": {
+		"event_title": {
 			"type": "string",
 			"format": {
 				"format": "event {num}",

@@ -29,6 +29,7 @@ CREATE TABLE "Project"(
 CREATE TABLE "Role"(
   "role_id" serial PRIMARY KEY,
   "name" varchar(50) NOT NULL,
+  --rename to role_title
   "description" varchar(100) NOT NULL,
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
@@ -41,13 +42,14 @@ CREATE TABLE "Role_User_Project"(
   --todo fix duplication of proj_id. Roleid already has proj_id
 );
 
+--static table
 CREATE TABLE "Privelege"(
   "priv_id" serial PRIMARY KEY,
   "name" varchar(50) NOT NULL,
   "description" varchar(100) NOT NULL
 );
 
-CREATE TABLE "Role_Priveleges"(
+CREATE TABLE "Role_Privelege"(
   "role_id" int NOT NULL REFERENCES "Role"(role_id),
   "priv_id" int NOT NULL REFERENCES "Privelege"(priv_id),
   PRIMARY KEY ("role_id", "priv_id")
@@ -76,21 +78,25 @@ CREATE TABLE "Sprint"(
 );
 
 CREATE TABLE "User_Sprint"(
-  "user_id" int not null REFERENCES "User"(user_id),
-  "sprint_id" int not null REFERENCES "Sprint"(sprint_id),
+  "user_id" int NOT NULL REFERENCES "User"(user_id),
+  "sprint_id" int NOT NULL REFERENCES "Sprint"(sprint_id),
   PRIMARY KEY ("user_id", "sprint_id")
 );
 
+--static table
 CREATE TABLE "Event"(
   "event_id" serial PRIMARY KEY,
-  "name" varchar(50) NOT NULL
+  "event_title" unique varchar(50) NOT NULL
+  -- todo maybe remove id and just use title as primary key
+  -- todo consider enum
 );
 
+--todo maybe replace static tables for enums
 CREATE TABLE "History"(
   "history_id" serial PRIMARY KEY,
   "date" date NOT NULL,
   "time" time NOT NULL,
-  "event_id" int NOT NULL REFERENCES "Event"(event_id),
+  "event_title" int NOT NULL REFERENCES "Event"(event_title),
   "user_id" int NOT NULL REFERENCES "User"(user_id),
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
@@ -99,20 +105,20 @@ CREATE TABLE "Ticket"(
   "tick_id" serial PRIMARY KEY,
   "title" varchar(50) NOT NULL,
   "description" varchar(250) NOT NULL,
-  "progress" int not null CHECK ("progress" BETWEEN 0 AND 2),
-  "priority" int not null CHECK ("priority" BETWEEN 0 AND 4),
-  "proj_id" int not null REFERENCES "Project"(proj_id)
+  "progress" int NOT NULL CHECK ("progress" BETWEEN 0 AND 2),
+  "priority" int NOT NULL CHECK ("priority" BETWEEN 0 AND 4),
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
 
 CREATE TABLE "User_Ticket"(
-  "tick_id" int not null REFERENCES "Ticket"(tick_id),
-  "user_id" int not null REFERENCES "User"(user_id),
+  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id),
+  "user_id" int NOT NULL REFERENCES "User"(user_id),
   PRIMARY KEY ("tick_id", "user_id")
 );
 
 CREATE TABLE "Sprint_Ticket"(
-  "sprint_id" int not null REFERENCES "Sprint"(sprint_id),
-  "tick_id" int not null REFERENCES "Ticket"(tick_id),
+  "sprint_id" int NOT NULL REFERENCES "Sprint"(sprint_id),
+  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id),
   PRIMARY KEY ("sprint_id", "tick_id")
 );
 
@@ -275,21 +281,42 @@ $$
 LANGUAGE plpgsql
 VOLATILE;
 
-CREATE OR REPLACE FUNCTION "runtime"(PAR_sql text, OUT sql_runtime real)
+--gets first, last, email and roles of all members of a team given a user in the team and the project id
+CREATE OR REPLACE FUNCTION getTeam(u_id integer, p_id integer)
+  RETURNS TABLE(
+    user_id integer,
+    FIRST varchar(50),
+    LAST varchar(50),
+    email varchar(100),
+    role_title varchar(50)
+  )
   AS $$
 DECLARE
-  run_time_start timestamp with time zone;
-  run_time_end timestamp with time zone;
+  t_id integer;
 BEGIN
   SELECT
-    clock_timestamp() INTO run_time_start;
-  EXECUTE PAR_sql;
-  SELECT
-    clock_timestamp() INTO run_time_end;
-  SELECT
-    EXTRACT(EPOCH FROM (run_time_end - run_time_start)) INTO sql_runtime;
+    team_id
+  FROM
+    "Team_User_Project"
+  WHERE
+    "Team_User_Project".user_id = u_id
+    AND proj_id = p_id
+  INTO t_id;
+  RETURN Query
+    SELECT
+      u.user_id,
+      u.first,
+      u.last,
+      u.email,
+      r.name AS role_title
+    FROM
+      "User" u
+      JOIN "Role_User_Project" rup ON u.user_id = rup.user_id
+      JOIN "Role" r ON rup.role_id = r.role_id
+      JOIN "Team_User_Project" tup ON u.user_id = tup.user_id
+    WHERE
+      tup.team_id = t_id
+      AND tup.proj_id = p_id;
 END;
 $$
-LANGUAGE plpgsql
-VOLATILE;
-
+LANGUAGE plpgsql;

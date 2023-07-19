@@ -1,6 +1,6 @@
 {
 	"type": "array",
-	"length": 15,
+	"length": 1500,
 	"content": {
 		"type": "object",
 		"history_id": {
@@ -20,9 +20,9 @@
 			"format": "%H:%M:%S",
 			"subtype": "naive_time"
 		},
-		"event_id": {
+		"event_title": {
 			"type": "same_as",
-			"ref": "Event.content.event_id"
+			"ref": "Event.content.event_title"
 		},
 		"user_id": {
 			"type": "same_as",

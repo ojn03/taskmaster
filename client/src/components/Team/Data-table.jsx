@@ -1,4 +1,6 @@
 "use client";
+
+//todo make data-table reusable
 import {
 	ColumnDef,
 	flexRender,
@@ -34,14 +36,20 @@ export function DataTable({ columns, data, ...props }) {
 	return (
 		<div className="bg-dark/90 text-light rounded-md ">
 			<Table>
-				<TableHeader classname="overflow-scroll">
+				<TableHeader
+					classname="overflow-scroll"
+					style={{ tableLayout: "fixed", width: "100%" }}
+				>
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map((header) => {
 								return (
 									<TableHead
 										style={{
-											width: header.getSize()
+											width:
+												header.getSize() === Number.MAX_SAFE_INTEGER
+													? "auto"
+													: header.getSize()
 										}}
 										key={header.id}
 									>
