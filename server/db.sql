@@ -1,5 +1,6 @@
 -- commands used to create sql db
 -- todo make shema not public
+--todo change "name" to "title" in all tables except "User"
 CREATE TABLE "User"(
   "user_id" serial PRIMARY KEY,
   "first" varchar(50) NOT NULL,

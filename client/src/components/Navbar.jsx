@@ -1,17 +1,23 @@
 import React from "react";
 
-const buttonStyle = "bg-dark text-light";
+const buttonStyle = "bg-dark text-light w-full";
+import Link from "next/link";
 
-const Navbar = (className) => {
+const Navbar = () => {
 	return (
-		<div className={"flex flex-col gap-3 h-full w-full p-3 bg-light"}>
-			<button className={buttonStyle}>DashBoard</button>
+		<nav className={"flex flex-col gap-3 h-full w-full p-3 bg-light"}>
+			<Link href="/">
+				<button className={buttonStyle}>DashBoard</button>
+			</Link>
 			<button className={buttonStyle}>My tickets</button>
 			<button className={buttonStyle}>Inbox</button>
-			<button className={buttonStyle}>Manage Projects</button>
+			<Link href="/manage-projects">
+				<button className={buttonStyle}>Manage Projects</button>
+			</Link>
+
 			<button className={buttonStyle}>Profile</button>
 			<button>logout</button>
-		</div>
+		</nav>
 	);
 };
 

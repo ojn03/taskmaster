@@ -11,7 +11,7 @@ const red = new Redis(redisUrl);
 
 console.log("redis connected at", redisUrl);
 
-//todo move server to nextjs
+//todo maybe move server to nextjs 
 //todo paginate queries
 //look into orms
 //todo add sessions, session verification, cookies, etc
@@ -137,8 +137,6 @@ function cacheDB(paramName, cacheLocation) {
 //DB Query for get requests with 1 param
 function queryDB(querytext, paramName, cacheLocation) {
 	return function (req, res) {
-		console.log(querytext, paramName, cacheLocation);
-		console.log(req.params[paramName]);
 		pool.query(querytext, [req.params[paramName]], (err, response) => {
 			if (err) {
 				console.error(err.message);
@@ -161,8 +159,6 @@ function queryDB(querytext, paramName, cacheLocation) {
 //DB Query for get requests with 2 params
 function query2(params, querytext, cacheLocation) {
 	return function (req, res) {
-		console.log(querytext, params, cacheLocation);
-		console.log(req.params[params[0]], req.params[params[1]]);
 		pool.query(
 			querytext,
 			[req.params[params[0]], req.params[params[1]]],
@@ -173,7 +169,9 @@ function query2(params, querytext, cacheLocation) {
 					console.timeEnd(cacheLocation);
 				} else {
 					red.setex(
-						`${cacheLocation}:${req.params[params[0]]}:${req.params[params[1]]}`,
+						`${cacheLocation}:${req.params[params[0]]}:${
+							req.params[params[1]]
+						}`,
 						600,
 						JSON.stringify(response.rows)
 					);
@@ -214,7 +212,7 @@ function cache2(params, cacheLocation) {
 //get all the project info for a given user
 const projectsRoute = "/projects/:userid";
 const projectsQuery =
-	'select * from "Project" join "Priv_User_Project" on "Project".proj_id = "Priv_User_Project".proj_id where "Priv_User_Project".user_id = $1';
+	'select * from "Project" join "Role_User_Project" on "Project".proj_id = "Role_User_Project".proj_id where "Role_User_Project".user_id = $1';
 //'SELECT * FROM "Project" WHERE proj_id IN (SELECT proj_id FROM "Priv_User_Project" WHERE user_id = $1)',
 //'select *  from "Project" join (select * from "Priv_User_Project" where user_id = $1) as pup on "Project".proj_id = "pup".proj_id;',
 app.get(
@@ -256,11 +254,32 @@ app.get(
 
 //gets first, last, email and roles of all members of a team given user in the team and the project id
 const teamRoute = "/team/:userid/:projid";
-const teamQuery = 'SELECT * FROM getTeam($1, $2)' ;
+const teamQuery = "SELECT * FROM getTeam($1, $2)";
 app.get(
 	teamRoute,
-	cache2(["projid", "userid"], "team"),
-	query2(["projid", "userid"], teamQuery, "team")
+	cache2(["userid", "projid"], "team"),
+	query2(["userid", "projid"], teamQuery, "team")
+);
+
+//gets all teams for a given projid
+//todo get all members of each team
+//todo combine this with /team route
+
+const allTeamsRoute = "/allteams/:projid";
+const allTeamsQuery = 'select * from "Team" where proj_id = $1';
+app.get(
+	allTeamsRoute,
+	cacheDB("projid", "allteams"),
+	queryDB(allTeamsQuery, "projid", "allteams")
+);
+
+//gets all roles for a given projid
+const rolesRoute = "/roles/:projid";
+const rolesQuery = 'select * from "Role" where proj_id = $1';
+app.get(
+	rolesRoute,
+	cacheDB("projid", "roles"),
+	queryDB(rolesQuery, "projid", "roles")
 );
 
 app.listen(5001, () => {

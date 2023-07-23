@@ -19,7 +19,7 @@ import {
 	TableRow
 } from "@/components/ui/table";
 
-export function DataTable({ columns, data, ...props }) {
+ function DataTable({ columns, data, ...props }) {
 	const table = useReactTable({
 		data,
 		columns,
@@ -66,7 +66,7 @@ export function DataTable({ columns, data, ...props }) {
 					))}
 				</TableHeader>
 				<TableBody>
-					{table.getRowModel().rows?.length ? (
+					{table.getRowModel()?.rows?.length ? (
 						table.getRowModel().rows.map((row) => (
 							<TableRow
 								className=" "
@@ -144,3 +144,4 @@ export function DataTable({ columns, data, ...props }) {
 		</div>
 	);
 }
+export default DataTable;

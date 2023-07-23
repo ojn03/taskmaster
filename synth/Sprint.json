@@ -1,6 +1,6 @@
 {
 	"type": "array",
-	"length": 500,
+	"length": 400,
 	"content": {
 		"type": "object",
 		"sprint_id": {
