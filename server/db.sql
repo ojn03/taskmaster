@@ -50,10 +50,19 @@ CREATE TABLE "Privelege"(
   "description" varchar(100) NOT NULL
 );
 
+CREATE TYPE "priv" AS enum(
+  'priv1',
+  'priv2',
+  'priv3',
+  'priv4',
+  'priv5'
+);
+
 CREATE TABLE "Role_Privelege"(
   "role_id" int NOT NULL REFERENCES "Role"(role_id),
-  "priv_id" int NOT NULL REFERENCES "Privelege"(priv_id),
-  PRIMARY KEY ("role_id", "priv_id")
+  -- "priv_id" int NOT NULL REFERENCES "Privelege"(priv_id),
+  "privelege" "priv" NOT NULL,
+  PRIMARY KEY ("role_id", "privelege")
 );
 
 CREATE TABLE "Team"(
@@ -92,12 +101,21 @@ CREATE TABLE "Event"(
   -- todo consider enum
 );
 
+CREATE TYPE "ev" AS enum(
+  'event1',
+  'event2',
+  'event3',
+  'event4',
+  'event5'
+);
+
 --todo maybe replace static tables for enums
 CREATE TABLE "History"(
   "history_id" serial PRIMARY KEY,
   "date" date NOT NULL,
   "time" time NOT NULL,
-  "event_title" int NOT NULL REFERENCES "Event"(event_title),
+  "event" "ev" NOT NULL,
+  -- "event_title" int NOT NULL REFERENCES "Event"(event_title),
   "user_id" int NOT NULL REFERENCES "User"(user_id),
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
@@ -170,14 +188,14 @@ ELSE
   SELECT
     'username already exists' INTO error;
 ELSE
-  RAISE NOTICE 'adding registration info';
+ -- adding registration info
   INSERT INTO "User"(FIRST, LAST, email)
     VALUES (fn, ln, em)
   RETURNING
     user_id INTO id;
   INSERT INTO "UserInfo"(user_id, username, hash)
     VALUES (id, un, hsh);
-  RAISE NOTICE 'registration complete';
+  -- registration complete
 END IF;
 END IF;
 END
@@ -301,23 +319,23 @@ BEGIN
     "Team_User_Project"
   WHERE
     "Team_User_Project".user_id = u_id
-    AND proj_id = p_id
-  INTO t_id;
+    AND proj_id = p_id INTO t_id;
   RETURN Query
-    SELECT
-      u.user_id,
-      u.first,
-      u.last,
-      u.email,
-      r.name AS role_title
-    FROM
-      "User" u
-      JOIN "Role_User_Project" rup ON u.user_id = rup.user_id
-      JOIN "Role" r ON rup.role_id = r.role_id
-      JOIN "Team_User_Project" tup ON u.user_id = tup.user_id
-    WHERE
-      tup.team_id = t_id
-      AND tup.proj_id = p_id;
+  SELECT
+    u.user_id,
+    u.first,
+    u.last,
+    u.email,
+    r.name AS role_title
+  FROM
+    "User" u
+    JOIN "Role_User_Project" rup ON u.user_id = rup.user_id
+    JOIN "Role" r ON rup.role_id = r.role_id
+    JOIN "Team_User_Project" tup ON u.user_id = tup.user_id
+  WHERE
+    tup.team_id = t_id
+    AND tup.proj_id = p_id;
 END;
 $$
 LANGUAGE plpgsql;
+
