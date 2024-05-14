@@ -131,3 +131,4 @@ CREATE TABLE "User_Proj"(
   PRIMARY KEY ("user_id", "proj_id")
 );
 
+-- command to generate synth data: synth generate synth --size 30 --to 'postgresql://postgres@localhost:5432/synth'
