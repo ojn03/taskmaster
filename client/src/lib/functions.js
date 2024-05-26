@@ -31,17 +31,17 @@ export const toastSuccess = ({ message }) => {
 //todo maybe use post instead of get with session ids and security features
 
 
-export const getTickets = async ({ projid }) => get ({ route: `tickets/${projid}`});
+export const getTickets = async ({ projid }) => get ({ route: `projects/${projid}/tickets`});
 
 export const getProjects = async ({ userid }) => get ({ route: `projects/${userid}`});
 
-export const getHistory = async ({ projid }) => get ({ route: `history/${projid}`});
+export const getHistory = async ({ projid }) => get ({ route: `projects/${projid}/history`});
 
-export const getTeam = async ({ userid, projid }) => get ({ route: `team/${userid}/${projid}`});
+export const getTeam = async ({ userid, projid }) => get ({ route: `projects/${projid}/users/${userid}/team/`});
 
-export const getAllTeams = async ({ projid }) => get ({ route: `allteams/${projid}`}); 
+export const getAllTeams = async ({ projid }) => get ({ route: `projects/${projid}/teams`}); 
 
-export const getRoles = async ({ projid }) => get ({ route: `roles/${projid}`});
+export const getRoles = async ({ projid }) => get ({ route: `projects/${projid}/roles`});
 
 export const getUsers = async ({ projid }) => get ({ route: `user/${projid}`});
 

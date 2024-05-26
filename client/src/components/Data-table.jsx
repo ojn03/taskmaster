@@ -37,7 +37,7 @@ import {
 		<div className="bg-dark/90 text-light rounded-md ">
 			<Table>
 				<TableHeader
-					classname="overflow-scroll"
+					className="overflow-scroll"
 					style={{ tableLayout: "fixed", width: "100%" }}
 				>
 					{table.getHeaderGroups().map((headerGroup) => (

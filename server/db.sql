@@ -120,6 +120,7 @@ CREATE TABLE "History"(
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
 
+-- TODO maybe make ticket_project composite key
 CREATE TABLE "Ticket"(
   "tick_id" serial PRIMARY KEY,
   "title" varchar(50) NOT NULL,

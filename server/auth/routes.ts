@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { pool } from "../pool";
 import { ensureError } from "../utils";
 
-const authRoutes = async (app: Express) => {
+const authRoutes = async (app: Express, basePath:string = "/auth") => {
 	//TODO make queries atomic
 
 	//regex patterns for input validation
@@ -11,8 +11,10 @@ const authRoutes = async (app: Express) => {
 	const usernameVal = new RegExp("^" + process.env.NEXT_PUBLIC_U_VAL + "$");
 	const emailVal = new RegExp("^" + process.env.NEXT_PUBLIC_E_VAL + "$");
 
+	
 	//REGISTER
-	app.post("/register", async (req, res) => {
+	const registerPath = `${basePath}/register`;
+	app.post(registerPath, async (req, res) => {
 		try {
 			const {
 				firstName: first,
@@ -55,7 +57,8 @@ const authRoutes = async (app: Express) => {
 	});
 
 	//LOGIN
-	app.post("/login", async (req, res) => {
+	const loginPath = `${basePath}/login`;
+	app.post(loginPath, async (req, res) => {
 		try {
 			const { username, email, password } = req.body;
 
