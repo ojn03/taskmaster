@@ -125,8 +125,8 @@ CREATE TABLE "Ticket"(
   "tick_id" serial PRIMARY KEY,
   "title" varchar(50) NOT NULL,
   "description" varchar(250) NOT NULL,
-  "progress" int NOT NULL CHECK ("progress" BETWEEN 0 AND 2),
-  "priority" int NOT NULL CHECK ("priority" BETWEEN 0 AND 4),
+  "progress" int NOT NULL CHECK ("progress" BETWEEN 0 AND 2) default 0,
+  "priority" int NOT NULL CHECK ("priority" BETWEEN 0 AND 4) default 0, 
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
 
