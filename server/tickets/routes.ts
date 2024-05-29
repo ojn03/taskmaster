@@ -1,5 +1,6 @@
-import type { Express } from "express";
-import { getDB,cacheDB, postDB} from "../utils";
+import { response, type Express } from "express";
+import { getDB,cacheDB, postDB, ensureError} from "../utils";
+import { QueryResult } from "pg";
 
 const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	//get all the tickets
@@ -52,9 +53,8 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	app.post(ticketComments, (req, res) => {
 		const tick_id = req.params.tickid;
 		const { user_id, comment }:{user_id:number, comment:string} = req.body;
-		
 		const values = [tick_id, user_id, comment];
-		postDB(addCommentQuery, "comments", ...values as string[]);
+		postDB(res, addCommentQuery, '', values as string[]);
 	});
 };
 

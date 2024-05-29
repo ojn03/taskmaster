@@ -4,6 +4,7 @@ import { red } from ".";
 
 import { Request, Response, NextFunction } from "express";
 import { pool } from "./pool";
+import { Query, QueryResult } from "pg";
 
 export function ensureError(value: unknown): Error {
 	if (value instanceof Error) return value;
@@ -73,9 +74,18 @@ export function getDB(
 
 //DB Query for post requests
 //FIXME this is incomplete
-export function postDB(querytxt: string, cacheLocation: string, ...params: string[]) {
-    pool.query(
-      querytxt,
-	  params,
-    );
+export function postDB(
+	res: Response,
+	querytxt: string,
+	cacheLocation: string,//TODO
+	params: string[]
+) {
+	pool.query(querytxt, params, (err, response) => {
+		if (err) {
+			console.error(err.message);
+			res.json({ error: "error 500: " + err.message });
+		} else {
+			res.json(response.rows);
+		}
+	});
 }
