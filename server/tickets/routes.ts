@@ -20,11 +20,12 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	);
 
 	//create a new ticket
-	app.post(ticket, (req, res) => {
-		const { title, description, project_id, } = req.body;
-		const insertQuery =
-			'INSERT INTO "Ticket" (title, description,progress,priority, proj_id) VALUES ($1, $2, $3) RETURNING *';
-		
+	app.post(basePath, (req, res) => {
+		const { title, description, priority, project_id } = req.body;
+		const addTicketQuery =
+			'INSERT INTO "Ticket" (title, description,priority, proj_id) VALUES ($1, $2, $3, $4) RETURNING *';
+			const values = [title, description, priority, project_id];
+			postDB(res, addTicketQuery, '', values as string[]);
 	});
 
 	//get the assignees of a specific ticket
@@ -36,6 +37,16 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 		cacheDB("assignees", "tickid"),
 		getDB(ticketAssigneesQuery, "assignees", "tickid")
 	);
+
+	//add an assignee to a specific ticket
+	const addAssigneeQuery =
+		'INSERT INTO "User_Ticket" (user_id, tick_id) VALUES ($1, $2) RETURNING *';
+	app.post(ticketAssignees, (req, res) => {
+		const tick_id = req.params.tickid;
+		const { user_id } = req.body;
+		const values = [user_id, tick_id];
+		postDB(res, addAssigneeQuery, '', values as string[]);
+	})
 
 	//get the comments of a specific ticket
 	const ticketComments = `${ticket}/comments`;
@@ -51,6 +62,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	const addCommentQuery =
 			'INSERT INTO "Comment" (tick_id, user_id, comment) VALUES ($1, $2, $3) RETURNING *';
 	app.post(ticketComments, (req, res) => {
+		//TODO add type and data validation (make sure description exists, is a string, etc.)
 		const tick_id = req.params.tickid;
 		const { user_id, comment }:{user_id:number, comment:string} = req.body;
 		const values = [tick_id, user_id, comment];

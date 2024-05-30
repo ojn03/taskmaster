@@ -17,8 +17,6 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 		getDB(ticketsQuery, "tickets", "projid")
 	);
 
-	//create a new ticket for a given project
-
 	//get the history for a given project
 	const ProjectHistory = `${basePath}/:projid/history`;
 	const historyQuery = 'SELECT * FROM "History" WHERE proj_id = $1';

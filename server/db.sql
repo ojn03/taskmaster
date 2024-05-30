@@ -7,7 +7,7 @@ CREATE TABLE "User"(
   "last" varchar(50) NOT NULL,
   "email" varchar(100) UNIQUE NOT NULL
 );
-
+--TODO add createdAt and updatedAt for all tables
 CREATE TABLE "UserInfo"(
   "user_id" int PRIMARY KEY REFERENCES "User"(user_id),
   "username" varchar(50) UNIQUE NOT NULL,
@@ -145,7 +145,7 @@ CREATE TABLE "Sprint_Ticket"(
 CREATE TABLE "Comment"(
   "comment_id" serial PRIMARY KEY,
   "comment" varchar(250) NOT NULL,
-  "datePosted" date NOT NULL,
+  "datePosted" date NOT NULL default current_date,
   "user_id" int NOT NULL REFERENCES "User"(user_id),
   "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id)
 );
@@ -340,3 +340,18 @@ END;
 $$
 LANGUAGE plpgsql;
 
+
+-- helper function to update updated_at column
+CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- trigger to update updated_at column in ticket
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON "Ticket"
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
