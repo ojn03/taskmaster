@@ -5,26 +5,32 @@ CREATE TABLE "User"(
   "user_id" serial PRIMARY KEY,
   "first" varchar(50) NOT NULL,
   "last" varchar(50) NOT NULL,
-  "email" varchar(100) UNIQUE NOT NULL
+  "email" varchar(100) UNIQUE NOT NULL,
+  "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 --TODO add createdAt and updatedAt for all tables
 CREATE TABLE "UserInfo"(
-  "user_id" int PRIMARY KEY REFERENCES "User"(user_id),
+  "user_id" int PRIMARY KEY REFERENCES "User"(user_id) on delete cascade,
   "username" varchar(50) UNIQUE NOT NULL,
-  "hash" varchar(250) NOT NULL
+  "hash" varchar(250) NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "Request"(
   "req_id" serial PRIMARY KEY,
   "description" varchar(100) NOT NULL,
-  "from_user" int NOT NULL REFERENCES "User"(user_id),
-  "to_user" int NOT NULL REFERENCES "User"(user_id)
+  "from_user" int NOT NULL REFERENCES "User"(user_id) on delete cascade,
+  "to_user" int NOT NULL REFERENCES "User"(user_id) on delete cascade
 );
 
 CREATE TABLE "Project"(
   "proj_id" serial PRIMARY KEY,
   "name" varchar(50) NOT NULL,
-  "description" varchar(250) NOT NULL
+  "description" varchar(250) NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "Role"(
@@ -32,13 +38,13 @@ CREATE TABLE "Role"(
   "name" varchar(50) NOT NULL,
   --rename to role_title
   "description" varchar(100) NOT NULL,
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade
 );
 
 CREATE TABLE "Role_User_Project"(
-  "role_id" int NOT NULL REFERENCES "Role"(role_id),
-  "user_id" int NOT NULL REFERENCES "User"(user_id),
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id),
+  "role_id" int NOT NULL REFERENCES "Role"(role_id) on delete cascade,
+  "user_id" int NOT NULL REFERENCES "User"(user_id) on delete cascade,
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade,
   PRIMARY KEY ("proj_id", "user_id")
   --todo fix duplication of proj_id. Roleid already has proj_id
 );
@@ -59,7 +65,7 @@ CREATE TYPE "priv" AS enum(
 );
 
 CREATE TABLE "Role_Privelege"(
-  "role_id" int NOT NULL REFERENCES "Role"(role_id),
+  "role_id" int NOT NULL REFERENCES "Role"(role_id) on delete cascade,
   -- "priv_id" int NOT NULL REFERENCES "Privelege"(priv_id),
   "privelege" "priv" NOT NULL,
   PRIMARY KEY ("role_id", "privelege")
@@ -69,13 +75,13 @@ CREATE TABLE "Team"(
   "team_id" serial PRIMARY KEY,
   "name" varchar(50) NOT NULL,
   "description" varchar(100) NOT NULL,
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade
 );
 
 CREATE TABLE "Team_User_Project"(
-  "team_id" int NOT NULL REFERENCES "Team"(team_id),
-  "user_id" int NOT NULL REFERENCES "User"(user_id),
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id),
+  "team_id" int NOT NULL REFERENCES "Team"(team_id) on delete cascade,
+  "user_id" int NOT NULL REFERENCES "User"(user_id) on delete cascade,
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade,
   PRIMARY KEY ("user_id", "proj_id")
   --TODO dupliation of proj_id
 );
@@ -84,19 +90,19 @@ CREATE TABLE "Sprint"(
   "sprint_id" serial PRIMARY KEY,
   "name" varchar(50) NOT NULL,
   "description" varchar(100) NOT NULL,
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade
 );
 
 CREATE TABLE "User_Sprint"(
-  "user_id" int NOT NULL REFERENCES "User"(user_id),
-  "sprint_id" int NOT NULL REFERENCES "Sprint"(sprint_id),
+  "user_id" int NOT NULL REFERENCES "User"(user_id) on delete cascade,
+  "sprint_id" int NOT NULL REFERENCES "Sprint"(sprint_id) on delete cascade,
   PRIMARY KEY ("user_id", "sprint_id")
 );
 
 --static table
 CREATE TABLE "Event"(
   "event_id" serial PRIMARY KEY,
-  "event_title" unique varchar(50) NOT NULL
+  "event_title" varchar(50) UNIQUE NOT NULL
   -- todo maybe remove id and just use title as primary key
   -- todo consider enum
 );
@@ -112,12 +118,11 @@ CREATE TYPE "ev" AS enum(
 --todo maybe replace static tables for enums
 CREATE TABLE "History"(
   "history_id" serial PRIMARY KEY,
-  "date" date NOT NULL,
-  "time" time NOT NULL,
   "event" "ev" NOT NULL,
   -- "event_title" int NOT NULL REFERENCES "Event"(event_title),
   "user_id" int NOT NULL REFERENCES "User"(user_id),
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- TODO maybe make ticket_project composite key
@@ -127,27 +132,30 @@ CREATE TABLE "Ticket"(
   "description" varchar(250) NOT NULL,
   "progress" int NOT NULL CHECK ("progress" BETWEEN 0 AND 2) default 0,
   "priority" int NOT NULL CHECK ("priority" BETWEEN 0 AND 4) default 0, 
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "User_Ticket"(
-  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id),
-  "user_id" int NOT NULL REFERENCES "User"(user_id),
+  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id) on delete cascade,
+  "user_id" int NOT NULL REFERENCES "User"(user_id) on delete cascade,
   PRIMARY KEY ("tick_id", "user_id")
 );
 
 CREATE TABLE "Sprint_Ticket"(
-  "sprint_id" int NOT NULL REFERENCES "Sprint"(sprint_id),
-  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id),
+  "sprint_id" int NOT NULL REFERENCES "Sprint"(sprint_id) on delete cascade,
+  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id) on delete cascade,
   PRIMARY KEY ("sprint_id", "tick_id")
 );
 
 CREATE TABLE "Comment"(
   "comment_id" serial PRIMARY KEY,
   "comment" varchar(250) NOT NULL,
-  "datePosted" date NOT NULL default current_date,
-  "user_id" int NOT NULL REFERENCES "User"(user_id),
-  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id)
+  "user_id" int NOT NULL REFERENCES "User"(user_id) on delete cascade,
+  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id) on delete cascade,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 --PROCEDURES--
@@ -350,8 +358,28 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- trigger to update updated_at column in ticket
-CREATE TRIGGER set_timestamp
+-- triggers to update updated_at column in ticket
+CREATE TRIGGER set_updated_time
 BEFORE UPDATE ON "Ticket"
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE TRIGGER set_updated_time
+BEFORE UPDATE ON "User"
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE TRIGGER set_updated_time
+BEFORE UPDATE ON "UserInfo"
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE TRIGGER set_updated_time
+BEFORE UPDATE ON "Project"
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE TRIGGER set_updated_time
+BEFORE UPDATE ON "Comment"
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
