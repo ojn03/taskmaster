@@ -72,12 +72,11 @@ export function getDB(
 	};
 }
 
-//DB Query for post requests
-//FIXME this is incomplete
-export function postDB(
+//DB Query for general requests
+export function QDB(
 	res: Response,
 	querytxt: string,
-	cacheLocation: string,//TODO
+	cacheLocation: string, //TODO
 	params: string[]
 ) {
 	pool.query(querytxt, params, (err, response) => {

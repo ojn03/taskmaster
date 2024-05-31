@@ -1,5 +1,5 @@
 import { response, type Express } from "express";
-import { getDB,cacheDB, postDB, ensureError} from "../utils";
+import { getDB, cacheDB, QDB, ensureError } from "../utils";
 import { QueryResult } from "pg";
 
 const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
@@ -24,8 +24,8 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 		const { title, description, priority, project_id } = req.body;
 		const addTicketQuery =
 			'INSERT INTO "Ticket" (title, description,priority, proj_id) VALUES ($1, $2, $3, $4) RETURNING *';
-			const values = [title, description, priority, project_id];
-			postDB(res, addTicketQuery, '', values as string[]);
+		const values = [title, description, priority, project_id];
+		QDB(res, addTicketQuery, "", values as string[]);
 	});
 
 	//get the assignees of a specific ticket
@@ -45,8 +45,8 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 		const tick_id = req.params.tickid;
 		const { user_id } = req.body;
 		const values = [user_id, tick_id];
-		postDB(res, addAssigneeQuery, '', values as string[]);
-	})
+		QDB(res, addAssigneeQuery, "", values as string[]);
+	});
 
 	//get the comments of a specific ticket
 	const ticketComments = `${ticket}/comments`;
@@ -58,15 +58,22 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	);
 
 	//add a comment to a specific ticket
-	//FIXME this is incomplete
 	const addCommentQuery =
-			'INSERT INTO "Comment" (tick_id, user_id, comment) VALUES ($1, $2, $3) RETURNING *';
+		'INSERT INTO "Comment" (tick_id, user_id, comment) VALUES ($1, $2, $3) RETURNING *';
 	app.post(ticketComments, (req, res) => {
-		//TODO add type and data validation (make sure description exists, is a string, etc.)
+		//TODO add type and data validation (make sure fields exists, is a string, etc.)
 		const tick_id = req.params.tickid;
-		const { user_id, comment }:{user_id:number, comment:string} = req.body;
+		const { user_id, comment }: { user_id: number; comment: string } = req.body;
 		const values = [tick_id, user_id, comment];
-		postDB(res, addCommentQuery, '', values as string[]);
+		QDB(res, addCommentQuery, "", values as string[]);
+	});
+
+	//delete a specific ticket
+	app.delete(ticket, (req, res) => {
+		const tick_id = req.params.tickid;
+		const deleteTicketQuery = 'DELETE FROM "Ticket" WHERE tick_id = $1';
+		const values = [tick_id];
+		QDB(res, deleteTicketQuery, "", values as string[]);
 	});
 };
 
