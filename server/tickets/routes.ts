@@ -48,6 +48,17 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 		QDB(res, addAssigneeQuery, "", values as string[]);
 	});
 
+	//remove an assignee from a specific ticket
+	//TODO change route to tickets/:tickid/assignees/:assigneeid
+	const removeAssigneeQuery =
+		'DELETE FROM "User_Ticket" WHERE user_id = $1 AND tick_id = $2';
+	app.delete(ticketAssignees, (req, res) => {
+		const {tick_id, user_id } = req.params;
+		const values = [user_id, tick_id];
+		QDB(res, removeAssigneeQuery, "", values as string[]);
+	}
+	);
+
 	//get the comments of a specific ticket
 	const ticketComments = `${ticket}/comments`;
 	const ticketCommentsQuery = 'SELECT * FROM "Comment" WHERE tick_id = $1';
@@ -67,6 +78,49 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 		const values = [tick_id, user_id, comment];
 		QDB(res, addCommentQuery, "", values as string[]);
 	});
+
+	//delete a comment from a specific ticket
+	//TODO change route to /comments/:commentid
+	// maybe move comments to their own route
+	const comment = `${ticketComments}/:commentid`;
+	const deleteCommentQuery = 'DELETE FROM "Comment" WHERE comment_id = $1';
+	app.delete(comment, (req, res) => {
+		const comment_id = req.params.commentid;
+		const values = [comment_id];
+		QDB(res, deleteCommentQuery, "", values as string[]);
+	});
+
+//update a specific ticket
+//TODO
+	app.patch(ticket, (req, res) => {
+		const tick_id = req.params.tickid;
+		const { title, description, priority, project_id } = req.body;
+		if (!title || !description || !priority || !project_id) {
+			return res.status(400).json({ error: "No fields to update" });
+		}
+		const values = [title, description, priority, project_id, tick_id].filter((v)=> v !== undefined);
+
+		const updateTicketQuery =
+			values.reduce((acc, _, i) => {
+				if (i === 0) {
+					return acc + 'UPDATE "Ticket" SET title = $1';
+				}
+				if (i === 1) {
+					return acc + ', description = $2';
+				}
+				if (i === 2) {
+					return acc + ', priority = $3';
+				}
+				if (i === 3) {
+					return acc + ', proj_id = $4';
+				}
+				return acc + ' WHERE tick_id = $5 RETURNING *';
+			}
+		);
+			// 'UPDATE "Ticket" SET title = $1, description = $2, priority = $3, proj_id = $4 WHERE tick_id = $5 RETURNING *';
+		QDB(res, updateTicketQuery, "", values as string[]);
+
+	})
 
 	//delete a specific ticket
 	app.delete(ticket, (req, res) => {
