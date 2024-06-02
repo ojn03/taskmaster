@@ -1,5 +1,5 @@
 import { response, type Express } from "express";
-import { getDB, cacheDB, QDB, ensureError } from "../utils";
+import { getDB, cacheDB, QDB, ensureError, patchDB } from "../utils";
 import { QueryResult } from "pg";
 
 const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
@@ -53,11 +53,10 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	const removeAssigneeQuery =
 		'DELETE FROM "User_Ticket" WHERE user_id = $1 AND tick_id = $2';
 	app.delete(ticketAssignees, (req, res) => {
-		const {tick_id, user_id } = req.params;
+		const { tick_id, user_id } = req.params;
 		const values = [user_id, tick_id];
 		QDB(res, removeAssigneeQuery, "", values as string[]);
-	}
-	);
+	});
 
 	//get the comments of a specific ticket
 	const ticketComments = `${ticket}/comments`;
@@ -90,37 +89,17 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 		QDB(res, deleteCommentQuery, "", values as string[]);
 	});
 
-//update a specific ticket
-//TODO
+	//update a specific ticket
+	//TODO
 	app.patch(ticket, (req, res) => {
 		const tick_id = req.params.tickid;
-		const { title, description, priority, project_id } = req.body;
-		if (!title || !description || !priority || !project_id) {
-			return res.status(400).json({ error: "No fields to update" });
-		}
-		const values = [title, description, priority, project_id, tick_id].filter((v)=> v !== undefined);
 
-		const updateTicketQuery =
-			values.reduce((acc, _, i) => {
-				if (i === 0) {
-					return acc + 'UPDATE "Ticket" SET title = $1';
-				}
-				if (i === 1) {
-					return acc + ', description = $2';
-				}
-				if (i === 2) {
-					return acc + ', priority = $3';
-				}
-				if (i === 3) {
-					return acc + ', proj_id = $4';
-				}
-				return acc + ' WHERE tick_id = $5 RETURNING *';
-			}
-		);
-			// 'UPDATE "Ticket" SET title = $1, description = $2, priority = $3, proj_id = $4 WHERE tick_id = $5 RETURNING *';
-		QDB(res, updateTicketQuery, "", values as string[]);
+//TODO CREATE TS TYPES TO REPRESENT DBSCHEMAS AND PARTIALS FOR DB QUERIES
 
-	})
+
+		patchDB(res, "Ticket", "ticket", req.body, { tick_id });
+
+	});
 
 	//delete a specific ticket
 	app.delete(ticket, (req, res) => {

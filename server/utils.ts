@@ -72,6 +72,34 @@ export function getDB(
 	};
 }
 
+//DB Query for patch requests
+export function patchDB(
+	res: Response,
+	tableName: string,
+	cacheLocation: string, //TODO
+	data: Record<string, unknown>,
+    where: Record<string, unknown>
+) {
+	let setClause = Object.entries(data)
+		.map(([key, value]) => `${key} = '${value}'`)
+		.join(", ");
+
+		let whereClause = Object.entries(where)
+        .map(([key, value]) => `${key} = '${value}'`)
+        .join(" AND ");
+
+    let q = `UPDATE "${tableName}" SET ${setClause} WHERE ${whereClause} RETURNING *;`;
+	console.log(q);
+	pool.query(q, (err, response) => {
+		if (err) {
+			console.error(err.message);
+			res.json({ error: "error 500: " + err.message });
+		} else {
+			res.json(response.rows);
+		}
+	});
+}
+
 //DB Query for general requests
 export function QDB(
 	res: Response,
