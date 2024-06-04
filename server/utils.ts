@@ -5,6 +5,7 @@ import { red } from ".";
 import { Request, Response, NextFunction } from "express";
 import { pool } from "./pool";
 import { Query, QueryResult } from "pg";
+import { MyQuery } from "./DB/QueryBuilder";
 
 export function ensureError(value: unknown): Error {
 	if (value instanceof Error) return value;
@@ -99,7 +100,6 @@ export function patchDB(
 		}
 	});
 }
-
 //DB Query for general requests
 export function QDB(
 	res: Response,
