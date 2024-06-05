@@ -1,6 +1,7 @@
 import { response, type Express } from "express";
 import { getDB, cacheDB, QDB, ensureError, patchDB } from "../utils";
 import { QueryResult } from "pg";
+import * as myQuery from "../DB/QueryBuilder";
 
 const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	//get all the tickets
@@ -92,13 +93,16 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	//update a specific ticket
 	//TODO
 	app.patch(ticket, (req, res) => {
-		const tick_id = req.params.tickid;
+		const tick_id = Number(req.params.tickid);
 
-//TODO CREATE TS TYPES TO REPRESENT DBSCHEMAS AND PARTIALS FOR DB QUERIES
-
-
+		//TODO CREATE TS TYPES TO REPRESENT DBSCHEMAS AND PARTIALS FOR DB QUERIES
+		// console.log(req.body);
+		new myQuery.MyQuery<myQuery.Ticket>("Ticket")
+			.Update(req.body as myQuery.Ticket)
+			.Where({ tick_id })
+			.Returning("*")
+			.Query((err, response) => {});
 		patchDB(res, "Ticket", "ticket", req.body, { tick_id });
-
 	});
 
 	//delete a specific ticket

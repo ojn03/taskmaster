@@ -1,7 +1,7 @@
 //TODO better error handling
 
 import { red } from ".";
-
+import * as myQuery from "./DB/QueryBuilder";
 import { Request, Response, NextFunction } from "express";
 import { pool } from "./pool";
 import { Query, QueryResult } from "pg";
@@ -85,20 +85,23 @@ export function patchDB(
 		.map(([key, value]) => `${key} = '${value}'`)
 		.join(", ");
 
-		let whereClause = Object.entries(where)
-        .map(([key, value]) => `${key} = '${value}'`)
-        .join(" AND ");
+	let whereClause = Object.entries(where)
+		.map(([key, value]) => `${key} = '${value}'`)
+		.join(" AND ");
 
-    let q = `UPDATE "${tableName}" SET ${setClause} WHERE ${whereClause} RETURNING *;`;
+    let q = `UPDATE "${tableName}" SET ${setClause} WHERE ${whereClause} RETURNING *`;
 	console.log(q);
-	pool.query(q, (err, response) => {
-		if (err) {
-			console.error(err.message);
-			res.json({ error: "error 500: " + err.message });
-		} else {
-			res.json(response.rows);
-		}
-	});
+
+	res.send("patched");
+
+	// pool.query(q, (err, response) => {
+	// 	if (err) {
+	// 		console.error(err.message);
+	// 		res.json({ error: "error 500: " + err.message });
+	// 	} else {
+	// 		res.json(response.rows);
+	// 	}
+	// });
 }
 //DB Query for general requests
 export function QDB(
