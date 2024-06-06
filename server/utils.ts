@@ -1,11 +1,10 @@
 //TODO better error handling
 
 import { red } from ".";
-import * as myQuery from "./DB/QueryBuilder";
 import { Request, Response, NextFunction } from "express";
 import { pool } from "./pool";
 import { Query, QueryResult } from "pg";
-import { MyQuery } from "./DB/QueryBuilder";
+import { MyQuery, Table } from "./DB/QueryBuilder";
 
 export function ensureError(value: unknown): Error {
 	if (value instanceof Error) return value;
@@ -74,34 +73,19 @@ export function getDB(
 }
 
 //DB Query for patch requests
-export function patchDB(
+export function patchDB<T extends Table>(
 	res: Response,
-	tableName: string,
-	cacheLocation: string, //TODO
-	data: Record<string, unknown>,
-    where: Record<string, unknown>
+	query: MyQuery<T>
+	// cacheLocation: string, //TODO
 ) {
-	let setClause = Object.entries(data)
-		.map(([key, value]) => `${key} = '${value}'`)
-		.join(", ");
-
-	let whereClause = Object.entries(where)
-		.map(([key, value]) => `${key} = '${value}'`)
-		.join(" AND ");
-
-    let q = `UPDATE "${tableName}" SET ${setClause} WHERE ${whereClause} RETURNING *`;
-	console.log(q);
-
-	res.send("patched");
-
-	// pool.query(q, (err, response) => {
-	// 	if (err) {
-	// 		console.error(err.message);
-	// 		res.json({ error: "error 500: " + err.message });
-	// 	} else {
-	// 		res.json(response.rows);
-	// 	}
-	// });
+	query.Query((err, response) => {
+		if (err) {
+			console.error(err.message);
+			res.json({ error: "error 500: " + err.message });
+		} else {
+			res.json(response.rows);
+		}
+	});
 }
 //DB Query for general requests
 export function QDB(

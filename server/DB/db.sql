@@ -309,6 +309,30 @@ $$
 LANGUAGE plpgsql
 VOLATILE;
 
+CREATE OR REPLACE FUNCTION createProject(user_id INT, project_name varchar(50),project_description varchar(250) )
+-- todo test this function + add error handling
+RETURNS VOID AS $$
+DECLARE
+    new_project_id INT;
+    new_role_id INT;
+BEGIN
+    -- Create a new project
+    INSERT INTO "Project" ("name", "description")
+    VALUES (project_name, project_description)
+    RETURNING "proj_id" INTO new_project_id;
+
+    -- Create an 'admin' role tied to the new project
+    INSERT INTO "Role" ("name", "description", "proj_id")
+    -- todo concat project_name to 'description' to create ("admin role for " + project_name)
+    VALUES ('admin', 'Admin role for the new project', new_project_id)
+    RETURNING "role_id" INTO new_role_id;
+
+    -- Update the Role_User_Project table
+    INSERT INTO "Role_User_Project" ("role_id", "user_id", "proj_id")
+    VALUES (new_role_id, user_id, new_project_id);
+END;
+$$ LANGUAGE plpgsql;
+
 --gets first, last, email and roles of all members of a team given a user in the team and the project id
 CREATE OR REPLACE FUNCTION getTeam(u_id integer, p_id integer)
   RETURNS TABLE(
@@ -383,3 +407,4 @@ CREATE TRIGGER set_updated_time
 BEFORE UPDATE ON "Comment"
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
+--todo add update triggers for all necessary tables

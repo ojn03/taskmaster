@@ -1,7 +1,8 @@
-import { response, type Express } from "express";
-import { getDB, cacheDB, QDB, ensureError, patchDB } from "../utils";
-import { QueryResult } from "pg";
-import * as myQuery from "../DB/QueryBuilder";
+import { type Express } from "express";
+import { getDB, cacheDB, QDB, patchDB } from "../utils";
+import { validate } from "class-validator";
+import {MyQuery, Ticket} from "../DB/QueryBuilder";
+import { plainToClass } from 'class-transformer';
 
 const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	//get all the tickets
@@ -94,15 +95,15 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	//TODO
 	app.patch(ticket, (req, res) => {
 		const tick_id = Number(req.params.tickid);
+		const update = plainToClass(Ticket, req.body);
+		
+		validate(update).then((errors) => {
+		//TODO handle validation
+		});
 
-		//TODO CREATE TS TYPES TO REPRESENT DBSCHEMAS AND PARTIALS FOR DB QUERIES
-		// console.log(req.body);
-		new myQuery.MyQuery<myQuery.Ticket>("Ticket")
-			.Update(req.body as myQuery.Ticket)
-			.Where({ tick_id })
-			.Returning("*")
-			.Query((err, response) => {});
-		patchDB(res, "Ticket", "ticket", req.body, { tick_id });
+		const Query = new MyQuery<Ticket>("Ticket").Update(update).Where({tick_id}).Returning("*")
+
+		patchDB(res, Query);
 	});
 
 	//delete a specific ticket

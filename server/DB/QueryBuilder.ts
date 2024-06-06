@@ -2,52 +2,79 @@
 import { pool } from "../pool";
 import { QueryResult } from "pg";
 import {
-	IsNotEmpty
+	IsDateString,
+	IsNotEmpty,
+	IsPositive,
+	IsString,
+	Max,
 } from "class-validator";
-export type Table = Ticket | User | Project;
+export type Table = Ticket | User | Project | Role;
 
-export type Ticket = {
+export class Ticket {
+	@IsPositive()
+	@IsNotEmpty()
 	tick_id: number;
+
+	@IsString()
 	title: string;
+
+	@IsString()
 	description: string;
+
+	@IsString()
 	priority: string;
+
+	@IsPositive()
 	proj_id: number;
-};
+}
 
-//TODO implement class-validator
-// export class Ticket {
-// 	@IsNotEmpty()
-// 	tick_id: number;
+export class Comment{
+	@IsPositive()
+	comment_id: number;
 
-// 	@IsNotEmpty()
-// 	title: string;
+	@IsString()
+	comment: string;
 
-// 	@IsNotEmpty()
-// 	description: string;
+	@IsPositive()
+	tick_id: number;
 
-// 	@IsNotEmpty()
-// 	priority: string;
+	@IsPositive()
+	user_id: number;
 
-// 	@IsNotEmpty()
-// 	proj_id: number;
-// 	// constructor(ticket: Ticket){
-// 	// 	this.tick_id = ticket.tick_id;
-// 	// 	this.title = ticket.title;
-// 	// 	this.description = ticket.description;
-// 	// 	this.priority = ticket.priority;
-// 	// 	this.proj_id = ticket.proj_id;
-// 	// }
-// }
+	@IsDateString()
+	created_at: Date;
 
-export type User = {
+	@IsDateString()
+	update_at: Date;
+}
+
+export class Role {
+	@IsPositive()
+	role_id: number;
+
+	@IsString()
+	@Max(50)
+	name: string;
+
+	@IsString()
+	@Max(100)
+	description: string;
+
+	@IsPositive()
+	proj_id: number;
+}
+
+
+//TODO add validation
+export class User {
 	user_id: number;
 	username: string;
 	password: string;
 	email: string;
 };
 
-export type Project = {
-	proj_id: number;
+export class Project {
+	proj_id: number|string;
 	name: string;
 	description: string;
 };

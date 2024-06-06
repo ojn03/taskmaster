@@ -1,12 +1,15 @@
 import type { Express } from "express";
-import { getDB } from "../utils";
+import { getDB, patchDB } from "../utils";
 import { cacheDB } from "../utils";
+import { MyQuery, Project } from "../DB/QueryBuilder";
 const projectRoutes = (app: Express, basePath: string = "/projects") => {
-	//FIXME create a new project
+	//TODO create a new project
 	const createProject = basePath;
 	const createProjectQuery =
-		'INSERT INTO "Project" (name, description) VALUES ($1, $2) RETURNING *';
-	//TODO add user_id to the project as admin
+		'Begin;\
+		INSERT INTO "Project" (name, description) VALUES ($1, $2) RETURNING *';
+	// create admin role for the project
+	// add user_id, role_id, proj_id to  role_user_project
 
 	//get all the tickets for a given project
 	const ProjectTickets = `${basePath}/:projid/tickets`;
@@ -16,6 +19,23 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 		cacheDB("tickets", "projid"),
 		getDB(ticketsQuery, "tickets", "projid")
 	);
+
+	//get basic info for a given project
+	const Project = `${basePath}/:projid`;
+	const projectQuery = 'SELECT * FROM "Project" WHERE proj_id = $1';
+	app.get(
+		Project,
+		cacheDB("project", "projid"),
+		getDB(projectQuery, "project", "projid")
+	);
+
+	//update info for a given project
+	app.patch(Project, (req, res) => {
+		const { name, description } = req.body;
+		const updateProjectQuery =
+		new MyQuery<Project>("Project").Update({ name, description }).Where({ proj_id: req.params.projid });
+		patchDB<Project>(res, updateProjectQuery);
+	})
 
 	//get the history for a given project
 	const ProjectHistory = `${basePath}/:projid/history`;

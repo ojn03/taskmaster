@@ -1,5 +1,5 @@
 import { ensureError } from "./utils";
-
+import 'reflect-metadata'; // required for class-transformer
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
