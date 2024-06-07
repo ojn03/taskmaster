@@ -38,6 +38,7 @@ CREATE TABLE "Role"(
   "name" varchar(50) NOT NULL,
   --rename to role_title
   "description" varchar(100) NOT NULL,
+  -- todo create trigger to disable updates on proj_id
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade
 );
 
@@ -311,7 +312,7 @@ VOLATILE;
 
 CREATE OR REPLACE FUNCTION createProject(user_id INT, project_name varchar(50),project_description varchar(250) )
 -- todo test this function + add error handling
-RETURNS VOID AS $$
+RETURNS TABLE(roleid INT, userid INT, projid INT) AS $$
 DECLARE
     new_project_id INT;
     new_role_id INT;
@@ -323,13 +324,14 @@ BEGIN
 
     -- Create an 'admin' role tied to the new project
     INSERT INTO "Role" ("name", "description", "proj_id")
-    -- todo concat project_name to 'description' to create ("admin role for " + project_name)
-    VALUES ('admin', 'Admin role for the new project', new_project_id)
+    VALUES ('admin', 'Admin role for project ' || project_name, new_project_id)
     RETURNING "role_id" INTO new_role_id;
 
     -- Update the Role_User_Project table
     INSERT INTO "Role_User_Project" ("role_id", "user_id", "proj_id")
     VALUES (new_role_id, user_id, new_project_id);
+     -- Return the newly created Role_User_Project entity
+    RETURN QUERY SELECT new_role_id, user_id, new_project_id;
 END;
 $$ LANGUAGE plpgsql;
 

@@ -8,6 +8,7 @@ import authRoutes from "./auth/routes";
 import projectRoutes from "./projects/routes";
 import userRoutes from "./users/routes";
 import ticketRoutes from "./tickets/routes";
+import commentRoutes from "./comments/routes";
 dotenv.config({ path: "../.env.local" });
 const app = express();
 const redisUrl = process.env.REDIS_URL as string;
@@ -28,6 +29,7 @@ authRoutes(app);
 projectRoutes(app);
 userRoutes(app);
 ticketRoutes(app);
+commentRoutes(app)
 
 app.listen(5001, () => {
 	console.log("Server is running on port 5001");

@@ -1,15 +1,8 @@
 import type { Express } from "express";
-import { getDB, patchDB } from "../utils";
+import { QDB, getDB, patchDB } from "../utils";
 import { cacheDB } from "../utils";
 import { MyQuery, Project } from "../DB/QueryBuilder";
 const projectRoutes = (app: Express, basePath: string = "/projects") => {
-	//TODO create a new project
-	const createProject = basePath;
-	const createProjectQuery =
-		'Begin;\
-		INSERT INTO "Project" (name, description) VALUES ($1, $2) RETURNING *';
-	// create admin role for the project
-	// add user_id, role_id, proj_id to  role_user_project
 
 	//get all the tickets for a given project
 	const ProjectTickets = `${basePath}/:projid/tickets`;

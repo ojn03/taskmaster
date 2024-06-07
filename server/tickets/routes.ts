@@ -51,12 +51,12 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	});
 
 	//remove an assignee from a specific ticket
-	//TODO change route to tickets/:tickid/assignees/:assigneeid
+	const ticketAssignee= `${ticketAssignees}/:userid`;
 	const removeAssigneeQuery =
 		'DELETE FROM "User_Ticket" WHERE user_id = $1 AND tick_id = $2';
-	app.delete(ticketAssignees, (req, res) => {
-		const { tick_id, user_id } = req.params;
-		const values = [user_id, tick_id];
+	app.delete(ticketAssignee, (req, res) => {
+		const { tickid, userid } = req.params;
+		const values = [userid, tickid];
 		QDB(res, removeAssigneeQuery, "", values as string[]);
 	});
 
@@ -80,19 +80,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 		QDB(res, addCommentQuery, "", values as string[]);
 	});
 
-	//delete a comment from a specific ticket
-	//TODO change route to /comments/:commentid
-	// maybe move comments to their own route
-	const comment = `${ticketComments}/:commentid`;
-	const deleteCommentQuery = 'DELETE FROM "Comment" WHERE comment_id = $1';
-	app.delete(comment, (req, res) => {
-		const comment_id = req.params.commentid;
-		const values = [comment_id];
-		QDB(res, deleteCommentQuery, "", values as string[]);
-	});
-
 	//update a specific ticket
-	//TODO
 	app.patch(ticket, (req, res) => {
 		const tick_id = Number(req.params.tickid);
 		const update = plainToClass(Ticket, req.body);

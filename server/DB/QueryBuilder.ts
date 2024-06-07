@@ -7,8 +7,9 @@ import {
 	IsPositive,
 	IsString,
 	Max,
+	MaxLength,
 } from "class-validator";
-export type Table = Ticket | User | Project | Role;
+export type Table = Ticket | User | Project | Role|Comment;
 
 export class Ticket {
 	@IsPositive()
@@ -53,11 +54,11 @@ export class Role {
 	role_id: number;
 
 	@IsString()
-	@Max(50)
+	@MaxLength(50)
 	name: string;
 
 	@IsString()
-	@Max(100)
+	@MaxLength(100)
 	description: string;
 
 	@IsPositive()
@@ -67,18 +68,39 @@ export class Role {
 
 //TODO add validation
 export class User {
+	@MaxLength(50)
+	@IsString()
+	first: string;
+
+	@MaxLength(50)
+	@IsString()
+	last: string;
+
+	@IsPositive()
 	user_id: number;
+
+	@MaxLength(50)
+	@IsString()
 	username: string;
+
+	//TODO add validation using regex
+	// @MaxLength(50)  //TODO figure out max length of hash
+	@IsString()
 	password: string;
+
+	@MaxLength(50) //TODO maybe separate user from userinfo
+	@IsString()
 	email: string;
 };
 
+//TODO add validation
 export class Project {
 	proj_id: number|string;
 	name: string;
 	description: string;
 };
 
+//TODO update all applicable routes to use this class
 export class MyQuery<T extends Table> {
 	//implements myQuery<T>
 	private QueryString: string = "";

@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import { getDB } from "../utils";
+import { QDB, getDB } from "../utils";
 import { cacheDB } from "../utils";
 
 const userRoutes = (app: Express, basePath: string = "/users") => {
@@ -18,6 +18,17 @@ const userRoutes = (app: Express, basePath: string = "/users") => {
 		cacheDB("users", "userid", "projects"),
 		getDB(projectsQuery, "projects", "userid")
 	);
+
+	//create a new project for a given user
+	const createProjectQuery =
+		'select * from createProject($1, $2, $3, $4)';
+	app.post(basePath, (req, res) => {
+		const { userid } = req.params;
+		const { name, description } = req.body;
+		const values = [userid, name, description];
+
+		QDB(res, createProjectQuery,"", values);
+	})
 
 	//get all the tickets for a given user
 	const UserTickets = `${basePath}/:userid/tickets`;
