@@ -49,6 +49,19 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 		getDB(usersQuery, "users", "projid")
 	);
 
+    //TODO finsish this
+    //add a user to a project
+    const ProjectUser = `${ProjectUsers}/:userid`;
+
+    const addUserQuery = 'INSERT INTO "Role_User_Project" (role_id,user_id, proj_id) VALUES ($1, $2, $3) RETURNING *';
+
+    app.post(ProjectUser, (req, res)=> {
+        const { projid, userid } = req.params;
+        const roleid = req.body.roleid;
+        const values = [userid, projid, roleid];
+        QDB(res, addUserQuery, "", values as string[]);
+    })
+
 	//gets first, last, email and roles of all members of a team given user in the team and the project id
 	const ProjectUserTeam = `${ProjectUsers}/:userid/team/`;
 	const userTeamQuery = "SELECT * FROM getTeam($1, $2)";

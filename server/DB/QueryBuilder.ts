@@ -1,16 +1,20 @@
 // Desc: QueryBuilder class for building SQL queries
 import { pool } from "../pool";
-import { QueryResult } from "pg";
+import { ClientBase, QueryResult } from "pg";
 import {
 	IsDateString,
 	IsNotEmpty,
 	IsPositive,
 	IsString,
-	Max,
+	Matches,
 	MaxLength,
+	IsEmail,
+	IsAlphanumeric,
 } from "class-validator";
 export type Table = Ticket | User | Project | Role|Comment;
 
+
+//TODO maybe add created at and updated at to all classes
 export class Ticket {
 	@IsPositive()
 	@IsNotEmpty()
@@ -66,7 +70,6 @@ export class Role {
 }
 
 
-//TODO add validation
 export class User {
 	@MaxLength(50)
 	@IsString()
@@ -79,15 +82,16 @@ export class User {
 	@IsPositive()
 	user_id: number;
 
-	@MaxLength(50)
+	@Matches(process.env.NEXT_PUBLIC_USERNAME_REGEX as string)
 	@IsString()
 	username: string;
 
-	//TODO add validation using regex
-	// @MaxLength(50)  //TODO figure out max length of hash
+	
+	@Matches(process.env.NEXT_PUBLIC_PASSWORD_REGEX as string)
 	@IsString()
 	password: string;
 
+	@IsEmail()
 	@MaxLength(50) //TODO maybe separate user from userinfo
 	@IsString()
 	email: string;
@@ -95,8 +99,15 @@ export class User {
 
 //TODO add validation
 export class Project {
+	@IsAlphanumeric()
 	proj_id: number|string;
+
+	@MaxLength(50)
+	@IsString()
 	name: string;
+
+	@MaxLength(250)
+	@IsString()
 	description: string;
 };
 

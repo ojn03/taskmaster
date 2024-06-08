@@ -5,11 +5,11 @@ import { ensureError } from "../utils";
 
 const authRoutes = async (app: Express, basePath:string = "/auth") => {
 	//TODO make queries atomic
-
+	//TODO change password, username, email, etc
 	//regex patterns for input validation
-	const pVal = new RegExp("^" + process.env.NEXT_PUBLIC_P_VAL + "$");
-	const usernameVal = new RegExp("^" + process.env.NEXT_PUBLIC_U_VAL + "$");
-	const emailVal = new RegExp("^" + process.env.NEXT_PUBLIC_E_VAL + "$");
+	const pVal = new RegExp("^" + process.env.NEXT_PUBLIC_PASSWORD_REGEX + "$");
+	const usernameVal = new RegExp("^" + process.env.NEXT_PUBLIC_USERNAME_REGEX + "$");
+	const emailVal = new RegExp("^" + process.env.NEXT_PUBLIC_EMAIL_REGEX + "$");
 
 	
 	//REGISTER
