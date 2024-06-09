@@ -57,7 +57,7 @@ CREATE TABLE "Permission"(
   "permission_description" varchar(100) NOT NULL
 );
 
-CREATE TYPE "priv" AS enum(
+CREATE TYPE "perm" AS enum(
   'priv1',
   'priv2',
   'priv3',
@@ -68,7 +68,7 @@ CREATE TYPE "priv" AS enum(
 CREATE TABLE "Role_Permission"(
   "role_id" int NOT NULL REFERENCES "Role"(role_id) on delete cascade,
   -- "permission_id" int NOT NULL REFERENCES "Permission"(Permission_id),
-  "Permission" "priv" NOT NULL,
+  "Permission" "perm" NOT NULL,
   PRIMARY KEY ("role_id", "Permission")
 );
 
@@ -318,12 +318,12 @@ DECLARE
     new_role_id INT;
 BEGIN
     -- Create a new project
-    INSERT INTO "Project" ("name", "description")
+    INSERT INTO "Project" ("proj_name", "proj_description")
     VALUES (project_name, project_description)
     RETURNING "proj_id" INTO new_project_id;
 
     -- Create an 'admin' role tied to the new project
-    INSERT INTO "Role" ("name", "description", "proj_id")
+    INSERT INTO "Role" ("role_title", "role_description", "proj_id")
     VALUES ('admin', 'Admin role for project ' || project_name, new_project_id)
     RETURNING "role_id" INTO new_role_id;
 

@@ -7,8 +7,6 @@ const userRoutes = (app: Express, basePath: string = "/users") => {
 
 	//get a specific user
 
-	//create a new user
-
 	//get all the project info for a given user. returns (proj_id, name, description, userid, roleid)
 	const UserProjects = `${basePath}/:userid/projects`;
 	const projectsQuery =

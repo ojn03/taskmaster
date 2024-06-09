@@ -8,13 +8,13 @@
             "id": {},
             "subtype": "i32"
         },
-        "title": {
+        "ticket_title": {
             "type": "string",
             "faker": {
                 "generator": "first_name"
             }
         },
-        "description": {
+        "ticket_description": {
             "type": "string",
             "faker": {
                 "generator": "bs"

@@ -15,21 +15,21 @@ CREATE TABLE "UserInfo"(
 
 CREATE TABLE "Request"(
   "req_id" serial PRIMARY KEY,
-  "description" varchar(100) NOT NULL,
+  "req_description" varchar(100) NOT NULL,
   "from_user" int NOT NULL REFERENCES "User"(user_id),
   "to_user" int NOT NULL REFERENCES "User"(user_id)
 );
 
 CREATE TABLE "Project"(
   "proj_id" serial PRIMARY KEY,
-  "name" varchar(50) NOT NULL,
-  "description" varchar(250) NOT NULL
+  "proj_name" varchar(50) NOT NULL,
+  "proj_description" varchar(250) NOT NULL
 );
 
 CREATE TABLE "Role"(
   "role_id" serial PRIMARY KEY,
-  "name" varchar(50) NOT NULL,
-  "description" varchar(100) NOT NULL,
+  "role_title" varchar(50) NOT NULL,
+  "role_description" varchar(100) NOT NULL,
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
 
@@ -41,22 +41,22 @@ CREATE TABLE "Role_User_Project"(
   --todo fix duplication of proj_id. Roleid already has proj_id
 );
 
-CREATE TABLE "Privelege"(
-  "priv_id" serial PRIMARY KEY,
-  "name" varchar(50) NOT NULL,
-  "description" varchar(100) NOT NULL
+CREATE TABLE "Permission"(
+  "permission_id" serial PRIMARY KEY,
+  "permission_name" varchar(50) NOT NULL,
+  "permission_description" varchar(100) NOT NULL
 );
 
-CREATE TABLE "Role_Privelege"(
+CREATE TABLE "Role_Permission"(
   "role_id" int NOT NULL REFERENCES "Role"(role_id),
-  "priv_id" int NOT NULL REFERENCES "Privelege"(priv_id),
-  PRIMARY KEY ("role_id", "priv_id")
+  "permission_id" int NOT NULL REFERENCES "Permission"(permission_id),
+  PRIMARY KEY ("role_id", "permission_id")
 );
 
 CREATE TABLE "Team"(
   "team_id" serial PRIMARY KEY,
-  "name" varchar(50) NOT NULL,
-  "description" varchar(100) NOT NULL,
+  "team_name" varchar(50) NOT NULL,
+  "team_description" varchar(100) NOT NULL,
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
 
@@ -70,8 +70,8 @@ CREATE TABLE "Team_User_Project"(
 
 CREATE TABLE "Sprint"(
   "sprint_id" serial PRIMARY KEY,
-  "name" varchar(50) NOT NULL,
-  "description" varchar(100) NOT NULL,
+  "sprint_name" varchar(50) NOT NULL,
+  "sprint_description" varchar(100) NOT NULL,
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
 
@@ -88,19 +88,18 @@ CREATE TABLE "Event"(
 
 CREATE TABLE "History"(
   "history_id" serial PRIMARY KEY,
-  "date" date NOT NULL,
-  "time" time NOT NULL,
   "event_title" varchar(50) NOT NULL REFERENCES "Event"(event_title),
   "user_id" int NOT NULL REFERENCES "User"(user_id),
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "Ticket"(
   "tick_id" serial PRIMARY KEY,
-  "title" varchar(50) NOT NULL,
-  "description" varchar(250) NOT NULL,
-  "progress" int NOT NULL CHECK ("progress" BETWEEN 0 AND 2),
-  "priority" int NOT NULL CHECK ("priority" BETWEEN 0 AND 4),
+  "ticket_title" varchar(50) NOT NULL,
+  "ticket_description" varchar(250) NOT NULL,
+  "ticket_progress" int NOT NULL CHECK ("progress" BETWEEN 0 AND 2),
+  "ticket_priority" int NOT NULL CHECK ("priority" BETWEEN 0 AND 4),
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
 

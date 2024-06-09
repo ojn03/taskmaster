@@ -1,0 +1,30 @@
+{
+	"type": "array",
+	"length": 5,
+	"content": {
+		"type": "object",
+		"permission_id": {
+			"type": "number",
+			"id": {},
+			"subtype": "i32"
+		},
+		"permission_name": {
+			"type": "string",
+			"format": {
+				"format": "Permission {num}",
+				"arguments": {
+					"num": {
+						"type": "number",
+						"id": {}
+					}
+				}
+			}
+		},
+		"permission_description": {
+			"type": "string",
+			"faker": {
+				"generator": "bs"
+			}
+		}
+	}
+}

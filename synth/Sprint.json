@@ -8,13 +8,13 @@
 			"id": {},
 			"subtype": "i32"
 		},
-		"name": {
+		"sprint_name": {
 			"type": "string",
 			"faker": {
 				"generator": "color"
 			}
 		},
-		"description": {
+		"sprint_description": {
 			"type": "string",
 			"faker": {
 				"generator": "bs"

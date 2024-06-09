@@ -25,7 +25,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	app.post(basePath, (req, res) => {
 		const { title, description, priority, project_id } = req.body;
 		const addTicketQuery =
-			'INSERT INTO "Ticket" (title, description,priority, proj_id) VALUES ($1, $2, $3, $4) RETURNING *';
+			'INSERT INTO "Ticket" (ticket_title, ticket_description,ticket_priority, proj_id) VALUES ($1, $2, $3, $4) RETURNING *';
 		const values = [title, description, priority, project_id];
 		QDB(res, addTicketQuery, "", values as string[]);
 	});

@@ -19,7 +19,7 @@ const teamColumns = [
 
 const ticketColumns = [
 	{
-		accessorKey: "title",
+		accessorKey: "ticket_title",
 		header: "Title",
 		size: 50
 	},
@@ -42,7 +42,7 @@ const ticketColumns = [
 
 const roleColumns = [
 	{
-		accessorKey: "name",
+		accessorKey: "role_title",
 		header: "Role"
 	},
 	{
@@ -68,7 +68,7 @@ const historyColumns = [
 
 const allTeamsColumns = [
 	{
-		accessorKey: "name",
+		accessorKey: "team_name",
 		header: "Team Name"
 	},
 	{

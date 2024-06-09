@@ -9,13 +9,13 @@
             "id":{},
             "subtype": "i32"
         },
-        "name": {
+        "role_title": {
             "type": "string",
             "faker": {
                 "generator": "profession"
             }
         },
-        "description": {
+        "role_description": {
             "type": "string",
             "faker": {
                 "generator": "bs"

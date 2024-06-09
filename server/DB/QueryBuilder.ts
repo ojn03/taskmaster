@@ -21,16 +21,22 @@ export class Ticket {
 	tick_id: number;
 
 	@IsString()
-	title: string;
+	ticket_title: string;
 
 	@IsString()
-	description: string;
+	ticket_description: string;
 
 	@IsString()
-	priority: string;
+	ticket_priority: string;
 
 	@IsPositive()
 	proj_id: number;
+
+	@IsDateString()
+	created_at: Date;
+
+	@IsDateString()
+	update_at: Date;
 }
 
 export class Comment{
@@ -59,14 +65,20 @@ export class Role {
 
 	@IsString()
 	@MaxLength(50)
-	name: string;
+	role_title: string;
 
 	@IsString()
 	@MaxLength(100)
-	description: string;
+	role_description: string;
 
 	@IsPositive()
 	proj_id: number;
+
+	@IsDateString()
+	created_at: Date;
+
+	@IsDateString()
+	update_at: Date;
 }
 
 
@@ -95,6 +107,12 @@ export class User {
 	@MaxLength(50) //TODO maybe separate user from userinfo
 	@IsString()
 	email: string;
+
+	@IsDateString()
+	created_at: Date;
+
+	@IsDateString()
+	update_at: Date;
 };
 
 //TODO add validation
@@ -104,11 +122,17 @@ export class Project {
 
 	@MaxLength(50)
 	@IsString()
-	name: string;
+	proj_name: string;
 
 	@MaxLength(250)
 	@IsString()
-	description: string;
+	proj_description: string;
+
+	@IsDateString()
+	created_at: Date;
+
+	@IsDateString()
+	update_at: Date;
 };
 
 //TODO update all applicable routes to use this class

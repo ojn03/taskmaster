@@ -8,13 +8,13 @@
             "id":{},
             "subtype": "i32"
         },
-        "name": {
+        "proj_name": {
             "type": "string",
             "faker": {
                 "generator": "company_name"
             }
         },
-        "description": {
+        "proj_description": {
             "type": "string",
             "faker": {
                 "generator": "catch_phrase"

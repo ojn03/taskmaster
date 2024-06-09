@@ -23,9 +23,9 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 
 	//update info for a given project
 	app.patch(Project, (req, res) => {
-		const { name, description } = req.body;
+		const { proj_name, proj_description } = req.body;
 		const updateProjectQuery = new MyQuery<Project>("Project")
-			.Update({ name, description })
+			.Update({ proj_name, proj_description })
 			.Where({ proj_id: req.params.projid });
 		patchDB<Project>(res, updateProjectQuery);
 	});
@@ -96,7 +96,7 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 	const ProjectRoles = `${basePath}/:projid/roles`;
 	const rolesQuery =
 		'select * from "Role" r \
-    join "Role_Privelege" rp on r.role_id = rp.role_id join "Privelege" p on rp.priv_id = p.priv_id and r.proj_id = $1';
+    join "Role_Permission" rp on r.role_id = rp.role_id join "Permission" p on rp.permission_id = p.permission_id and r.proj_id = $1';
 	app.get(
 		ProjectRoles,
 		getCache("roles", "projid"),
