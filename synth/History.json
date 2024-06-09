@@ -8,18 +8,6 @@
 			"id": {},
 			"subtype": "i32"
 		},
-		"date": {
-			"type": "date_time",
-			"format": "%m-%d-%Y",
-			"subtype": "naive_date",
-			"end": "01-01-2020",
-			"begin": "01-01-2010"
-		},
-		"time": {
-			"type": "date_time",
-			"format": "%H:%M:%S",
-			"subtype": "naive_time"
-		},
 		"event_title": {
 			"type": "same_as",
 			"ref": "Event.content.event_title"

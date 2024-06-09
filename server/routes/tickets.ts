@@ -8,8 +8,11 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	//get all the tickets
 	const allTickets = basePath;
 	const allTicketsQuery = 'SELECT * FROM "Ticket"';
-	app.get(allTickets, getCache("tickets"), getDB(allTicketsQuery, "tickets"));
-
+	app.get(
+		allTickets,
+		getCache(),
+		getDB(allTicketsQuery, "tickets")
+	);
 	//TODO this is decoupled from the project route
 	// in this case, ensure the user has access to the ticket by checking if the user is part of the ticket's project
 	//get a specific ticket
@@ -17,7 +20,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	const ticketQuery = 'SELECT * FROM "Ticket" WHERE tick_id = $1';
 	app.get(
 		ticket,
-		getCache("ticket", "tickid"),
+		getCache(),
 		getDB(ticketQuery, "ticket", "tickid")
 	);
 
@@ -31,13 +34,13 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	});
 
 	//get the assignees of a specific ticket
-	const ticketAssignees = `${ticket}/assignees`;
+	const ticketAssignees = `${ticket}/users`;
 	const ticketAssigneesQuery =
 		'SELECT * FROM "User_Ticket" join "User" on "User_Ticket".user_id = "User".user_id WHERE tick_id = $1';
 	app.get(
 		ticketAssignees,
-		getCache("assignees", "tickid"),
-		getDB(ticketAssigneesQuery, "assignees", "tickid")
+		getCache(),
+		getDB(ticketAssigneesQuery, "users", "tickid")
 	);
 
 	//add an assignee to a specific ticket
@@ -65,7 +68,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	const ticketCommentsQuery = 'SELECT * FROM "Comment" WHERE tick_id = $1';
 	app.get(
 		ticketComments,
-		getCache("comments", "tickid"),
+		getCache(),
 		getDB(ticketCommentsQuery, "comments", "tickid")
 	);
 

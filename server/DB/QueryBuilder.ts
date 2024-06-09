@@ -1,24 +1,23 @@
 // Desc: QueryBuilder class for building SQL queries
 import { pool } from "../pool";
-import { ClientBase, QueryResult } from "pg";
+import {  QueryResult } from "pg";
 import {
 	IsDateString,
-	IsNotEmpty,
 	IsPositive,
 	IsString,
 	Matches,
 	MaxLength,
 	IsEmail,
-	IsAlphanumeric,
+	IsNumberString,
 } from "class-validator";
 export type Table = Ticket | User | Project | Role|Comment;
 
 
 //TODO maybe add created at and updated at to all classes
 export class Ticket {
+	@IsNumberString()
 	@IsPositive()
-	@IsNotEmpty()
-	tick_id: number;
+	tick_id: number|string;
 
 	@IsString()
 	ticket_title: string;
@@ -40,8 +39,9 @@ export class Ticket {
 }
 
 export class Comment{
+	@IsNumberString()
 	@IsPositive()
-	comment_id: number;
+	comment_id: number|string;
 
 	@IsString()
 	comment: string;
@@ -60,8 +60,9 @@ export class Comment{
 }
 
 export class Role {
+	@IsNumberString()
 	@IsPositive()
-	role_id: number;
+	role_id: number|string;
 
 	@IsString()
 	@MaxLength(50)
@@ -83,6 +84,10 @@ export class Role {
 
 
 export class User {
+	@IsNumberString()
+	@IsPositive()
+	user_id: number|string;
+
 	@MaxLength(50)
 	@IsString()
 	first: string;
@@ -91,14 +96,10 @@ export class User {
 	@IsString()
 	last: string;
 
-	@IsPositive()
-	user_id: number;
-
 	@Matches(process.env.NEXT_PUBLIC_USERNAME_REGEX as string)
 	@IsString()
 	username: string;
 
-	
 	@Matches(process.env.NEXT_PUBLIC_PASSWORD_REGEX as string)
 	@IsString()
 	password: string;
@@ -117,7 +118,8 @@ export class User {
 
 //TODO add validation
 export class Project {
-	@IsAlphanumeric()
+	@IsNumberString()
+	@IsPositive()
 	proj_id: number|string;
 
 	@MaxLength(50)
@@ -199,5 +201,9 @@ export class MyQuery<T extends Table> {
 
 	Query(callback: (err: Error, result: QueryResult<any>) => void): void {
 		pool.query(this.QueryString, callback);
+	}
+
+	toString(): string {
+		return this.QueryString;
 	}
 }

@@ -8,7 +8,7 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 	const ticketsQuery = 'SELECT * FROM "Ticket" WHERE proj_id = $1';
 	app.get(
 		ProjectTickets,
-		getCache("tickets", "projid"),
+		getCache(),
 		getDB(ticketsQuery, "tickets", "projid")
 	);
 
@@ -17,7 +17,7 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 	const projectQuery = 'SELECT * FROM "Project" WHERE proj_id = $1';
 	app.get(
 		Project,
-		getCache("project", "projid"),
+		getCache(),
 		getDB(projectQuery, "project", "projid")
 	);
 
@@ -35,7 +35,7 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 	const historyQuery = 'SELECT * FROM "History" WHERE proj_id = $1';
 	app.get(
 		ProjectHistory,
-		getCache("history", "projid"),
+		getCache(),
 		getDB(historyQuery, "history", "projid")
 	);
 
@@ -45,14 +45,12 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 		'SELECT * FROM "User" u join "Role_User_Project" rup on u.user_id = rup.user_id join "Role" r on r.proj_id = rup.proj_id and r.proj_id = $1';
 	app.get(
 		ProjectUsers,
-		getCache("users", "projid"),
+		getCache(),
 		getDB(usersQuery, "users", "projid")
 	);
 
-	//TODO finsish this
 	//add a user to a project
 	const ProjectUser = `${ProjectUsers}/:userid`;
-
 	const addUserQuery =
 		'INSERT INTO "Role_User_Project" (role_id,user_id, proj_id) VALUES ($1, $2, $3) RETURNING *';
 
@@ -68,7 +66,7 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 	const userTeamQuery = "SELECT * FROM getTeam($1, $2)";
 	app.get(
 		ProjectUserTeam,
-		getCache("team", "userid", "projid"),
+		getCache(),
 		getDB(userTeamQuery, "team", "userid", "projid")
 	);
 
@@ -77,18 +75,18 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 	const teamsQuery = 'select * from "Team" where proj_id = $1';
 	app.get(
 		ProjectTeams,
-		getCache("teams", "projid"),
+		getCache(),
 		getDB(teamsQuery, "teams", "projid")
 	);
 
 	//FIXME THIS IS INCOMPLETE
 	// get all members of a team
-	const TeamMembers = `${ProjectTeams}/:teamid/members`;
+	const TeamMembers = `${ProjectTeams}/:teamid/users`;
 	const teamMembersQuery =
 		'select * from "User" where user_id in (select user_id from "Team_User" where team_id = $1)';
 	app.get(
 		TeamMembers,
-		getCache("teamMembers", "teamid"),
+		getCache(),
 		getDB(teamMembersQuery, "teamMembers", "teamid")
 	);
 
@@ -99,7 +97,7 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
     join "Role_Permission" rp on r.role_id = rp.role_id join "Permission" p on rp.permission_id = p.permission_id and r.proj_id = $1';
 	app.get(
 		ProjectRoles,
-		getCache("roles", "projid"),
+		getCache(),
 		getDB(rolesQuery, "roles", "projid")
 	);
 };

@@ -98,8 +98,8 @@ CREATE TABLE "Ticket"(
   "tick_id" serial PRIMARY KEY,
   "ticket_title" varchar(50) NOT NULL,
   "ticket_description" varchar(250) NOT NULL,
-  "ticket_progress" int NOT NULL CHECK ("progress" BETWEEN 0 AND 2),
-  "ticket_priority" int NOT NULL CHECK ("priority" BETWEEN 0 AND 4),
+  "ticket_progress" int NOT NULL CHECK ("ticket_progress" BETWEEN 0 AND 2),
+  "ticket_priority" int NOT NULL CHECK ("ticket_priority" BETWEEN 0 AND 4),
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
 );
 
@@ -130,4 +130,5 @@ CREATE TABLE "User_Proj"(
   PRIMARY KEY ("user_id", "proj_id")
 );
 
--- command to generate synth data: synth generate synth --size 30 --to 'postgresql://postgres@localhost:5432/synth'
+-- command to generate synth data: synth generate synth --size 30 --to 'postgresql://postgres@localhost:5432/synth' --random
+-- to set sequence values: select setval('sequence_name', some_value) 

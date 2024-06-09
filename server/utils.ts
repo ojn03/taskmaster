@@ -3,7 +3,6 @@
 import { red } from ".";
 import { Request, Response, NextFunction } from "express";
 import { pool } from "./pool";
-import { Query, QueryResult } from "pg";
 import { MyQuery, Table } from "./DB/QueryBuilder";
 
 export function ensureError(value: unknown): Error {
@@ -21,10 +20,11 @@ export function ensureError(value: unknown): Error {
 }
 // cache middleware for get requests
 
-export function getCache(cacheLocation: string, ...params: string[]) {
+export function getCache() {
 	return function (req: Request, res: Response, next: NextFunction) {
+		const cacheLocation = req.path;
 		red.get(
-			`${cacheLocation}:${params.map((param) => req.params[param]).join(":")}`,
+			`${req.path}`,
 			(err, data) => {
 				console.time(cacheLocation);
 				if (err) {
@@ -59,7 +59,7 @@ export function getDB(
 					console.timeEnd(cacheLocation);
 				} else {
 					red.setex(
-						`${cacheLocation}:${params.map((param) => `${param}:${req.params[param]}`).join(":")}`,
+						`${req.path}`,
 						600,
 						JSON.stringify(response.rows)
 					);

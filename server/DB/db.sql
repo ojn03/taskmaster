@@ -1,6 +1,4 @@
--- commands used to create sql db
--- todo make shema not public
---todo change "name" to "title" in all tables except "User"
+-- sql schema
 CREATE TABLE "User"(
   "user_id" serial PRIMARY KEY,
   "first" varchar(50) NOT NULL,
@@ -361,7 +359,7 @@ BEGIN
     u.first,
     u.last,
     u.email,
-    r.name AS role_title
+    r.role_title AS role_title
   FROM
     "User" u
     JOIN "Role_User_Project" rup ON u.user_id = rup.user_id

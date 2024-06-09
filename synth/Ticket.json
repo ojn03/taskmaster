@@ -20,7 +20,7 @@
                 "generator": "bs"
             }
         },
-        "priority": {
+        "ticket_priority": {
             "type": "number",
             "range": {
                 "low": 0,
@@ -34,7 +34,7 @@
             "type": "same_as",
             "ref": "Project.content.proj_id"
         },
-        "progress": {
+        "ticket_progress": {
             "type": "number",
             "range": {
                 "low": 0,
