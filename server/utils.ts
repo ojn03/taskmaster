@@ -21,7 +21,7 @@ export function ensureError(value: unknown): Error {
 }
 // cache middleware for get requests
 
-export function cacheDB(cacheLocation: string, ...params: string[]) {
+export function getCache(cacheLocation: string, ...params: string[]) {
 	return function (req: Request, res: Response, next: NextFunction) {
 		red.get(
 			`${cacheLocation}:${params.map((param) => req.params[param]).join(":")}`,

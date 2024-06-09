@@ -7,7 +7,6 @@ const teamRoutes = (app: Express) => {
     //remove a user from a team
     //update team info
     //get all the users of a given team
-    //get all the projects for a given team
     //get all the tickets for a given team
 
 }

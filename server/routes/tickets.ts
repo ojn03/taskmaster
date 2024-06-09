@@ -1,14 +1,14 @@
 import { type Express } from "express";
-import { getDB, cacheDB, QDB, patchDB } from "../utils";
+import { getDB, getCache, QDB, patchDB } from "../utils";
 import { validate } from "class-validator";
-import {MyQuery, Ticket} from "../DB/QueryBuilder";
-import { plainToClass } from 'class-transformer';
+import { MyQuery, Ticket } from "../DB/QueryBuilder";
+import { plainToClass } from "class-transformer";
 
 const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	//get all the tickets
 	const allTickets = basePath;
 	const allTicketsQuery = 'SELECT * FROM "Ticket"';
-	app.get(allTickets, cacheDB("tickets"), getDB(allTicketsQuery, "tickets"));
+	app.get(allTickets, getCache("tickets"), getDB(allTicketsQuery, "tickets"));
 
 	//TODO this is decoupled from the project route
 	// in this case, ensure the user has access to the ticket by checking if the user is part of the ticket's project
@@ -17,7 +17,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	const ticketQuery = 'SELECT * FROM "Ticket" WHERE tick_id = $1';
 	app.get(
 		ticket,
-		cacheDB("ticket", "tickid"),
+		getCache("ticket", "tickid"),
 		getDB(ticketQuery, "ticket", "tickid")
 	);
 
@@ -36,7 +36,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 		'SELECT * FROM "User_Ticket" join "User" on "User_Ticket".user_id = "User".user_id WHERE tick_id = $1';
 	app.get(
 		ticketAssignees,
-		cacheDB("assignees", "tickid"),
+		getCache("assignees", "tickid"),
 		getDB(ticketAssigneesQuery, "assignees", "tickid")
 	);
 
@@ -51,7 +51,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	});
 
 	//remove an assignee from a specific ticket
-	const ticketAssignee= `${ticketAssignees}/:userid`;
+	const ticketAssignee = `${ticketAssignees}/:userid`;
 	const removeAssigneeQuery =
 		'DELETE FROM "User_Ticket" WHERE user_id = $1 AND tick_id = $2';
 	app.delete(ticketAssignee, (req, res) => {
@@ -65,7 +65,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	const ticketCommentsQuery = 'SELECT * FROM "Comment" WHERE tick_id = $1';
 	app.get(
 		ticketComments,
-		cacheDB("comments", "tickid"),
+		getCache("comments", "tickid"),
 		getDB(ticketCommentsQuery, "comments", "tickid")
 	);
 
@@ -84,12 +84,15 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	app.patch(ticket, (req, res) => {
 		const tick_id = Number(req.params.tickid);
 		const update = plainToClass(Ticket, req.body);
-		
+
 		validate(update).then((errors) => {
-		//TODO handle validation
+			//TODO handle validation
 		});
 
-		const Query = new MyQuery<Ticket>("Ticket").Update(update).Where({tick_id}).Returning("*")
+		const Query = new MyQuery<Ticket>("Ticket")
+			.Update(update)
+			.Where({ tick_id })
+			.Returning("*");
 
 		patchDB(res, Query);
 	});
