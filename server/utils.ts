@@ -18,8 +18,8 @@ export function ensureError(value: unknown): Error {
 	);
 	return error;
 }
-// cache middleware for get requests
 
+// cache middleware for get requests
 export function getCache() {
 	return function (req: Request, res: Response, next: NextFunction) {
 		const cacheLocation = req.path;

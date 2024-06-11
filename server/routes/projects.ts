@@ -79,17 +79,6 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 		getDB(teamsQuery, "teams", "projid")
 	);
 
-	//FIXME THIS IS INCOMPLETE
-	// get all members of a team
-	const TeamMembers = `${ProjectTeams}/:teamid/users`;
-	const teamMembersQuery =
-		'select * from "User" where user_id in (select user_id from "Team_User" where team_id = $1)';
-	app.get(
-		TeamMembers,
-		getCache(),
-		getDB(teamMembersQuery, "teamMembers", "teamid")
-	);
-
 	//gets all roles for a given projid
 	const ProjectRoles = `${basePath}/:projid/roles`;
 	const rolesQuery =

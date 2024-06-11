@@ -1,6 +1,6 @@
 // Desc: QueryBuilder class for building SQL queries
 import { pool } from "../pool";
-import {  QueryResult } from "pg";
+import { QueryResult } from "pg";
 import {
 	IsDateString,
 	IsPositive,
@@ -8,16 +8,15 @@ import {
 	Matches,
 	MaxLength,
 	IsEmail,
-	IsNumberString,
+	IsNumberString
 } from "class-validator";
-export type Table = Ticket | User | Project | Role|Comment;
-
+export type Table = Ticket | User | Project | Role | Team|Comment;
 
 //TODO maybe add created at and updated at to all classes
 export class Ticket {
 	@IsNumberString()
 	@IsPositive()
-	tick_id: number|string;
+	tick_id: number | string;
 
 	@IsString()
 	ticket_title: string;
@@ -38,10 +37,10 @@ export class Ticket {
 	update_at: Date;
 }
 
-export class Comment{
+export class Comment {
 	@IsNumberString()
 	@IsPositive()
-	comment_id: number|string;
+	comment_id: number | string;
 
 	@IsString()
 	comment: string;
@@ -62,7 +61,7 @@ export class Comment{
 export class Role {
 	@IsNumberString()
 	@IsPositive()
-	role_id: number|string;
+	role_id: number | string;
 
 	@IsString()
 	@MaxLength(50)
@@ -82,11 +81,10 @@ export class Role {
 	update_at: Date;
 }
 
-
 export class User {
 	@IsNumberString()
 	@IsPositive()
-	user_id: number|string;
+	user_id: number | string;
 
 	@MaxLength(50)
 	@IsString()
@@ -114,13 +112,13 @@ export class User {
 
 	@IsDateString()
 	update_at: Date;
-};
+}
 
 //TODO add validation
 export class Project {
 	@IsNumberString()
 	@IsPositive()
-	proj_id: number|string;
+	proj_id: number | string;
 
 	@MaxLength(50)
 	@IsString()
@@ -135,7 +133,24 @@ export class Project {
 
 	@IsDateString()
 	update_at: Date;
-};
+}
+
+export class Team {
+	@IsNumberString()
+	@IsPositive()
+	team_id: number | string;
+
+	@MaxLength(50)
+	@IsString()
+	team_name: string;
+
+	@MaxLength(100)
+	@IsString()
+	team_description: string;
+
+	@IsPositive()
+	proj_id: number;
+}
 
 //TODO update all applicable routes to use this class
 export class MyQuery<T extends Table> {
