@@ -8,13 +8,16 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	//get all the tickets
 	const allTickets = basePath;
 	const allTicketsQuery = 'SELECT * FROM "Ticket"';
-	app.get(allTickets, getCache(), getDB(allTicketsQuery, "tickets"));
+	app.get(allTickets, getCache(), getDB(allTicketsQuery));
 	//TODO this is decoupled from the project route
 	// in this case, ensure the user has access to the ticket by checking if the user is part of the ticket's project
 	//get a specific ticket
 	const ticket = `${basePath}/:tickid`;
-	const ticketQuery = 'SELECT * FROM "Ticket" WHERE tick_id = $1';
-	app.get(ticket, getCache(), getDB(ticketQuery, "ticket", "tickid"));
+	app.get(ticket, getCache(), (req, res) => {
+		const tick_id = req.params.tickid;
+		const query = new MyQuery<Ticket>("Ticket").Select("*").Where({ tick_id });
+		myQueryDB(req, res, query);
+	});
 
 	//create a new ticket
 	app.post(basePath, (req, res) => {
@@ -35,11 +38,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	const ticketAssignees = `${ticket}/users`;
 	const ticketAssigneesQuery =
 		'SELECT * FROM "User_Ticket" join "User" on "User_Ticket".user_id = "User".user_id WHERE tick_id = $1';
-	app.get(
-		ticketAssignees,
-		getCache(),
-		getDB(ticketAssigneesQuery, "users", "tickid")
-	);
+	app.get(ticketAssignees, getCache(), getDB(ticketAssigneesQuery, "tickid"));
 
 	//add an assignee to a specific ticket
 	const addAssigneeQuery =
@@ -63,22 +62,21 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 
 	//get the comments of a specific ticket
 	const ticketComments = `${ticket}/comments`;
-	const ticketCommentsQuery = 'SELECT * FROM "Comment" WHERE tick_id = $1';
-	app.get(
-		ticketComments,
-		getCache(),
-		getDB(ticketCommentsQuery, "comments", "tickid")
-	);
+	app.get(ticketComments, getCache(), (req, res) => {
+		const tick_id = Number(req.params.tickid);
+		const query = new MyQuery<Comment>("Comment")
+			.Select("*")
+			.Where({ tick_id });
+		myQueryDB(req, res, query);
+	});
 
 	//add a comment to a specific ticket
-	// const addCommentQuery =
-	// 	'INSERT INTO "Comment" (tick_id, user_id, comment) VALUES ($1, $2, $3) RETURNING *';
 	app.post(ticketComments, (req, res) => {
 		//TODO add type and data validation (make sure fields exists, is a string, etc.)
 		const tick_id = Number(req.params.tickid);
 		const { user_id, comment }: { user_id: number; comment: string } = req.body;
 		const addCommentQuery = new MyQuery<Comment>("Comment")
-			.Insert({ tick_id, comment })
+			.Insert({  comment ,tick_id,user_id})
 			.Returning("*");
 		myQueryDB(req, res, addCommentQuery);
 	});

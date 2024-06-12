@@ -152,7 +152,6 @@ export class Team {
 	proj_id: number;
 }
 
-//TODO update all applicable routes to use this class
 //TODO get autocomplete to work for this class when used with TABLE types
 export class MyQuery<T extends Table> {
 	private QueryString: string = "";
@@ -192,7 +191,7 @@ export class MyQuery<T extends Table> {
 			values.push(value as string);
 		});
 
-		const insertQuery = `INSERT INTO "${this.Table}" (${keys.join(", ")}) VALUES (${values.join(", ")})`;
+		const insertQuery = `INSERT INTO "${this.Table}" (${keys.join(", ")}) VALUES ('${values.join("', '")}')`;
 		this.QueryString += insertQuery;
 		return this;
 	}

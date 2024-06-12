@@ -4,18 +4,18 @@ import { MyQuery, Team } from "../DB/QueryBuilder";
 const teamRoutes = (app: Express, basePath: string = "/teams") => {
 	//get a specific team
 	const team = `${basePath}/:teamid`;
-	const teamQuery = 'select * from "Team" where team_id = $1';
-	app.get(team, getCache(), getDB(teamQuery, "team", "teamid"));
+	app.get(team, getCache(), (req, res) => {
+		const query = new MyQuery<Team>("Team")
+			.Select("*")
+			.Where({ team_id: req.params.teamid });
+		myQueryDB(req, res, query);
+	});
 
 	// get all members of a team
 	const TeamMembers = `${basePath}/:teamid/users`;
 	const teamMembersQuery =
 		'select u.* from "Team" t join "Team_User_Project" tup on t.team_id = tup.team_id join "User" u on u.user_id = tup.user_id and tup.team_id = $1';
-	app.get(
-		TeamMembers,
-		getCache(),
-		getDB(teamMembersQuery, "teamMembers", "teamid")
-	);
+	app.get(TeamMembers, getCache(), getDB(teamMembersQuery, "teamid"));
 
 	//delete a team
 	app.delete(team, (req, res) => {

@@ -83,7 +83,7 @@ CREATE TABLE "User_Sprint"(
 
 CREATE TABLE "Event"(
   "event_id" serial PRIMARY KEY,
-  "event_title" varchar(50) unique NOT NULL
+  "event_title" varchar(50) UNIQUE NOT NULL
 );
 
 CREATE TABLE "History"(
@@ -91,7 +91,7 @@ CREATE TABLE "History"(
   "event_title" varchar(50) NOT NULL REFERENCES "Event"(event_title),
   "user_id" int NOT NULL REFERENCES "User"(user_id),
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  created_at timestamptz NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "Ticket"(
@@ -118,9 +118,10 @@ CREATE TABLE "Sprint_Ticket"(
 CREATE TABLE "Comment"(
   "comment_id" serial PRIMARY KEY,
   "comment" varchar(250) NOT NULL,
-  "datePosted" date NOT NULL,
   "user_id" int NOT NULL REFERENCES "User"(user_id),
-  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id)
+  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id),
+  created_at timestamptz NOT NULL DEFAULT NOW(),
+  updated_at timestamptz NOT NULL DEFAULT NOW()
 );
 
 --extra table for synth generation
@@ -131,4 +132,4 @@ CREATE TABLE "User_Proj"(
 );
 
 -- command to generate synth data: synth generate synth --size 30 --to 'postgresql://postgres@localhost:5432/synth' --random
--- to set sequence values: select setval('sequence_name', some_value) 
+-- to set sequence values: select setval('sequence_name', some_value)

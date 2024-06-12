@@ -38,7 +38,6 @@ export function getCache() {
 } //DB Query for get requests
 export function getDB(
 	querytxt: string,
-	cacheLocation: string, //TODO remove everywhere
 	...params: string[]
 ) {
 	return function (req: Request, res: Response) {

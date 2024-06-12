@@ -1,18 +1,25 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { QDB, getDB, myQueryDB } from "../utils";
 import { getCache } from "../utils";
-import { MyQuery, Project, Team } from "../DB/QueryBuilder";
+import { MyQuery, Project, Table, Team, Ticket } from "../DB/QueryBuilder";
 const projectRoutes = (app: Express, basePath: string = "/projects") => {
 	//get all the tickets for a given project
 	const ProjectTickets = `${basePath}/:projid/tickets`;
-	const ticketsQuery = 'SELECT * FROM "Ticket" WHERE proj_id = $1';
-	app.get(ProjectTickets, getCache(), getDB(ticketsQuery, "tickets", "projid"));
-
+	app.get(ProjectTickets, getCache(), (req, res) => {
+		const ticketsQuery = new MyQuery<Ticket>("Ticket")
+			.Select("*")
+			.Where({ proj_id: Number(req.params.projid) });
+		myQueryDB<Ticket>(req, res, ticketsQuery);
+	});
 	//get basic info for a given project
 	const Project = `${basePath}/:projid`;
-	const projectQuery = 'SELECT * FROM "Project" WHERE proj_id = $1';
-	app.get(Project, getCache(), getDB(projectQuery, "project", "projid"));
-
+	app.get(Project, getCache(), (req, res) => {
+		const proj_id = Number(req.params.projid);
+		const query = new MyQuery<Project>("Project")
+			.Select("*")
+			.Where({ proj_id });
+		myQueryDB(req, res, query);
+	});
 	//update info for a given project
 	app.patch(Project, (req, res) => {
 		const { proj_name, proj_description } = req.body;
@@ -25,14 +32,17 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 
 	//get the history for a given project
 	const ProjectHistory = `${basePath}/:projid/history`;
-	const historyQuery = 'SELECT * FROM "History" WHERE proj_id = $1';
-	app.get(ProjectHistory, getCache(), getDB(historyQuery, "history", "projid"));
+	app.get(ProjectHistory, getCache(), (req, res) => {
+		const proj_id = Number(req.params.projid);
+		const query = new MyQuery<Table>("History").Select("*").Where({ proj_id });
+		myQueryDB(req, res, query);
+	});
 
 	//gets all the users of a given project
 	const ProjectUsers = `${basePath}/:projid/users`;
 	const usersQuery =
 		'SELECT * FROM "User" u join "Role_User_Project" rup on u.user_id = rup.user_id join "Role" r on r.proj_id = rup.proj_id and r.proj_id = $1';
-	app.get(ProjectUsers, getCache(), getDB(usersQuery, "users", "projid"));
+	app.get(ProjectUsers, getCache(), getDB(usersQuery, "projid"));
 
 	//add a user to a project
 	const ProjectUser = `${ProjectUsers}/:userid`;
@@ -52,17 +62,18 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 	app.get(
 		ProjectUserTeam,
 		getCache(),
-		getDB(userTeamQuery, "team", "userid", "projid")
+		getDB(userTeamQuery, "userid", "projid")
 	);
 
 	//gets all teams for a given projid
 	const ProjectTeams = `${basePath}/:projid/teams`;
-	const teamsQuery = 'select * from "Team" where proj_id = $1';
-	app.get(ProjectTeams, getCache(), getDB(teamsQuery, "teams", "projid"));
+	app.get(ProjectTeams, getCache(), (req, res) => {
+		const proj_id = Number(req.params.projid);
+		const query = new MyQuery<Team>("Team").Select("*").Where({ proj_id });
+		myQueryDB(req, res, query);
+	});
 
 	//creates a new team
-	const addTeamQuery =
-		'INSERT INTO "Team" (team_name, team_description proj_id) VALUES ($1, $2, $3) RETURNING *';
 	app.post(ProjectTeams, (req, res) => {
 		const { name: team_name, description: team_description } = req.body;
 		const proj_id = Number(req.params.projid);
@@ -70,7 +81,6 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 		const addTeamQuery = new MyQuery<Team>("Team")
 			.Insert({ team_name, team_description, proj_id })
 			.Returning("*");
-
 		myQueryDB(req, res, addTeamQuery);
 	});
 
@@ -78,8 +88,9 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 	const ProjectRoles = `${basePath}/:projid/roles`;
 	const rolesQuery =
 		'select * from "Role" r \
-    join "Role_Permission" rp on r.role_id = rp.role_id join "Permission" p on rp.permission_id = p.permission_id and r.proj_id = $1';
-	app.get(ProjectRoles, getCache(), getDB(rolesQuery, "roles", "projid"));
+    join "Role_Permission" rp on r.role_id = rp.role_id \
+	join "Permission" p on rp.permission_id = p.permission_id and r.proj_id = $1';
+	app.get(ProjectRoles, getCache(), getDB(rolesQuery, "projid"));
 };
 
 export default projectRoutes;
