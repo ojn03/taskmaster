@@ -23,24 +23,18 @@ export function ensureError(value: unknown): Error {
 export function getCache() {
 	return function (req: Request, res: Response, next: NextFunction) {
 		const cacheLocation = req.path;
-		red.get(
-			`${req.path}`,
-			(err, data) => {
-				console.time(cacheLocation);
-				if (err) {
-					console.error(err.message);
-					res.json({ error: "error 500: " + err.message });
-					console.timeEnd(cacheLocation);
-				}
-				if (data != null) {
-					res.json(JSON.parse(data));
-					console.timeEnd(cacheLocation);
-					console.log("cache hit");
-				} else {
-					next();
-				}
+		red.get(`${req.path}`, (err, data) => {
+			if (err) {
+				console.error(err.message);
+				res.json({ error: "error 500: " + err.message });
 			}
-		);
+			if (data != null) {
+				console.log("cache hit");
+				res.json(JSON.parse(data));
+			} else {
+				next();
+			}
+		});
 	};
 } //DB Query for get requests
 export function getDB(
@@ -56,16 +50,10 @@ export function getDB(
 				if (err) {
 					console.error(err.message);
 					res.json({ error: "error 500: " + err.message });
-					console.timeEnd(cacheLocation);
 				} else {
-					red.setex(
-						`${req.path}`,
-						600,
-						JSON.stringify(response.rows)
-					);
-					res.json(response.rows);
-					console.timeEnd(cacheLocation);
+					red.setex(`${req.path}`, 600, JSON.stringify(response.rows));
 					console.log("cache miss");
+					res.json(response.rows);
 				}
 			}
 		);
@@ -73,9 +61,11 @@ export function getDB(
 }
 
 //DB Query for patch requests
-export function patchDB<T extends Table>(
+export function myQueryDB<T extends Table>(
+	req: Request,
 	res: Response,
-	query: MyQuery<T>
+	query: MyQuery<T>,
+	lengthTilExpiration: number = 600
 	// cacheLocation: string, //TODO
 ) {
 	query.Query((err, response) => {
@@ -83,7 +73,25 @@ export function patchDB<T extends Table>(
 			console.error(err.message);
 			res.json({ error: "error 500: " + err.message });
 		} else {
-			res.json(response.rows);
+			const data = response.rows;
+			switch(req.method) {
+				case "GET":
+				case "POST":
+				case "PATCH": //TODO find out how to only update part of the cache. maybe use hset/hget
+					red.setex(`${req.path}`, lengthTilExpiration, JSON.stringify(data));
+					console.log("cache set");
+				  break;
+
+
+				
+				case "DELETE":
+					red.del(`${req.path}`); //TODO error handling
+				  break;
+				default:
+					break;
+				  // code block
+			  }
+			res.json(data);
 		}
 	});
 }

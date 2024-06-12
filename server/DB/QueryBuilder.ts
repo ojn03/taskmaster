@@ -154,7 +154,7 @@ export class Team {
 
 //TODO update all applicable routes to use this class
 export class MyQuery<T extends Table> {
-	//implements myQuery<T>
+	//TODO add flags as fields for different operations, to automatically add the correct operation. ie. whenever update is called, set this.updateFlag = true. then in the Query method, if updateFlag (or insert, etc) add returning * automatically.
 	private QueryString: string = "";
 	private readonly Table: string;
 	constructor(tablename: string) {

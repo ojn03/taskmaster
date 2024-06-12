@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import { getCache, getDB, patchDB } from "../utils";
+import { getCache, getDB, myQueryDB } from "../utils";
 import { MyQuery, Team } from "../DB/QueryBuilder";
 const teamRoutes = (app: Express, basePath: string = "/teams") => {
 	//get a specific team
@@ -16,27 +16,31 @@ const teamRoutes = (app: Express, basePath: string = "/teams") => {
 		getCache(),
 		getDB(teamMembersQuery, "teamMembers", "teamid")
 	);
-	//create a new team
 
 	//delete a team
+	app.delete(team, (req, res) => {
+		const deleteTeamQuery = new MyQuery<Team>("Team")
+			.Delete()
+			.Where({ team_id: req.params.teamid });
+		myQueryDB<Team>(req, res, deleteTeamQuery);
+	});
 
 	//add a user to a team
-
 
 	//remove a user from a team
 
 	//update team info
 	app.patch(team, (req, res) => {
 		const updateTeamQuery = new MyQuery<Team>("Team")
-        .Update({
-			team_description: req.body.description,
-            team_name: req.body.name,
-		})
-        .Where({ team_id: req.params.teamid })
-        .Returning("*");
-        patchDB<Team>(res, updateTeamQuery);
+			.Update({
+				team_description: req.body.description,
+				team_name: req.body.name
+			})
+			.Where({ team_id: req.params.teamid })
+			.Returning("*");
+		myQueryDB<Team>(req, res, updateTeamQuery);
 	});
-    //TODO nice to have
+	//TODO nice to have
 	//get all the tickets for a given team
 };
 export default teamRoutes;

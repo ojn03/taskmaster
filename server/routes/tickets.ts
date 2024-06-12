@@ -1,36 +1,34 @@
 import { type Express } from "express";
-import { getDB, getCache, QDB, patchDB } from "../utils";
+import { getDB, getCache, QDB, myQueryDB } from "../utils";
 import { validate } from "class-validator";
-import { MyQuery, Ticket } from "../DB/QueryBuilder";
+import { Comment, MyQuery, Ticket } from "../DB/QueryBuilder";
 import { plainToClass } from "class-transformer";
 
 const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	//get all the tickets
 	const allTickets = basePath;
 	const allTicketsQuery = 'SELECT * FROM "Ticket"';
-	app.get(
-		allTickets,
-		getCache(),
-		getDB(allTicketsQuery, "tickets")
-	);
+	app.get(allTickets, getCache(), getDB(allTicketsQuery, "tickets"));
 	//TODO this is decoupled from the project route
 	// in this case, ensure the user has access to the ticket by checking if the user is part of the ticket's project
 	//get a specific ticket
 	const ticket = `${basePath}/:tickid`;
 	const ticketQuery = 'SELECT * FROM "Ticket" WHERE tick_id = $1';
-	app.get(
-		ticket,
-		getCache(),
-		getDB(ticketQuery, "ticket", "tickid")
-	);
+	app.get(ticket, getCache(), getDB(ticketQuery, "ticket", "tickid"));
 
 	//create a new ticket
 	app.post(basePath, (req, res) => {
 		const { title, description, priority, project_id } = req.body;
-		const addTicketQuery =
-			'INSERT INTO "Ticket" (ticket_title, ticket_description,ticket_priority, proj_id) VALUES ($1, $2, $3, $4) RETURNING *';
-		const values = [title, description, priority, project_id];
-		QDB(res, addTicketQuery, "", values as string[]);
+
+		const addTicketQuery = new MyQuery<Ticket>("Ticket")
+			.Insert({
+				ticket_title: title,
+				ticket_description: description,
+				ticket_priority: priority,
+				proj_id: project_id
+			})
+			.Returning("*");
+		myQueryDB<Ticket>(req, res, addTicketQuery);
 	});
 
 	//get the assignees of a specific ticket
@@ -73,14 +71,16 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	);
 
 	//add a comment to a specific ticket
-	const addCommentQuery =
-		'INSERT INTO "Comment" (tick_id, user_id, comment) VALUES ($1, $2, $3) RETURNING *';
+	// const addCommentQuery =
+	// 	'INSERT INTO "Comment" (tick_id, user_id, comment) VALUES ($1, $2, $3) RETURNING *';
 	app.post(ticketComments, (req, res) => {
 		//TODO add type and data validation (make sure fields exists, is a string, etc.)
-		const tick_id = req.params.tickid;
+		const tick_id = Number(req.params.tickid);
 		const { user_id, comment }: { user_id: number; comment: string } = req.body;
-		const values = [tick_id, user_id, comment];
-		QDB(res, addCommentQuery, "", values as string[]);
+		const addCommentQuery = new MyQuery<Comment>("Comment")
+			.Insert({ tick_id, comment })
+			.Returning("*");
+		myQueryDB(res, addCommentQuery);
 	});
 
 	//update a specific ticket
@@ -97,7 +97,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 			.Where({ tick_id })
 			.Returning("*");
 
-		patchDB(res, Query);
+		myQueryDB(res, Query);
 	});
 
 	//delete a specific ticket
