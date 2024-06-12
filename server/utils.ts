@@ -22,7 +22,6 @@ export function ensureError(value: unknown): Error {
 // cache middleware for get requests
 export function getCache() {
 	return function (req: Request, res: Response, next: NextFunction) {
-		const cacheLocation = req.path;
 		red.get(`${req.path}`, (err, data) => {
 			if (err) {
 				console.error(err.message);
@@ -39,7 +38,7 @@ export function getCache() {
 } //DB Query for get requests
 export function getDB(
 	querytxt: string,
-	cacheLocation: string,
+	cacheLocation: string, //TODO remove everywhere
 	...params: string[]
 ) {
 	return function (req: Request, res: Response) {
@@ -66,7 +65,6 @@ export function myQueryDB<T extends Table>(
 	res: Response,
 	query: MyQuery<T>,
 	lengthTilExpiration: number = 600
-	// cacheLocation: string, //TODO
 ) {
 	query.Query((err, response) => {
 		if (err) {
@@ -99,7 +97,7 @@ export function myQueryDB<T extends Table>(
 export function QDB(
 	res: Response,
 	querytxt: string,
-	cacheLocation: string, //TODO
+	cacheLocation: string, //TODO remove everywhere
 	params: string[]
 ) {
 	pool.query(querytxt, params, (err, response) => {

@@ -18,7 +18,8 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 		const { proj_name, proj_description } = req.body;
 		const updateProjectQuery = new MyQuery<Project>("Project")
 			.Update({ proj_name, proj_description })
-			.Where({ proj_id: req.params.projid }).Returning("*");
+			.Where({ proj_id: req.params.projid })
+			.Returning("*");
 		myQueryDB<Project>(req, res, updateProjectQuery);
 	});
 
@@ -63,14 +64,14 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 	const addTeamQuery =
 		'INSERT INTO "Team" (team_name, team_description proj_id) VALUES ($1, $2, $3) RETURNING *';
 	app.post(ProjectTeams, (req, res) => {
-		const { name :team_name, description: team_description } = req.body;
-		const { projid: proj_id } = req.params;
+		const { name: team_name, description: team_description } = req.body;
+		const proj_id = Number(req.params.projid);
 
-		const addTeamQuery = new MyQuery<Team>("Team").Insert({team_name, team_description, proj_id}).Returning("*");
-		
-		const values = [team_name, team_description, projid];
+		const addTeamQuery = new MyQuery<Team>("Team")
+			.Insert({ team_name, team_description, proj_id })
+			.Returning("*");
 
-		QDB(res, addTeamQuery, "", values as string[]);
+		myQueryDB(req, res, addTeamQuery);
 	});
 
 	//gets all roles for a given projid

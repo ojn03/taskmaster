@@ -80,7 +80,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 		const addCommentQuery = new MyQuery<Comment>("Comment")
 			.Insert({ tick_id, comment })
 			.Returning("*");
-		myQueryDB(res, addCommentQuery);
+		myQueryDB(req, res, addCommentQuery);
 	});
 
 	//update a specific ticket
@@ -97,15 +97,17 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 			.Where({ tick_id })
 			.Returning("*");
 
-		myQueryDB(res, Query);
+		myQueryDB(req, res, Query);
 	});
 
 	//delete a specific ticket
 	app.delete(ticket, (req, res) => {
 		const tick_id = req.params.tickid;
-		const deleteTicketQuery = 'DELETE FROM "Ticket" WHERE tick_id = $1';
-		const values = [tick_id];
-		QDB(res, deleteTicketQuery, "", values as string[]);
+		const deleteTicketQuery = new MyQuery<Ticket>("Ticket")
+			.Delete()
+			.Where({ tick_id });
+
+		myQueryDB(req, res, deleteTicketQuery);
 	});
 };
 

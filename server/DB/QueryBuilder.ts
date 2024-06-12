@@ -10,7 +10,7 @@ import {
 	IsEmail,
 	IsNumberString
 } from "class-validator";
-export type Table = Ticket | User | Project | Role | Team|Comment;
+export type Table = Ticket | User | Project | Role | Team | Comment;
 
 //TODO maybe add created at and updated at to all classes
 export class Ticket {
@@ -153,33 +153,38 @@ export class Team {
 }
 
 //TODO update all applicable routes to use this class
+//TODO get autocomplete to work for this class when used with TABLE types
 export class MyQuery<T extends Table> {
-	//TODO add flags as fields for different operations, to automatically add the correct operation. ie. whenever update is called, set this.updateFlag = true. then in the Query method, if updateFlag (or insert, etc) add returning * automatically.
 	private QueryString: string = "";
+	private whereFlag: boolean = false;
+	private returningFlag: boolean = false;
+
+	//tracks if there is data to return. (ie. if the query is a inseet or update query)
+	private toReturnFlag: boolean = false;
+
+	//tracks if an operation has already been added to the query
+	private operationFlag: boolean = false;
+
 	private readonly Table: string;
 	constructor(tablename: string) {
 		this.Table = tablename;
 	}
 
-	//TODO figure out overload. look at Query method in pg ClientBase class
-	//TODO implement functionality different operations (=, <, >, etc)
-	Where(clauses: Partial<T>): this {
-		const whereClause = Object.entries(clauses)
-			.map(([key, value]) => `${key} = '${value}'`)
-			.join(" AND ");
-		this.QueryString += ` WHERE ${whereClause}`;
-		return this;
-	}
+	Select(columns: Array<keyof T> | string): this {
+		this.checkOperationFlag();
 
-	Update(data: Partial<T>): this {
-		const setClause = Object.entries(data)
-			.map(([key, value]) => `${key} = '${value}'`)
-			.join(", ");
-		this.QueryString += `UPDATE "${this.Table}" SET ${setClause}`;
+		if (typeof columns === "string") {
+			this.QueryString += `SELECT ${columns} FROM "${this.Table}"`;
+		} else {
+			this.QueryString += `SELECT ${columns.join(", ")} FROM "${this.Table}"`;
+		}
 		return this;
 	}
 
 	Insert(data: Partial<T>): this {
+		this.checkOperationFlag();
+		this.toReturnFlag = true;
+
 		const keys: Array<keyof T> = [];
 		const values: Array<string> = [];
 		Object.entries(data).forEach(([key, value]) => {
@@ -191,16 +196,50 @@ export class MyQuery<T extends Table> {
 		this.QueryString += insertQuery;
 		return this;
 	}
-	Select(columns: Array<keyof T> | string): this {
-		if (typeof columns === "string") {
-			this.QueryString += `SELECT ${columns} FROM "${this.Table}"`;
-		} else {
-			this.QueryString += `SELECT ${columns.join(", ")} FROM "${this.Table}"`;
+
+	Update(data: Partial<T>): this {
+		this.checkOperationFlag();
+		this.toReturnFlag = true;
+
+		const setClause = Object.entries(data)
+			.map(([key, value]) => `${key} = '${value}'`)
+			.join(", ");
+		this.QueryString += `UPDATE "${this.Table}" SET ${setClause}`;
+		return this;
+	}
+
+	Delete() {
+		this.checkOperationFlag();
+		this.QueryString += `DELETE FROM "${this.Table}"`;
+		return this;
+	}
+
+	//TODO figure out overload. look at Query method in pg ClientBase class
+	//TODO implement functionality different operations (=, <, >, etc)
+	Where(clauses: Partial<T>): this {
+		if (this.whereFlag) {
+			throw new Error("Cannot add multiple where clauses");
 		}
+		this.whereFlag = true;
+
+		const whereClause = Object.entries(clauses)
+			.map(([key, value]) => `${key} = '${value}'`)
+			.join(" AND ");
+		this.QueryString += ` WHERE ${whereClause}`;
 		return this;
 	}
 
 	Returning(columns: Array<keyof T> | string): this {
+		if (this.returningFlag) {
+			throw new Error("Cannot add multiple returning clauses");
+		}
+		if (!this.toReturnFlag) {
+			throw new Error(
+				"Cannot return data for this query. Choose one of Update, Insert"
+			);
+		}
+		this.returningFlag = true;
+
 		if (typeof columns === "string") {
 			this.QueryString += ` RETURNING ${columns}`;
 		} else if (typeof columns === typeof Array<keyof T>) {
@@ -209,12 +248,28 @@ export class MyQuery<T extends Table> {
 		return this;
 	}
 
-	Delete() {
-		this.QueryString += `DELETE FROM "${this.Table}"`;
-		return this;
+	//ensures only one CRUD operation is added to the query
+	private checkOperationFlag(): void {
+		if (this.operationFlag) {
+			throw new Error(
+				"Cannot call multiple operations. Choose one of Update, Insert, Delete, Select"
+			);
+		}
+		this.operationFlag = true;
 	}
 
+	// passes the query to the pool. automatically adds RETURNING * if the query is an insert or update query and no returning clause was added
 	Query(callback: (err: Error, result: QueryResult<any>) => void): void {
+		if (!this.operationFlag) {
+			throw new Error(
+				"No operation was added to the query. Choose one of Update, Insert, Delete, Select"
+			);
+		}
+
+		if (!this.returningFlag && this.toReturnFlag) {
+			this.QueryString += " RETURNING *";
+		}
+
 		pool.query(this.QueryString, callback);
 	}
 
