@@ -12,7 +12,6 @@ import {
 } from "class-validator";
 export type Table = Ticket | User | Project | Role | Team | Comment;
 
-//TODO maybe add created at and updated at to all classes
 export class Ticket {
 	@IsNumberString()
 	@IsPositive()
@@ -150,6 +149,12 @@ export class Team {
 
 	@IsPositive()
 	proj_id: number;
+
+	@IsDateString()
+	created_at: Date;
+
+	@IsDateString()
+	update_at: Date;
 }
 
 //TODO get autocomplete to work for this class when used with TABLE types

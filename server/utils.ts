@@ -1,9 +1,9 @@
 //TODO better error handling
 
+import { NextFunction, Request, Response } from "express";
 import { red } from ".";
-import { Request, Response, NextFunction } from "express";
-import { pool } from "./pool";
 import { MyQuery, Table } from "./DB/QueryBuilder";
+import { pool } from "./pool";
 
 export function ensureError(value: unknown): Error {
 	if (value instanceof Error) return value;
@@ -36,10 +36,7 @@ export function getCache() {
 		});
 	};
 } //DB Query for get requests
-export function getDB(
-	querytxt: string,
-	...params: string[]
-) {
+export function getDB(querytxt: string, ...params: string[]) {
 	return function (req: Request, res: Response) {
 		pool.query(
 			querytxt,
@@ -71,34 +68,27 @@ export function myQueryDB<T extends Table>(
 			res.json({ error: "error 500: " + err.message });
 		} else {
 			const data = response.rows;
-			switch(req.method) {
+			switch (req.method) {
 				case "GET":
 				case "POST":
 				case "PATCH": //TODO find out how to only update part of the cache. maybe use hset/hget
 					red.setex(`${req.path}`, lengthTilExpiration, JSON.stringify(data));
 					console.log("cache set");
-				  break;
+					break;
 
-
-				
 				case "DELETE":
 					red.del(`${req.path}`); //TODO error handling
-				  break;
+					break;
 				default:
 					break;
-				  // code block
-			  }
+				// code block
+			}
 			res.json(data);
 		}
 	});
 }
 //DB Query for general requests
-export function QDB(
-	res: Response,
-	querytxt: string,
-	cacheLocation: string, //TODO remove everywhere
-	params: string[]
-) {
+export function QDB(res: Response, querytxt: string, params: string[]) {
 	pool.query(querytxt, params, (err, response) => {
 		if (err) {
 			console.error(err.message);

@@ -1,5 +1,5 @@
-import type { Express } from "express";
 import bcrypt from "bcrypt";
+import type { Express } from "express";
 import { pool } from "../pool";
 import { ensureError } from "../utils";
 

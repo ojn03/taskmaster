@@ -1,7 +1,6 @@
-import type { Express, Request, Response } from "express";
-import { QDB, getDB, myQueryDB } from "../utils";
-import { getCache } from "../utils";
+import type { Express } from "express";
 import { MyQuery, Project, Table, Team, Ticket } from "../DB/QueryBuilder";
+import { QDB, getCache, getDB, myQueryDB } from "../utils";
 const projectRoutes = (app: Express, basePath: string = "/projects") => {
 	//get all the tickets for a given project
 	const ProjectTickets = `${basePath}/:projid/tickets`;
@@ -53,7 +52,7 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 		const { projid, userid } = req.params;
 		const roleid = req.body.roleid;
 		const values = [roleid, userid, projid];
-		QDB(res, addUserQuery, "", values as string[]);
+		QDB(res, addUserQuery, values as string[]);
 	});
 
 	//gets first, last, email and roles of all members of a team given user in the team and the project id

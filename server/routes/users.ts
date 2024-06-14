@@ -1,7 +1,6 @@
 import type { Express } from "express";
-import { QDB, getDB, myQueryDB } from "../utils";
-import { getCache } from "../utils";
 import { MyQuery, User } from "../DB/QueryBuilder";
+import { QDB, getCache, getDB, myQueryDB } from "../utils";
 
 const userRoutes = (app: Express, basePath: string = "/users") => {
 	//get a specific user
@@ -24,7 +23,7 @@ const userRoutes = (app: Express, basePath: string = "/users") => {
 		const { name, description } = req.body;
 		const values = [userid, name, description];
 
-		QDB(res, createProjectQuery, "", values);
+		QDB(res, createProjectQuery, values);
 	});
 
 	//get all the tickets for a given user

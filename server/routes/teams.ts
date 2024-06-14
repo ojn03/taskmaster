@@ -1,6 +1,6 @@
 import type { Express } from "express";
-import { getCache, getDB, myQueryDB } from "../utils";
 import { MyQuery, Team } from "../DB/QueryBuilder";
+import { getCache, getDB, myQueryDB } from "../utils";
 const teamRoutes = (app: Express, basePath: string = "/teams") => {
 	//get a specific team
 	const team = `${basePath}/:teamid`;

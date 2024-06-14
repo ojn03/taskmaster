@@ -1,15 +1,14 @@
-import { ensureError } from "./utils";
-import 'reflect-metadata'; // required for class-transformer
-import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import express from "express";
 import { Redis } from "ioredis";
+import 'reflect-metadata'; // required for class-transformer
 import authRoutes from "./routes/auth";
-import projectRoutes from "./routes/projects";
-import userRoutes from "./routes/users";
-import ticketRoutes from "./routes/tickets";
 import commentRoutes from "./routes/comments";
+import projectRoutes from "./routes/projects";
 import teamRoutes from "./routes/teams";
+import ticketRoutes from "./routes/tickets";
+import userRoutes from "./routes/users";
 dotenv.config({ path: "../.env.local" });
 const app = express();
 const redisUrl = process.env.REDIS_URL as string;

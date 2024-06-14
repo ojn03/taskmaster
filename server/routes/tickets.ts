@@ -1,8 +1,8 @@
-import { type Express } from "express";
-import { getDB, getCache, QDB, myQueryDB } from "../utils";
-import { validate } from "class-validator";
-import { Comment, MyQuery, Ticket } from "../DB/QueryBuilder";
 import { plainToClass } from "class-transformer";
+import { validate } from "class-validator";
+import { type Express } from "express";
+import { Comment, MyQuery, Ticket } from "../DB/QueryBuilder";
+import { QDB, getCache, getDB, myQueryDB } from "../utils";
 
 const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	//get all the tickets
@@ -47,7 +47,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 		const tick_id = req.params.tickid;
 		const { user_id } = req.body;
 		const values = [user_id, tick_id];
-		QDB(res, addAssigneeQuery, "", values as string[]);
+		QDB(res, addAssigneeQuery, values as string[]);
 	});
 
 	//remove an assignee from a specific ticket
@@ -57,7 +57,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 	app.delete(ticketAssignee, (req, res) => {
 		const { tickid, userid } = req.params;
 		const values = [userid, tickid];
-		QDB(res, removeAssigneeQuery, "", values as string[]);
+		QDB(res, removeAssigneeQuery, values as string[]);
 	});
 
 	//get the comments of a specific ticket

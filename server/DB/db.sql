@@ -36,7 +36,7 @@ CREATE TABLE "Role"(
   "role_title" varchar(50) NOT NULL,
   --rename to role_title
   "role_description" varchar(100) NOT NULL,
-  -- todo create trigger to disable updates on proj_id
+  -- todo create trigger to disable updates on proj_id and all other foreign keys
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade
 );
 
@@ -102,7 +102,6 @@ CREATE TABLE "User_Sprint"(
 CREATE TABLE "Event"(
   "event_id" serial PRIMARY KEY,
   "event_title" varchar(50) UNIQUE NOT NULL
-  -- todo maybe remove id and just use title as primary key
   -- todo consider enum
 );
 
@@ -114,7 +113,6 @@ CREATE TYPE "ev" AS enum(
   'event5'
 );
 
---todo maybe replace static tables for enums
 CREATE TABLE "History"(
   "history_id" serial PRIMARY KEY,
   "event" "ev" NOT NULL,
@@ -309,7 +307,7 @@ LANGUAGE plpgsql
 VOLATILE;
 
 CREATE OR REPLACE FUNCTION createProject(user_id INT, project_name varchar(50),project_description varchar(250) )
--- todo test this function + add error handling
+-- todo add error handling
 RETURNS TABLE(roleid INT, userid INT, projid INT) AS $$
 DECLARE
     new_project_id INT;
