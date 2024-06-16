@@ -36,7 +36,7 @@ CREATE TABLE "Role"(
   "role_title" varchar(50) NOT NULL,
   --rename to role_title
   "role_description" varchar(100) NOT NULL,
-  -- todo create trigger to disable updates on proj_id and all other foreign keys
+  -- TODO create trigger to disable updates on proj_id and all other foreign keys
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade
 );
 
@@ -45,7 +45,7 @@ CREATE TABLE "Role_User_Project"(
   "user_id" int NOT NULL REFERENCES "User"(user_id) on delete cascade,
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade,
   PRIMARY KEY ("proj_id", "user_id")
-  --todo fix duplication of proj_id. Roleid already has proj_id
+  --TODO fix duplication of proj_id. Roleid already has proj_id
 );
 
 --static table
@@ -102,7 +102,7 @@ CREATE TABLE "User_Sprint"(
 CREATE TABLE "Event"(
   "event_id" serial PRIMARY KEY,
   "event_title" varchar(50) UNIQUE NOT NULL
-  -- todo consider enum
+  -- TODO consider enum
 );
 
 CREATE TYPE "ev" AS enum(
@@ -307,7 +307,7 @@ LANGUAGE plpgsql
 VOLATILE;
 
 CREATE OR REPLACE FUNCTION createProject(user_id INT, project_name varchar(50),project_description varchar(250) )
--- todo add error handling
+-- TODO add error handling
 RETURNS TABLE(roleid INT, userid INT, projid INT) AS $$
 DECLARE
     new_project_id INT;
@@ -405,4 +405,4 @@ CREATE TRIGGER set_updated_time
 BEFORE UPDATE ON "Comment"
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
---todo add update triggers for all necessary tables
+--TODO add update triggers for all necessary tables

@@ -1,5 +1,5 @@
 -- commands used to create sql db
--- todo fix array lengths in synth schemas
+-- TODO fix array lengths in synth schemas
 CREATE TABLE "User"(
   "user_id" serial PRIMARY KEY,
   "first" varchar(50) NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE "Role_User_Project"(
   "user_id" int NOT NULL REFERENCES "User"(user_id),
   "proj_id" int NOT NULL REFERENCES "Project"(proj_id),
   PRIMARY KEY ("proj_id", "user_id")
-  --todo fix duplication of proj_id. Roleid already has proj_id
+  --TODO fix duplication of proj_id. Roleid already has proj_id
 );
 
 CREATE TABLE "Permission"(
