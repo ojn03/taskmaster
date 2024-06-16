@@ -1,12 +1,27 @@
 "use client";
 import Link from "next/link";
 import React from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { toastError, toastSuccess } from "@/lib/functions";
 
 //todo add icons to inputs
 //todo use tailwindcomponents and fowbite
 //todo add input labels
+
+//TODO move to utils after fixing ts
+export function ensureError(value: unknown): Error {
+	if (value instanceof Error) return value;
+
+	let stringified = "[Unable to stringify the thrown value]";
+	try {
+		stringified = JSON.stringify(value);
+	} catch {}
+
+	const error = new Error(
+		`This value was thrown as is, not through an Error: ${stringified}`
+	);
+	return error;
+}
 
 const Register = () => {
 	const pVal = new RegExp("^" + process.env.NEXT_PUBLIC_PASSWORD_REGEX + "$");
@@ -22,14 +37,23 @@ const Register = () => {
 		username: "asdcadas",
 		password: "AAAaaa123!"
 	};
+
+	interface registrationFormInput{
+		firstName:	string,
+		lastName:	string,
+		email:	string,
+		username:	string,
+		password:	string,
+		confirmPass:	string
+	}
 	const {
 		register,
 		handleSubmit,
 		watch,
 		formState: { errors }
-	} = useForm();
+	} = useForm<registrationFormInput>();
 
-	const onSubmit = async (data) => {
+	const onSubmit:SubmitHandler<registrationFormInput> = async (data) => {
 		try {
 			//response is an array
 			const response = await fetch("http://localhost:5001/auth/register", {
@@ -43,8 +67,9 @@ const Register = () => {
 			}
 			toastSuccess({ message: "account created" });
 		} catch (err) {
-			console.error(err.message);
-		}
+			const error = ensureError(err);
+			console.error(error.message);		}
+		console.log(data);
 	};
 
 	const inputStyle =
@@ -61,18 +86,16 @@ const Register = () => {
 					<input
 						required
 						type="text"
-						name="first name"
 						placeholder="first name"
 						maxLength={45}
 						{...register("firstName", { required: true })}
 						className={inputStyle}
-					/>
+					></input>
 
 					{/* LAST name */}
 					<input
 						required
 						type="text"
-						name="last name"
 						placeholder="last name"
 						maxLength={45}
 						{...register("lastName")}
@@ -84,7 +107,6 @@ const Register = () => {
 				<input
 					required
 					type="email"
-					name="email"
 					placeholder="email"
 					maxLength={95}
 					{...register("email", {
@@ -106,7 +128,6 @@ const Register = () => {
 				<input
 					required
 					type="text"
-					name="username"
 					placeholder="username"
 					minLength={5}
 					maxLength={45}
@@ -129,7 +150,6 @@ const Register = () => {
 				{/* PASSWORD */}
 				<input
 					required
-					name="password"
 					type="password"
 					placeholder="password"
 					{...register("password", {
@@ -154,7 +174,6 @@ const Register = () => {
 				<input
 					required
 					type="password"
-					name="confirm_password"
 					placeholder="confirm password"
 					{...register("confirmPass", {
 						required: true,
