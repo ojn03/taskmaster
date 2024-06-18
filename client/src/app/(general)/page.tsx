@@ -1,9 +1,19 @@
 import Modal from "@/components/Modal";
+import { useMutation } from "@tanstack/react-query";
 import { getTickets, getHistory, getTeam } from "@/lib/functions";
+import { getUser } from "@/actions/userService";
 import DataTable from "@/components/data-table";
 import * as Columns from "@/components/Columns";
 
 export default async function Home() {
+  const {
+    mutate: server_getUser,
+    isPending,
+    isError,
+    data,
+  } = useMutation({
+    mutationFn: getUser,
+  });
   const projid = 3;
   const userid = 3;
   const tickets = await getTickets({ projid });

@@ -57,7 +57,7 @@ export const getUsers = async ({ projid }: { projid: number }) =>
   get({ route: `user/${projid}` });
 
 //TODO fix caching
-export const get = async ({ route }: { route: string }) => {
+export const get = async <T>({ route }: { route: string }) => {
   try {
     const response = await fetch(`http://localhost:5001/${route}`, {
       cache: "no-store",
