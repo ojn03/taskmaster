@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import "../globals.css";
 import { Inter } from "next/font/google";
-
+import TanstackProvider from "@/providers/tanstackProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {};
@@ -26,7 +26,9 @@ export default function RootLayout({
         </div>
 
         {/* main content */}
-        <div className="w-[90%] h-full">{children}</div>
+        <div className="w-[90%] h-full">
+          <TanstackProvider>{children}</TanstackProvider>
+        </div>
       </body>
     </html>
   );
