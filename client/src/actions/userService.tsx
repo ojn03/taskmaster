@@ -1,12 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
 
-type User = {
-  user_id: number;
-  first: string;
-  last: string;
-  email: string;
-};
 
 const base = process.env.NEXT_API_BASE || "http://localhost:5001";
 

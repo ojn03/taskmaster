@@ -15,12 +15,11 @@ type Project = {
 type Ticket = {
   ticket_id: number;
   proj_id: number;
-  title: string;
-  description: string;
-  status: string;
-  priority: string;
-  created: string;
-  updated: string;
+  ticket_title: string;
+  ticket_description: string;
+  ticket_progress: string;
+  created_at: string;
+  updated_at: string;
 };
 
 type Team = {
