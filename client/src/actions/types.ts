@@ -13,13 +13,13 @@ type Project = {
 };
 
 type Ticket = {
-  ticket_id: number;
   proj_id: number;
+  tick_id: number;
   ticket_title: string;
   ticket_description: string;
-  ticket_progress: string;
-  created_at: string;
-  updated_at: string;
+  ticket_progress: number;
+  created_at: Date;
+  updated_at: Date;
 };
 
 type Team = {

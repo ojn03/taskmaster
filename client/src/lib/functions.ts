@@ -30,6 +30,7 @@ const base = process.env.NEXT_API_BASE || "http://localhost:5001";
 
 //TODO change from get___ to getProject___
 //TODO maybe use post instead of get with session ids and security features
+//TODO move to actions folder
 
 export const getTickets = async ({ projid }: { projid: number }) =>
   get({ route: `projects/${projid}/tickets` });
