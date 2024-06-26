@@ -1,13 +1,28 @@
 "use server";
 // import typia from "typia";
 import { base } from "@/actions/host";
+import { assertIs } from "@/lib/utils";
 
 export async function getTicket({ tick_id }: { tick_id: number }) {
   return await getAssert<Ticket>(`ticket/${tick_id}`);
 }
 
-async function getAssert<T>(route: string) {
-  return await fetch(`${base}/${route}`).then((res) => res.json());
+async function getAssert<T>(route: string): Promise<T> {
+  const data = await fetch(`${base}/${route}`)
+    .then((res) => {
+      if (!res.ok) {
+        console.error(res);
+      }
+      return res.json();
+    })
+    .catch((error) => {
+      console.error("error: ", error);
+    });
+  console.log("datadata: ", data);
+
+  //FIXME
+  assertIs<T>(data);
+  return data;
 }
 
 export async function updateTicket({

@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { assert, is } from "tsafe";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -19,10 +20,14 @@ export function ensureError(value: unknown): Error {
   return error;
 }
 
-type IfEquals<T, U, Y = true, N = false> =
-  (<G>() => G extends T ? 1 : 2) extends <G>() => G extends U ? 1 : 2 ? Y : N;
+type IfEquals<X, Y, t = unknown, N = never> =
+  (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? t : N;
 
 export declare const exactType: <T, U>(
   draft: T & IfEquals<T, U>,
   expected: U & IfEquals<T, U>,
 ) => IfEquals<T, U>;
+
+export function assertIs<T>(value: unknown): asserts value is T {
+  assert(is<T>(value));
+}

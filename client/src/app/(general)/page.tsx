@@ -4,16 +4,17 @@ import { getTickets, getHistory, getTeam } from "@/lib/functions";
 import { getUser } from "@/actions/userService";
 import DataTable from "@/components/data-table";
 import * as Columns from "@/components/Columns";
+import Ticket from "@/components/Ticket";
 
 export default async function Home() {
-  const {
-    mutate: server_getUser,
-    isPending,
-    isError,
-    data,
-  } = useMutation({
-    mutationFn: getUser,
-  });
+  // const {
+  //   mutate: server_getUser,
+  //   isPending,
+  //   isError,
+  //   data,
+  // } = useMutation({
+  //   mutationFn: getUser,
+  // });
   const projid = 3;
   const userid = 3;
   const tickets = await getTickets({ projid });
@@ -40,6 +41,7 @@ export default async function Home() {
 
           {/* row 3: history info */}
           <DataTable columns={Columns.historyColumns} data={history} />
+          <Ticket />
         </div>
       </div>
     </div>
