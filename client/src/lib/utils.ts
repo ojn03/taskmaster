@@ -1,6 +1,8 @@
 import { type ClassValue, clsx } from "clsx";
 import { assert, is } from "tsafe";
 import { twMerge } from "tailwind-merge";
+import { Value } from "@sinclair/typebox/value";
+import { TSchema } from "@sinclair/typebox";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -28,6 +30,7 @@ export declare const exactType: <T, U>(
   expected: U & IfEquals<T, U>,
 ) => IfEquals<T, U>;
 
-export function assertIs<T>(value: unknown): asserts value is T {
-  assert(is<T>(value));
+export function assertIs<T>(schema: TSchema, data: unknown): asserts data is T {
+  //TODO add error message
+  assert(Value.Check(schema, data));
 }

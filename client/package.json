@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@sinclair/typebox": "^0.32.34",
     "@tanstack/react-query": "^5.45.1",
     "@tanstack/react-table": "^8.17.3",
     "autoprefixer": "^10.4.19",

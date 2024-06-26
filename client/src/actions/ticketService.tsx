@@ -2,26 +2,31 @@
 // import typia from "typia";
 import { base } from "@/actions/host";
 import { assertIs } from "@/lib/utils";
+import { Ticket } from "./types";
+import assert from "assert";
+import { Value } from "@sinclair/typebox/value";
+import { TSchema } from "@sinclair/typebox";
 
-export async function getTicket({ tick_id }: { tick_id: number }) {
-  return await getAssert<Ticket>(`ticket/${tick_id}`);
+export async function getTicket({
+  tick_id,
+}: {
+  tick_id: number;
+}): Promise<Ticket> {
+  const data = await getAssert<Ticket>(`tickets/${tick_id}`, Ticket);
+  return data;
 }
 
-async function getAssert<T>(route: string): Promise<T> {
-  const data = await fetch(`${base}/${route}`)
-    .then((res) => {
+async function getAssert<T>(route: string, schema: TSchema): Promise<T> {
+  const data = await fetch(`${base}/${route}`, { cache: "no-store" }).then(
+    (res) => {
       if (!res.ok) {
-        console.error(res);
+        throw new Error(res.status + " " + res.statusText);
       }
       return res.json();
-    })
-    .catch((error) => {
-      console.error("error: ", error);
-    });
-  console.log("datadata: ", data);
-
+    },
+  );
   //FIXME
-  assertIs<T>(data);
+  assertIs<T>(schema, data);
   return data;
 }
 
@@ -36,7 +41,7 @@ export async function updateTicket({
   ticket_description?: string;
   ticket_progress?: number;
 }) {
-  return await fetch(`${base}/ticket/${tick_id}`, {
+  return await fetch(`${base}/tickets/${tick_id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
