@@ -7,6 +7,7 @@ CREATE TABLE "User"(
   "email" varchar(100) UNIQUE NOT NULL
 );
 
+--TODO add createdAt and updatedAt for all tables
 CREATE TABLE "UserInfo"(
   "user_id" int PRIMARY KEY REFERENCES "User"(user_id),
   "username" varchar(50) UNIQUE NOT NULL,
@@ -100,7 +101,9 @@ CREATE TABLE "Ticket"(
   "ticket_description" varchar(250) NOT NULL,
   "ticket_progress" int NOT NULL CHECK ("ticket_progress" BETWEEN 0 AND 2),
   "ticket_priority" int NOT NULL CHECK ("ticket_priority" BETWEEN 0 AND 4),
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id)
+  "proj_id" int NOT NULL REFERENCES "Project"(proj_id),
+  created_at timestamptz NOT NULL DEFAULT NOW(),
+  updated_at timestamptz NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "User_Ticket"(

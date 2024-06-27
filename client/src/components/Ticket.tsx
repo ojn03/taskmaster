@@ -23,7 +23,7 @@ export default function Ticket() {
       <button onClick={() => server_getTicket({ tick_id: 1 })}>
         get ticket
       </button>
-      {data && <div>{data.ticket_title}</div>}
+      {data && <div>{data[0].ticket_title}</div>}
     </div>
   );
 }

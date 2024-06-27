@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { get } from "./utils";
 
 export const toastError = (message: string) => {
   toast.error(message, {
@@ -26,7 +27,6 @@ export const toastSuccess = (message: string) => {
     theme: "colored",
   });
 };
-const base = process.env.NEXT_API_BASE || "http://localhost:5001";
 
 //TODO change from get___ to getProject___
 //TODO maybe use post instead of get with session ids and security features
@@ -57,17 +57,3 @@ export const getRoles = async ({ projid }: { projid: number }) =>
 
 export const getUsers = async ({ projid }: { projid: number }) =>
   get({ route: `user/${projid}` });
-
-//TODO fix caching
-export const get = async <T>({ route }: { route: string }) => {
-  try {
-    const response = await fetch(`${base}/${route}`, {
-      cache: "no-store",
-    });
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-};

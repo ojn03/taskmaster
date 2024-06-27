@@ -1,4 +1,4 @@
-import { Type, Static } from "@sinclair/typebox";
+import { Type, Static, TSchema } from "@sinclair/typebox";
 //TODO allow for arrays of types without creating extra typeboxes
 export type User = {
   user_id: number;
@@ -20,8 +20,8 @@ export const Ticket = Type.Object({
   ticket_title: Type.String(),
   ticket_description: Type.String(),
   ticket_progress: Type.Number(),
-  created_at: Type.String(),
-  updated_at: Type.String(),
+  created_at: Type.Optional(Type.String()),
+  updated_at: Type.Optional(Type.String()),
 });
 
 export type Ticket = Static<typeof Ticket>;
