@@ -1,7 +1,7 @@
 "use server";
 // import typia from "typia";
 import { base } from "@/actions/host";
-import { Ticket } from "./types";
+import { Ticket } from "./schemas";
 import assert from "assert";
 import { Value } from "@sinclair/typebox/value";
 import { getAssert } from "@/lib/utils";

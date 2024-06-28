@@ -1,8 +1,5 @@
 "use server";
-import { assertIs, exactType } from "@/lib/utils";
-import { revalidatePath } from "next/cache";
-import { type Equals, assert, is } from "tsafe";
-import { User } from "./types";
+import { User } from "./schemas";
 
 const base = process.env.NEXT_API_BASE || "http://localhost:5001";
 

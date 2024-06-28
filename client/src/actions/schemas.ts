@@ -24,6 +24,8 @@ export const Ticket = Type.Object({
   updated_at: Type.Optional(Type.String()),
 });
 
+Ticket.title = "Ticket";
+
 export type Ticket = Static<typeof Ticket>;
 
 export type Team = {

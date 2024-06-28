@@ -1,5 +1,5 @@
 "use server";
-import { Project } from "./types";
+import { Project } from "./schemas";
 import { base } from "@/actions/host";
 
 export async function getProjectMembers({ projid }: { projid: number }) {

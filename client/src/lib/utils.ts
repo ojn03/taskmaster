@@ -37,11 +37,17 @@ export function assertIs<T>(
   //if isArray is true, the data is expected to be an array of the given schema
   isArray = false,
 ): asserts data is T {
-  //TODO add error message
-  const valid = isArray
-    ? Value.Check(Type.Array(schema), data)
-    : Value.Check(schema, data);
-  assert(valid);
+  //TODO for performance, call Value.Errors only if Value.check is false
+  const errors = isArray
+    ? Value.Errors(Type.Array(schema), data)
+    : Value.Errors(schema, data);
+
+  const firstError = errors.First();
+
+  assert(
+    firstError === undefined,
+    `error while validating schema ${schema.title && schema.title}: ${firstError?.message}`,
+  );
 } //TODO fix caching
 
 export async function get({ route }: { route: string }) {
