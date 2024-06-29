@@ -1,14 +1,11 @@
-import { Type, Static, TSchema } from "@sinclair/typebox";
-//TODO allow for arrays of types without creating extra typeboxes
+import { Type, Static } from "@sinclair/typebox";
+
 export type User = {
   user_id: number;
   first: string;
   last: string;
   email: string;
 };
-
-//type to make make all fields optional except for K
-export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;
 
 export const User = Type.Object(
   {
@@ -66,3 +63,6 @@ export const Role = Type.Object(
 );
 
 export type Role = Static<typeof Role>;
+
+//type to make all fields optional except for K
+export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;

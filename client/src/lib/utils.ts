@@ -3,7 +3,6 @@ import { assert, is } from "tsafe";
 import { twMerge } from "tailwind-merge";
 import { Value } from "@sinclair/typebox/value";
 import { Static, TSchema, Type } from "@sinclair/typebox";
-import { base } from "@/actions/host";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -32,12 +31,17 @@ export declare const exactType: <T, U>(
 ) => IfEquals<T, U>;
 
 export function assertIs<T>(
-  schema: TSchema,
+  schemas: TSchema | TSchema[],
   data: unknown,
   //if isArray is true, the data is expected to be an array of the given schema
   isArray = false,
 ): asserts data is T {
   //TODO for performance, call Value.Errors only if Value.check is false
+
+  const schema = Array.isArray(schemas)
+    ? Type.Composite(schemas, { additionalProperties: false })
+    : schemas;
+
   const errors = isArray
     ? Value.Errors(Type.Array(schema), data)
     : Value.Errors(schema, data);
@@ -50,18 +54,69 @@ export function assertIs<T>(
   );
 } //TODO fix caching
 
-export async function get({ route }: { route: string }) {
-  try {
-    const response = await fetch(`${base}/${route}`, {
-      cache: "no-store",
-    });
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
+export const base = process.env.NEXT_BASE || "http://localhost:5001";
+
+export async function del(route: string): Promise<void> {
+  return await fetch(`${base}/${route}`, {
+    method: "DELETE",
+  }).then((res) => {
+    if (!res.ok) {
+      throw new Error(res.status + " " + res.statusText);
+    }
+  });
 }
+
+export async function patch({
+  route,
+  body,
+}: {
+  route: string;
+  body: Record<string, unknown>; //TODO maybe change unknown to string | number | boolean | Date
+}): Promise<unknown> {
+  return await fetch(`${base}/${route}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  }).then((res) => {
+    if (!res.ok) {
+      throw new Error(res.status + " " + res.statusText);
+    }
+  });
+}
+
+export async function post({
+  route,
+  data,
+}: {
+  route: string;
+  data: Object;
+}): Promise<unknown> {
+  return await fetch(`${base}/${route}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+    cache: "no-store",
+  }).then((res) => {
+    if (!res.ok) {
+      throw new Error(res.status + " " + res.statusText);
+    }
+    return res.json();
+  });
+}
+
+export async function get(route: string) {
+  return await fetch(`${base}/${route}`, { cache: "no-store" }).then((res) => {
+    if (!res.ok) {
+      throw new Error(res.status + " " + res.statusText);
+    }
+    return res.json();
+  });
+}
+
 export async function getAssert<T>({
   route,
   schemas,
@@ -71,22 +126,10 @@ export async function getAssert<T>({
   schemas: TSchema | TSchema[];
   isArray?: boolean;
 }): Promise<T> {
-  const schema = Array.isArray(schemas)
-    ? Type.Composite(schemas, { additionalProperties: false })
-    : schemas;
-
-  console.log("schema: ", schema);
-  const data =
-    // get({ route });
-
-    await fetch(`${base}/${route}`, { cache: "no-store" }).then((res) => {
-      if (!res.ok) {
-        throw new Error(res.status + " " + res.statusText);
-      }
-      return res.json();
-    });
+  console.log("schema: ", schemas);
+  const data = await get(route);
 
   console.log(data);
-  assertIs<T>(schema, data, isArray);
+  assertIs<T>(schemas, data, isArray);
   return data;
 }

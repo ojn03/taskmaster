@@ -1,5 +1,5 @@
 "use client";
-//TODO: ZOD schemas?
+import * as schemas from "../lib/schemas";
 
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -29,14 +29,7 @@ const teamColumns: ColumnDef<Team>[] = [
   },
 ];
 
-export type Ticket = {
-  id: number;
-  ticket_title: string;
-  description: string;
-  progress: number;
-  priority: number;
-};
-const ticketColumns: ColumnDef<Ticket>[] = [
+const ticketColumns: ColumnDef<schemas.Ticket>[] = [
   {
     accessorKey: "ticket_title",
     header: "Title",

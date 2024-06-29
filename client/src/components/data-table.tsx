@@ -9,7 +9,6 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
 import {
   Table,
   TableBody,

@@ -20,6 +20,7 @@ console.log("redis connected at", redisUrl);
 
 //TODO paginate queries
 //TODO add sessions, session verification, cookies, etc
+//TODO create readme
 
 // middleware
 app.use(cors());

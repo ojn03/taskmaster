@@ -1,6 +1,5 @@
 "use server";
-import * as schemas from "./schemas";
-// import { base } from "@/actions/host";
+import * as schemas from "../lib/schemas";
 import { getAssert } from "@/lib/utils";
 
 type UserRole = schemas.User & schemas.Role;

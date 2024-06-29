@@ -1,1 +1,0 @@
-export const base = process.env.NEXT_BASE || "http://localhost:5001";

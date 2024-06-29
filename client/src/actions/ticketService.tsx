@@ -1,10 +1,7 @@
 "use server";
 // import typia from "typia";
-import { base } from "@/actions/host";
-import { AtLeast, Ticket } from "./schemas";
-import assert from "assert";
-import { Value } from "@sinclair/typebox/value";
-import { getAssert } from "@/lib/utils";
+import { AtLeast, Ticket } from "../lib/schemas";
+import { getAssert, patch } from "@/lib/utils";
 
 export async function getTicketInfo({
   tick_id,
@@ -27,15 +24,12 @@ export async function updateTicket({
   ticket_description,
   ticket_progress,
 }: AtLeast<Ticket, "tick_id">) {
-  return await fetch(`${base}/tickets/${tick_id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+  return await patch({
+    route: `tickets/${tick_id}`,
+    body: {
       ticket_title,
       ticket_description,
       ticket_progress,
-    }),
+    },
   });
 }
