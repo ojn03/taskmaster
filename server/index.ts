@@ -9,6 +9,7 @@ import projectRoutes from "./routes/projects";
 import teamRoutes from "./routes/teams";
 import ticketRoutes from "./routes/tickets";
 import userRoutes from "./routes/users";
+import { roleRoutes } from "./routes/roles";
 dotenv.config({ path: "../.env.local" });
 const app = express();
 const redisUrl = process.env.REDIS_URL as string;
@@ -31,6 +32,7 @@ userRoutes(app);
 ticketRoutes(app);
 commentRoutes(app);
 teamRoutes(app);
+roleRoutes(app);
 
 app.listen(5001, () => {
   console.log("Server is running on port 5001");

@@ -1,12 +1,12 @@
 "use server";
 // import typia from "typia";
 import { base } from "@/actions/host";
-import { Ticket } from "./schemas";
+import { AtLeast, Ticket } from "./schemas";
 import assert from "assert";
 import { Value } from "@sinclair/typebox/value";
 import { getAssert } from "@/lib/utils";
 
-export async function getTicket({
+export async function getTicketInfo({
   tick_id,
 }: {
   tick_id: number;
@@ -14,9 +14,10 @@ export async function getTicket({
   //TODO should not be returning an array
   const data = await getAssert<Ticket[]>({
     route: `tickets/${tick_id}`,
-    schema: Ticket,
+    schemas: Ticket,
     isArray: true,
   });
+  console.log("data: ", data);
   return data;
 }
 
@@ -25,12 +26,7 @@ export async function updateTicket({
   ticket_title,
   ticket_description,
   ticket_progress,
-}: {
-  tick_id: number;
-  ticket_title?: string;
-  ticket_description?: string;
-  ticket_progress?: number;
-}) {
+}: AtLeast<Ticket, "tick_id">) {
   return await fetch(`${base}/tickets/${tick_id}`, {
     method: "PATCH",
     headers: {

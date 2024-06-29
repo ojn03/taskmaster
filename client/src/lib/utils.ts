@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { assert, is } from "tsafe";
 import { twMerge } from "tailwind-merge";
 import { Value } from "@sinclair/typebox/value";
-import { TSchema, Type } from "@sinclair/typebox";
+import { Static, TSchema, Type } from "@sinclair/typebox";
 import { base } from "@/actions/host";
 
 export function cn(...inputs: ClassValue[]) {
@@ -64,13 +64,18 @@ export async function get({ route }: { route: string }) {
 }
 export async function getAssert<T>({
   route,
-  schema,
+  schemas,
   isArray = false,
 }: {
   route: string;
-  schema: TSchema;
+  schemas: TSchema | TSchema[];
   isArray?: boolean;
 }): Promise<T> {
+  const schema = Array.isArray(schemas)
+    ? Type.Composite(schemas, { additionalProperties: false })
+    : schemas;
+
+  console.log("schema: ", schema);
   const data =
     // get({ route });
 
@@ -80,6 +85,8 @@ export async function getAssert<T>({
       }
       return res.json();
     });
+
+  console.log(data);
   assertIs<T>(schema, data, isArray);
   return data;
 }

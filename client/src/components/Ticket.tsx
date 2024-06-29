@@ -1,6 +1,12 @@
 "use client";
 
-import { getTicket } from "@/actions/ticketService";
+import {
+  getProjectInfo,
+  getProjectMembers,
+  getProjectRoles,
+  getProjectTickets,
+} from "@/actions/projectService";
+import { getTicketInfo } from "@/actions/ticketService";
 import { useMutation } from "@tanstack/react-query";
 import React from "react";
 
@@ -11,7 +17,7 @@ export default function Ticket() {
     isError,
     data,
   } = useMutation({
-    mutationFn: getTicket,
+    mutationFn: getProjectRoles,
   });
 
   if (isPending) {
@@ -20,10 +26,12 @@ export default function Ticket() {
 
   return (
     <div className="w-24 h-24 bg-pink-900 text-pretty">
-      <button onClick={() => server_getTicket({ tick_id: 1 })}>
-        get ticket
-      </button>
-      {data && <div>{data[0].ticket_title}</div>}
+      <button onClick={() => server_getTicket({ projid: 1 })}>get info</button>
+      {data && (
+        <div>
+          {Object.entries(data[0]).map(([key, val]) => `${key}: ${val}`)}
+        </div>
+      )}
     </div>
   );
 }
