@@ -1,5 +1,3 @@
-import { plainToClass } from "class-transformer";
-import { validate } from "class-validator";
 import { type Express } from "express";
 import { Comment, MyQuery, Ticket } from "../DB/QueryBuilder";
 import { QDB, getCache, getDB, myQueryDB } from "../utils";
@@ -64,7 +62,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
   //get the comments of a specific ticket
   const ticketComments = `${ticket}/comments`;
   app.get(ticketComments, getCache(), (req, res) => {
-    const tick_id = Number(req.params.tickid);
+    const tick_id = req.params.tickid;
     const query = new MyQuery<Comment>("Comment")
       .Select("*")
       .Where({ tick_id });
@@ -74,7 +72,7 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
   //add a comment to a specific ticket
   app.post(ticketComments, (req, res) => {
     //TODO add type and data validation (make sure fields exists, is a string, etc.)
-    const tick_id = Number(req.params.tickid);
+    const tick_id = req.params.tickid;
     const { user_id, comment }: { user_id: number; comment: string } = req.body;
     const addCommentQuery = new MyQuery<Comment>("Comment")
       .Insert({ comment, tick_id, user_id })
@@ -84,15 +82,15 @@ const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
 
   //update a specific ticket
   app.patch(ticket, (req, res) => {
-    const tick_id = Number(req.params.tickid);
-    const update = plainToClass(Ticket, req.body);
-
-    validate(update).then((errors) => {
-      //TODO handle validation
-    });
+    const tick_id = req.params.tickid;
+    const {
+      title: ticket_title,
+      description: ticket_description,
+      priority: ticket_priority,
+    } = req.body;
 
     const Query = new MyQuery<Ticket>("Ticket")
-      .Update(update)
+      .Update({ ticket_title, ticket_description, ticket_priority })
       .Where({ tick_id })
       .Returning("*");
 

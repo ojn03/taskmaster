@@ -7,35 +7,35 @@ import { QueryResult } from "pg";
 export type Table = Ticket | User | Project | Role | Team | Comment;
 
 export type Ticket = {
-  tick_id: number;
+  tick_id: number | string;
   ticket_title: string;
   ticket_description: string;
   ticket_priority: string;
-  proj_id: number;
+  proj_id: number | string;
   created_at: Date;
   update_at: Date;
 };
 
 export type Comment = {
-  comment_id: number;
+  comment_id: number | string;
   comment: string;
-  tick_id: number;
-  user_id: number;
+  tick_id: number | string;
+  user_id: number | string;
   created_at: Date;
   update_at: Date;
 };
 
 export type Role = {
-  role_id: number;
+  role_id: number | string;
   role_title: string;
   role_description: string;
-  proj_id: number;
+  proj_id: number | string;
   created_at: Date;
   update_at: Date;
 };
 
 export type User = {
-  user_id: number;
+  user_id: number | string;
   first: string;
   last: string;
   username: string;
@@ -47,7 +47,7 @@ export type User = {
 
 //TODO add validation
 export type Project = {
-  proj_id: number;
+  proj_id: number | string;
   proj_name: string;
   proj_description: string;
   created_at: Date;
@@ -55,10 +55,10 @@ export type Project = {
 };
 
 export type Team = {
-  team_id: number;
+  team_id: number | string;
   team_name: string;
   team_description: string;
-  proj_id: number;
+  proj_id: number | string;
   created_at: Date;
   update_at: Date;
 };

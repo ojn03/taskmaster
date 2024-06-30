@@ -14,13 +14,13 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
   app.get(ProjectTickets, getCache(), (req, res) => {
     const ticketsQuery = new MyQuery<Ticket>("Ticket")
       .Select("*")
-      .Where({ proj_id: Number(req.params.projid) });
+      .Where({ proj_id: req.params.projid });
     myQueryDB<Ticket>(req, res, ticketsQuery);
   });
   //get basic info for a given project
   const Project = `${basePath}/:projid`;
   app.get(Project, getCache(), (req, res) => {
-    const proj_id = Number(req.params.projid);
+    const proj_id = req.params.projid;
     const query = new MyQuery<Project>("Project")
       .Select("*")
       .Where({ proj_id });
@@ -29,7 +29,7 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
   //update info for a given project
   app.patch(Project, (req, res) => {
     const { proj_name, proj_description } = req.body;
-    const proj_id = Number(req.params.projid);
+    const proj_id = req.params.projid;
     const updateProjectQuery = new MyQuery<Project>("Project")
       .Update({ proj_name, proj_description })
       .Where({ proj_id })
@@ -40,7 +40,7 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
   //get the history for a given project
   const ProjectHistory = `${basePath}/:projid/history`;
   app.get(ProjectHistory, getCache(), (req, res) => {
-    const proj_id = Number(req.params.projid);
+    const proj_id = req.params.projid;
     const query = new MyQuery<Table>("History").Select("*").Where({ proj_id });
     myQueryDB(req, res, query);
   });
@@ -85,7 +85,7 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
   //gets all teams for a given projid
   const ProjectTeams = `${basePath}/:projid/teams`;
   app.get(ProjectTeams, getCache(), (req, res) => {
-    const proj_id = Number(req.params.projid);
+    const proj_id = req.params.projid;
     const query = new MyQuery<Team>("Team").Select("*").Where({ proj_id });
     myQueryDB(req, res, query);
   });
@@ -93,7 +93,7 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
   //creates a new team
   app.post(ProjectTeams, (req, res) => {
     const { name: team_name, description: team_description } = req.body;
-    const proj_id = Number(req.params.projid);
+    const proj_id = req.params.projid;
 
     const addTeamQuery = new MyQuery<Team>("Team")
       .Insert({ team_name, team_description, proj_id })
@@ -105,7 +105,7 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
   const ProjectRoles = `${basePath}/:projid/roles`;
 
   app.get(ProjectRoles, getCache(), (req, res) => {
-    const projid = Number(req.params.projid);
+    const projid = req.params.projid;
     const getRolesQuery = new MyQuery<Role>("Role")
       .Select("*")
       .Where({ proj_id: projid });
