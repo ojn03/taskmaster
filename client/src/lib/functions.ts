@@ -4,7 +4,7 @@ import { get } from "./utils";
 
 export const toastError = (message: string) => {
   toast.error(message, {
-    position: "top-center",
+    position: "top-right",
     autoClose: 2000,
     hideProgressBar: true,
     closeOnClick: true,
@@ -17,7 +17,7 @@ export const toastError = (message: string) => {
 
 export const toastSuccess = (message: string) => {
   toast.success(message, {
-    position: "top-center",
+    position: "top-right",
     autoClose: 2000,
     hideProgressBar: true,
     closeOnClick: true,
@@ -32,28 +32,25 @@ export const toastSuccess = (message: string) => {
 //TODO maybe use post instead of get with session ids and security features
 //TODO move to actions folder
 
-export const getTickets = async ({ projid }: { projid: number }) =>
-  get({ route: `projects/${projid}/tickets` });
+export const getTickets = ({ projid }: { projid: number }) =>
+  get(`projects/${projid}/tickets`);
 
-export const getProjects = async ({ userid }: { userid: number }) =>
-  get({ route: `projects/${userid}` });
+export const getHistory = ({ projid }: { projid: number }) =>
+  get(`projects/${projid}/history`);
 
-export const getHistory = async ({ projid }: { projid: number }) =>
-  get({ route: `projects/${projid}/history` });
-
-export const getTeam = async ({
+export const getTeam = ({
   userid,
   projid,
 }: {
   userid: number;
   projid: number;
-}) => get({ route: `projects/${projid}/users/${userid}/team/` });
+}) => get(`projects/${projid}/users/${userid}/team/`);
 
-export const getAllTeams = async ({ projid }: { projid: number }) =>
-  get({ route: `projects/${projid}/teams` });
+export const getAllTeams = ({ projid }: { projid: number }) =>
+  get(`projects/${projid}/teams`);
 
-export const getRoles = async ({ projid }: { projid: number }) =>
-  get({ route: `projects/${projid}/roles` });
+export const getRoles = ({ projid }: { projid: number }) =>
+  get(`projects/${projid}/roles`);
 
-export const getUsers = async ({ projid }: { projid: number }) =>
-  get({ route: `user/${projid}` });
+export const getUsers = ({ projid }: { projid: number }) =>
+  get(`user/${projid}`);

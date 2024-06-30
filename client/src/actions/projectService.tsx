@@ -32,6 +32,21 @@ export async function getProjectTickets({
   return data;
 }
 
+export async function getProjectUserTickets({
+  projid,
+  userid,
+}: {
+  projid: number;
+  userid: number;
+}): Promise<schemas.Ticket[]> {
+  const data = await getAssert<schemas.Ticket[]>({
+    route: `projects/${projid}/users/${userid}/tickets`,
+    schemas: schemas.Ticket,
+    isArray: true,
+  });
+  return data;
+}
+
 export async function getProjectInfo({
   projid,
 }: {

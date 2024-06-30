@@ -50,6 +50,16 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
     'SELECT u.*, r.role_id, role_title, role_description FROM "User" u join "Role_User_Project" rup on u.user_id = rup.user_id join "Role" r on r.proj_id = rup.proj_id and r.proj_id = $1';
   app.get(ProjectUsers, getCache(), getDB(usersQuery, "projid"));
 
+  //gets all the tickets for a given project and user
+  const ProjectUserTickets = `${ProjectUsers}/:userid/tickets`;
+  const userTicketsQuery =
+    'SELECT * FROM "Ticket" WHERE proj_id = $1 AND tick_id IN (SELECT tick_id FROM "User_Ticket" WHERE user_id = $2)';
+  app.get(
+    ProjectUserTickets,
+    getCache(),
+    getDB(userTicketsQuery, "projid", "userid"),
+  );
+
   //add a user to a project
   const ProjectUser = `${ProjectUsers}/:userid`;
   const addUserQuery =

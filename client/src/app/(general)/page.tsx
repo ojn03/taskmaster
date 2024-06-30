@@ -1,10 +1,8 @@
-import Modal from "@/components/Modal";
-import { useMutation } from "@tanstack/react-query";
 import { getTickets, getHistory, getTeam } from "@/lib/functions";
-import { getUser } from "@/actions/userService";
 import DataTable from "@/components/data-table";
 import * as Columns from "@/components/Columns";
 import Ticket from "@/components/Ticket";
+import Tickets from "@/components/Tickets";
 
 export default async function Home() {
   // const {
@@ -32,7 +30,7 @@ export default async function Home() {
         {/* row 2: tickets */}
         <div className="w-fit col-span-2">
           {/* tickets component */}
-          <DataTable columns={Columns.ticketColumns} data={tickets} />
+          <Tickets projid={projid} userid={userid} />
         </div>
 
         {/* row 3: other */}

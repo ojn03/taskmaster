@@ -176,9 +176,13 @@ export class MyQuery<T extends Table> {
     this.Table = tablename;
   }
 
-  Select(columns: Array<keyof T> | string): this {
+  Select(columns?: Array<keyof T> | string): this {
     this.checkOperationFlag();
 
+    if (columns === undefined) {
+      this.QueryString += `SELECT * FROM "${this.Table}"`;
+      return this;
+    }
     if (typeof columns === "string") {
       this.QueryString += `SELECT ${columns} FROM "${this.Table}"`;
     } else {

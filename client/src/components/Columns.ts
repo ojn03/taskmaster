@@ -36,17 +36,17 @@ const ticketColumns: ColumnDef<schemas.Ticket>[] = [
     size: 50,
   },
   {
-    accessorKey: "description",
+    accessorKey: "ticket_description",
     header: "Description",
     size: 400,
   },
   {
-    accessorKey: "progress",
+    accessorKey: "ticket_progress",
     header: "Progress",
     size: 50,
   },
   {
-    accessorKey: "priority",
+    accessorKey: "ticket_priority",
     header: "Priority",
     size: 50,
   },

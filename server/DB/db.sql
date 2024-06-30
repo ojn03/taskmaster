@@ -7,6 +7,7 @@ CREATE TABLE "User"(
   "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+--TODO sync with synthDB
 --TODO add createdAt and updatedAt for all tables
 CREATE TABLE "UserInfo"(
   "user_id" int PRIMARY KEY REFERENCES "User"(user_id) on delete cascade,
