@@ -29,9 +29,10 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
   //update info for a given project
   app.patch(Project, (req, res) => {
     const { proj_name, proj_description } = req.body;
+    const proj_id = Number(req.params.projid);
     const updateProjectQuery = new MyQuery<Project>("Project")
       .Update({ proj_name, proj_description })
-      .Where({ proj_id: req.params.projid })
+      .Where({ proj_id })
       .Returning("*");
     myQueryDB<Project>(req, res, updateProjectQuery);
   });

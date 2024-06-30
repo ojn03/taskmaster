@@ -2,162 +2,66 @@
 import { pool } from "../pool";
 import { QueryResult } from "pg";
 
-//TODO remove class-validator for typebox
-import {
-  IsDateString,
-  IsPositive,
-  IsString,
-  Matches,
-  MaxLength,
-  IsEmail,
-  IsNumberString,
-} from "class-validator";
+//TODO use typebox validation
+
 export type Table = Ticket | User | Project | Role | Team | Comment;
 
-export class Ticket {
-  @IsNumberString()
-  @IsPositive()
-  tick_id: number | string;
-
-  @IsString()
-  ticket_title: string;
-
-  @IsString()
-  ticket_description: string;
-
-  @IsString()
-  ticket_priority: string;
-
-  @IsPositive()
-  proj_id: number;
-
-  @IsDateString()
-  created_at: Date;
-
-  @IsDateString()
-  update_at: Date;
-}
-
-export class Comment {
-  @IsNumberString()
-  @IsPositive()
-  comment_id: number | string;
-
-  @IsString()
-  comment: string;
-
-  @IsPositive()
+export type Ticket = {
   tick_id: number;
-
-  @IsPositive()
-  user_id: number;
-
-  @IsDateString()
-  created_at: Date;
-
-  @IsDateString()
-  update_at: Date;
-}
-
-export class Role {
-  @IsNumberString()
-  @IsPositive()
-  role_id: number | string;
-
-  @IsString()
-  @MaxLength(50)
-  role_title: string;
-
-  @IsString()
-  @MaxLength(100)
-  role_description: string;
-
-  @IsPositive()
+  ticket_title: string;
+  ticket_description: string;
+  ticket_priority: string;
   proj_id: number;
-
-  @IsDateString()
   created_at: Date;
-
-  @IsDateString()
   update_at: Date;
-}
+};
 
-export class User {
-  @IsNumberString()
-  @IsPositive()
-  user_id: number | string;
+export type Comment = {
+  comment_id: number;
+  comment: string;
+  tick_id: number;
+  user_id: number;
+  created_at: Date;
+  update_at: Date;
+};
 
-  @MaxLength(50)
-  @IsString()
+export type Role = {
+  role_id: number;
+  role_title: string;
+  role_description: string;
+  proj_id: number;
+  created_at: Date;
+  update_at: Date;
+};
+
+export type User = {
+  user_id: number;
   first: string;
-
-  @MaxLength(50)
-  @IsString()
   last: string;
-
-  @Matches(process.env.NEXT_PUBLIC_USERNAME_REGEX as string)
-  @IsString()
   username: string;
-
-  @Matches(process.env.NEXT_PUBLIC_PASSWORD_REGEX as string)
-  @IsString()
   password: string;
-
-  @IsEmail()
-  @MaxLength(50) //TODO maybe separate user from userinfo
-  @IsString()
   email: string;
-
-  @IsDateString()
   created_at: Date;
-
-  @IsDateString()
   update_at: Date;
-}
+};
 
 //TODO add validation
-export class Project {
-  @IsNumberString()
-  @IsPositive()
-  proj_id: number | string;
-
-  @MaxLength(50)
-  @IsString()
-  proj_name: string;
-
-  @MaxLength(250)
-  @IsString()
-  proj_description: string;
-
-  @IsDateString()
-  created_at: Date;
-
-  @IsDateString()
-  update_at: Date;
-}
-
-export class Team {
-  @IsNumberString()
-  @IsPositive()
-  team_id: number | string;
-
-  @MaxLength(50)
-  @IsString()
-  team_name: string;
-
-  @MaxLength(100)
-  @IsString()
-  team_description: string;
-
-  @IsPositive()
+export type Project = {
   proj_id: number;
-
-  @IsDateString()
+  proj_name: string;
+  proj_description: string;
   created_at: Date;
-
-  @IsDateString()
   update_at: Date;
-}
+};
+
+export type Team = {
+  team_id: number;
+  team_name: string;
+  team_description: string;
+  proj_id: number;
+  created_at: Date;
+  update_at: Date;
+};
 
 //TODO get autocomplete to work for this class when used with TABLE types
 export class MyQuery<T extends Table> {
