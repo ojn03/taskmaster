@@ -62,6 +62,19 @@ export const Role = Type.Object(
   { additionalProperties: false },
 );
 
+export const History = Type.Object(
+  {
+    history_id: Type.Number(),
+    proj_id: Type.Number(),
+    user_id: Type.Number(),
+    event_title: Type.String(),
+    created_at: Type.String(),
+  },
+  { additionalProperties: false },
+);
+
+export type History = Static<typeof History>;
+
 export type Role = Static<typeof Role>;
 
 //type to make all fields optional except for K

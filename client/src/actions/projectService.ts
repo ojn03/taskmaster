@@ -1,6 +1,6 @@
 "use server";
 import * as schemas from "../lib/schemas";
-import { getAssert } from "@/lib/utils";
+import { get, getAssert } from "@/lib/utils";
 
 type UserRole = schemas.User & schemas.Role;
 
@@ -9,7 +9,6 @@ export async function getProjectMembers({
 }: {
   projid: number;
 }): Promise<UserRole[]> {
-  type UserRole = schemas.User & schemas.Role;
   const data = await getAssert<UserRole[]>({
     route: `projects/${projid}/users`,
     schemas: [schemas.User, schemas.Role],
@@ -69,6 +68,35 @@ export async function getProjectRoles({
   const data = await getAssert<schemas.Role[]>({
     route: `projects/${projid}/roles`,
     schemas: schemas.Role,
+    isArray: true,
+  });
+
+  return data;
+}
+
+export async function getHistory({
+  projid,
+}: {
+  projid: number;
+}): Promise<schemas.History[]> {
+  const data = await getAssert<schemas.History[]>({
+    route: `projects/${projid}/history`,
+    schemas: schemas.History,
+    isArray: true,
+  });
+  return data;
+}
+
+export async function getTeam({
+  userid,
+  projid,
+}: {
+  userid: number;
+  projid: number;
+}): Promise<UserRole[]> {
+  const data = await getAssert<UserRole[]>({
+    route: `projects/${projid}/users/${userid}/team`,
+    schemas: [schemas.User, schemas.Role],
     isArray: true,
   });
 

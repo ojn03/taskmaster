@@ -32,19 +32,8 @@ export const toastSuccess = (message: string) => {
 //TODO maybe use post instead of get with session ids and security features
 //TODO move to actions folder
 
-export const getTickets = ({ projid }: { projid: number }) =>
-  get(`projects/${projid}/tickets`);
-
-export const getHistory = ({ projid }: { projid: number }) =>
-  get(`projects/${projid}/history`);
-
-export const getTeam = ({
-  userid,
-  projid,
-}: {
-  userid: number;
-  projid: number;
-}) => get(`projects/${projid}/users/${userid}/team/`);
+export const getTickets = async ({ projid }: { projid: number | string }) =>
+  await get(`projects/${projid}/tickets`);
 
 export const getAllTeams = ({ projid }: { projid: number }) =>
   get(`projects/${projid}/teams`);

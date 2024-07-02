@@ -1,4 +1,3 @@
-"use client";
 import * as schemas from "../lib/schemas";
 
 import { ColumnDef } from "@tanstack/react-table";
@@ -68,19 +67,14 @@ const roleColumns: ColumnDef<Role>[] = [
   },
 ];
 
-export type History = {
-  date: string;
-  time: string;
-  event_title: string;
-};
-const historyColumns: ColumnDef<History>[] = [
+const historyColumns: ColumnDef<schemas.History>[] = [
   {
-    accessorKey: "date",
-    header: "Date",
+    accessorKey: "created_at",
+    header: "created_at",
   },
   {
-    accessorKey: "time",
-    header: "Time",
+    accessorKey: "user_id",
+    header: "user_id",
   },
   {
     accessorKey: "event_title",
@@ -103,10 +97,56 @@ const allTeamsColumns: ColumnDef<AllTeams>[] = [
   },
 ];
 
+const userProjectsColumns: ColumnDef<schemas.Project>[] = [
+  {
+    accessorKey: "proj_name",
+    header: "Project Name",
+  },
+  {
+    accessorKey: "proj_description",
+    header: "Description",
+  },
+];
+
+const userColumns: ColumnDef<schemas.User>[] = [
+  {
+    accessorKey: "first",
+    header: "First",
+  },
+  {
+    accessorKey: "last",
+    header: "Last",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+];
+
+const RoleColumns: ColumnDef<schemas.Role>[] = [
+  {
+    accessorKey: "role_title",
+    header: "Role",
+  },
+  {
+    accessorKey: "role_description",
+    header: "Description",
+  },
+];
+
+//@ts-expect-error
+const userRoleColumns: ColumnDef<schemas.User & schemas.Role>[] = [
+  ...userColumns,
+  ...RoleColumns,
+];
+
 export {
   teamColumns,
   ticketColumns,
   roleColumns,
   historyColumns,
   allTeamsColumns,
+  userProjectsColumns,
+  userColumns,
+  userRoleColumns,
 };

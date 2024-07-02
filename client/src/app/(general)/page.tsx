@@ -1,45 +1,34 @@
-import { getTickets, getHistory, getTeam } from "@/lib/functions";
-import DataTable from "@/components/data-table";
-import * as Columns from "@/components/Columns";
-import Ticket from "@/components/Ticket";
-import Tickets from "@/components/Tickets";
+import Test from "@/components/Ticket";
+import Tickets from "@/app/(general)/_components/Tickets";
+import UserProjects from "./_components/UserProjects";
+import History from "./_components/History";
+import Team from "./_components/Team";
 
 export default async function Home() {
-  // const {
-  //   mutate: server_getUser,
-  //   isPending,
-  //   isError,
-  //   data,
-  // } = useMutation({
-  //   mutationFn: getUser,
-  // });
   const projid = 3;
   const userid = 3;
-  const tickets = await getTickets({ projid });
-  const history = await getHistory({ projid });
-  const team = await getTeam({ userid, projid });
   return (
     <div className="h-full w-full">
       <div className="h-1/5 "></div>
       <div className=" gap-2 p-2 grid grid-cols-5">
         {/* row 1: team */}
         <div className="col-span-2">
-          <DataTable columns={Columns.teamColumns} data={team} />
+          <Team userid={userid} />
         </div>
 
         {/* row 2: tickets */}
         <div className="w-fit col-span-2">
-          {/* tickets component */}
-          <Tickets projid={projid} userid={userid} />
+          <Tickets userid={userid} />
         </div>
 
         {/* row 3: other */}
         <div className="col-span-1 ">
           {/* row 1: project view */}
+          <UserProjects userid={userid} className="absolute top-5 right-5" />
 
           {/* row 3: history info */}
-          <DataTable columns={Columns.historyColumns} data={history} />
-          <Ticket />
+          <History userid={userid} />
+          <Test />
         </div>
       </div>
     </div>
