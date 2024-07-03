@@ -75,7 +75,7 @@ function DataTable<TData, TValue>({
           {table.getRowModel()?.rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
-                className=" "
+                className="hover:bg-dark/80 transition-all duration-200 cursor-pointer"
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
               >

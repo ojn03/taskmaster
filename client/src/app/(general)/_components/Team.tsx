@@ -1,6 +1,6 @@
 "use client";
 //TODO skeleton loading
-import { getTeam } from "@/actions/projectService";
+import { getTeamMembers } from "@/actions/projectService";
 import DataTable from "@/components/data-table";
 import { userRoleColumns } from "@/components/Columns";
 import { useQuery } from "@tanstack/react-query";
@@ -19,8 +19,9 @@ export default function Team({ userid }: Props) {
     isError,
     data: teamMembers,
   } = useQuery({
-    queryKey: ["getTeam", { projid }],
-    queryFn: async () => await getTeam({ projid: Number(projid), userid }),
+    queryKey: ["getTeamMembers", { projid }],
+    queryFn: async () =>
+      await getTeamMembers({ projid: Number(projid), userid }),
   });
 
   if (isPending) {

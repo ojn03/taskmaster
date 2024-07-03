@@ -1,5 +1,6 @@
 import * as schemas from "../lib/schemas";
 
+import { ExternalLink, SquareArrowOutUpRight } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 
 export type Team = {
@@ -48,6 +49,23 @@ const ticketColumns: ColumnDef<schemas.Ticket>[] = [
     accessorKey: "ticket_priority",
     header: "Priority",
     size: 50,
+  },
+  {
+    id: "actions",
+    size: 50,
+    cell: (row) => {
+      return (
+        <div>
+          <button
+            onClick={() => {
+              alert("(do something)");
+            }}
+          >
+            <ExternalLink />
+          </button>
+        </div>
+      );
+    },
   },
 ];
 

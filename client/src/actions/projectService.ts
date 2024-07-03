@@ -74,6 +74,7 @@ export async function getProjectRoles({
   return data;
 }
 
+//TODO fix history implementation
 export async function getHistory({
   projid,
 }: {
@@ -87,7 +88,7 @@ export async function getHistory({
   return data;
 }
 
-export async function getTeam({
+export async function getTeamMembers({
   userid,
   projid,
 }: {
@@ -97,6 +98,20 @@ export async function getTeam({
   const data = await getAssert<UserRole[]>({
     route: `projects/${projid}/users/${userid}/team`,
     schemas: [schemas.User, schemas.Role],
+    isArray: true,
+  });
+
+  return data;
+}
+
+export async function getRoles({
+  projid,
+}: {
+  projid: number;
+}): Promise<schemas.Role[]> {
+  const data = await getAssert<schemas.Role[]>({
+    route: `projects/${projid}/roles`,
+    schemas: schemas.Role,
     isArray: true,
   });
 
