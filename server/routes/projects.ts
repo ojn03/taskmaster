@@ -7,35 +7,25 @@ import {
   Team,
   Ticket,
 } from "../DB/QueryBuilder";
+import * as projectController from "../Controllers/projectsController";
 import { QDB, getCache, getDB, myQueryDB } from "../utils";
 const projectRoutes = (app: Express, basePath: string = "/projects") => {
   //get all the tickets for a given project
   const ProjectTickets = `${basePath}/:projid/tickets`;
-  app.get(ProjectTickets, getCache(), (req, res) => {
+  app.route(ProjectTickets).get(getCache(), (req, res) => {
     const ticketsQuery = new MyQuery<Ticket>("Ticket")
       .Select("*")
       .Where({ proj_id: req.params.projid });
     myQueryDB<Ticket>(req, res, ticketsQuery);
   });
-  //get basic info for a given project
+
   const Project = `${basePath}/:projid`;
-  app.get(Project, getCache(), (req, res) => {
-    const proj_id = req.params.projid;
-    const query = new MyQuery<Project>("Project")
-      .Select("*")
-      .Where({ proj_id });
-    myQueryDB(req, res, query);
-  });
-  //update info for a given project
-  app.patch(Project, (req, res) => {
-    const { proj_name, proj_description } = req.body;
-    const proj_id = req.params.projid;
-    const updateProjectQuery = new MyQuery<Project>("Project")
-      .Update({ proj_name, proj_description })
-      .Where({ proj_id })
-      .Returning("*");
-    myQueryDB<Project>(req, res, updateProjectQuery);
-  });
+  app
+    .route(Project)
+    //get basic info for a given project
+    .get(getCache(), projectController.getProjectInfo)
+    //update info for a given project
+    .patch(getCache(), projectController.UpdateProjectInfo);
 
   //get the history for a given project
   const ProjectHistory = `${basePath}/:projid/history`;
