@@ -1,11 +1,11 @@
 import type { Express } from "express";
-import { QDB, getCache, myQueryDB } from "../utils";
+import { QDB, myQueryDB } from "../utils";
 import { MyQuery, Role } from "../DB/QueryBuilder";
 
 export default function roleRoutes(app: Express, base: string = "/roles") {
   const role = `${base}/:role_id`;
   //get,edit a specific role's info
-  app.get(role, getCache(), (req, res) => {
+  app.get(role, (req, res) => {
     //TODO
     const role_id = req.params.role_id;
     const Query = new MyQuery<Role>("Role").Select().Where({ role_id });

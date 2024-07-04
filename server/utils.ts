@@ -20,19 +20,23 @@ export function ensureError(value: unknown): Error {
 }
 
 // cache middleware for get requests
+//TODO implement cache logic for post,patch,delete requests, and rename this function accordingly (getCache -> cache)
 export function getCache() {
-  return function (req: Request, res: Response, next: NextFunction) {
+  return function (req: Request, res: Response, next: NextFunction): void {
+    if (req.method !== "GET") {
+      return next();
+    }
     red.get(`${req.path}`, (err, data) => {
       if (err) {
         console.error(err.message);
         res.json({ error: "error 500: " + err.message });
-      }
-      if (data != null) {
+      } else if (data != null) {
         console.log("cache hit");
         res.json(JSON.parse(data));
       } else {
         next();
       }
+      return;
     });
   };
 } //DB Query for get requests
@@ -60,7 +64,7 @@ export function myQueryDB<T extends Table>(
   req: Request,
   res: Response,
   query: MyQuery<T>,
-  lengthTilExpiration: number = 600,
+  lengthTilExpiration: number = 600, //TODO set this dynamically
 ) {
   query.Query((err, response) => {
     if (err) {

@@ -1,106 +1,49 @@
 import type { Express } from "express";
-import {
-  MyQuery,
-  Project,
-  Role,
-  Table,
-  Team,
-  Ticket,
-} from "../DB/QueryBuilder";
 import * as projectController from "../Controllers/projectsController";
-import { QDB, getCache, getDB, myQueryDB } from "../utils";
+
 const projectRoutes = (app: Express, basePath: string = "/projects") => {
   //get all the tickets for a given project
   const ProjectTickets = `${basePath}/:projid/tickets`;
-  app.route(ProjectTickets).get(getCache(), (req, res) => {
-    const ticketsQuery = new MyQuery<Ticket>("Ticket")
-      .Select("*")
-      .Where({ proj_id: req.params.projid });
-    myQueryDB<Ticket>(req, res, ticketsQuery);
-  });
+  app.route(ProjectTickets).get(projectController.getProjectTickets);
 
   const Project = `${basePath}/:projid`;
   app
     .route(Project)
     //get basic info for a given project
-    .get(getCache(), projectController.getProjectInfo)
+    .get(projectController.getProjectInfo)
     //update info for a given project
-    .patch(getCache(), projectController.UpdateProjectInfo);
+    .patch(projectController.UpdateProjectInfo);
 
   //get the history for a given project
   const ProjectHistory = `${basePath}/:projid/history`;
-  app.get(ProjectHistory, getCache(), (req, res) => {
-    const proj_id = req.params.projid;
-    const query = new MyQuery<Table>("History").Select("*").Where({ proj_id });
-    myQueryDB(req, res, query);
-  });
+  app.get(ProjectHistory, projectController.getProjectHistory);
 
   //gets all the users of a given project
   const ProjectUsers = `${basePath}/:projid/users`;
-  const usersQuery =
-    'SELECT u.*, r.role_id, role_title, role_description FROM "User" u join "Role_User_Project" rup on u.user_id = rup.user_id join "Role" r on r.proj_id = rup.proj_id and r.proj_id = $1';
-  app.get(ProjectUsers, getCache(), getDB(usersQuery, "projid"));
+  app.get(ProjectUsers, projectController.getProjectUsers);
 
   //gets all the tickets for a given project and user
   const ProjectUserTickets = `${ProjectUsers}/:userid/tickets`;
-  const userTicketsQuery =
-    'SELECT * FROM "Ticket" WHERE proj_id = $1 AND tick_id IN (SELECT tick_id FROM "User_Ticket" WHERE user_id = $2)';
-  app.get(
-    ProjectUserTickets,
-    getCache(),
-    getDB(userTicketsQuery, "projid", "userid"),
-  );
+  app.get(ProjectUserTickets, projectController.getProjectUserTickets);
 
   //add a user to a project
   const ProjectUser = `${ProjectUsers}/:userid`;
-  const addUserQuery =
-    'INSERT INTO "Role_User_Project" (role_id,user_id, proj_id) VALUES ($1, $2, $3) RETURNING *';
-
-  app.post(ProjectUser, (req, res) => {
-    const { projid, userid } = req.params;
-    const roleid = req.body.roleid;
-    const values = [roleid, userid, projid];
-    QDB(res, addUserQuery, values as string[]);
-  });
+  app.post(ProjectUser, projectController.createProjectUser);
 
   //gets first, last, email and roles of all members of a team given user in the team and the project id
   const ProjectUserTeam = `${ProjectUsers}/:userid/team/`;
-  const userTeamQuery = "SELECT * FROM getTeam($1, $2)";
-  app.get(
-    ProjectUserTeam,
-    getCache(),
-    getDB(userTeamQuery, "userid", "projid"),
-  );
+  app.get(ProjectUserTeam, projectController.getProjectUserTeam);
 
   //gets all teams for a given projid
   const ProjectTeams = `${basePath}/:projid/teams`;
-  app.get(ProjectTeams, getCache(), (req, res) => {
-    const proj_id = req.params.projid;
-    const query = new MyQuery<Team>("Team").Select("*").Where({ proj_id });
-    myQueryDB(req, res, query);
-  });
+  app.get(ProjectTeams, projectController.getProjectTeams);
 
   //creates a new team
-  app.post(ProjectTeams, (req, res) => {
-    const { name: team_name, description: team_description } = req.body;
-    const proj_id = req.params.projid;
-
-    const addTeamQuery = new MyQuery<Team>("Team")
-      .Insert({ team_name, team_description, proj_id })
-      .Returning("*");
-    myQueryDB(req, res, addTeamQuery);
-  });
+  app.post(ProjectTeams, projectController.createProjectTeam);
 
   //gets all roles for a given projid
   const ProjectRoles = `${basePath}/:projid/roles`;
-
-  app.get(ProjectRoles, getCache(), (req, res) => {
-    const projid = req.params.projid;
-    const getRolesQuery = new MyQuery<Role>("Role")
-      .Select("*")
-      .Where({ proj_id: projid });
-    myQueryDB(req, res, getRolesQuery);
-  });
+  app.get(ProjectRoles, projectController.getProjectRoles);
 };
 
 export default projectRoutes;

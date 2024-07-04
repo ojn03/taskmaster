@@ -10,6 +10,7 @@ import teamRoutes from "./routes/teams";
 import ticketRoutes from "./routes/tickets";
 import userRoutes from "./routes/users";
 import roleRoutes from "./routes/roles";
+import { getCache } from "./utils";
 dotenv.config({ path: "../.env.local" });
 const app = express();
 const redisUrl = process.env.REDIS_URL as string;
@@ -24,10 +25,10 @@ console.log("redis connected at", redisUrl);
 
 // middleware
 app.use(cors());
-app.use(express.json()); //req.body will be undefined without this
-
-//ROUTES//
+app.use(express.json());
 authRoutes(app);
+app.use(getCache()); //cache middleware for get requests not in auth
+//ROUTES//
 projectRoutes(app);
 userRoutes(app);
 ticketRoutes(app);

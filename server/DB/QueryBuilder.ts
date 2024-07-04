@@ -4,7 +4,15 @@ import { QueryResult } from "pg";
 
 //TODO use typebox validation
 
-export type Table = Ticket | User | Project | Role | Team | Comment;
+export type Table = Ticket | User | Project | Role | Team | Comment | History;
+
+export type History = {
+  hist_id: number | string;
+  hist_description: string;
+  proj_id: number | string;
+  created_at: Date;
+  update_at: Date;
+};
 
 export type Ticket = {
   tick_id: number | string;
