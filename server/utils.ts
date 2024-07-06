@@ -19,8 +19,11 @@ export function ensureError(value: unknown): Error {
   return error;
 }
 
-// cache middleware for get requests
+/**
+ * 
+ * middleware that caches db query results for get requests.
 //TODO implement cache logic for post,patch,delete requests, and rename this function accordingly (getCache -> cache)
+ */
 export function getCache() {
   return function (req: Request, res: Response, next: NextFunction): void {
     if (req.method !== "GET") {
@@ -39,7 +42,9 @@ export function getCache() {
       return;
     });
   };
-} //DB Query for get requests
+}
+
+//DB Middlware for get requests
 export function getDB(querytxt: string, ...params: string[]) {
   return function (req: Request, res: Response) {
     pool.query(
@@ -59,7 +64,9 @@ export function getDB(querytxt: string, ...params: string[]) {
   };
 }
 
-//DB Query for patch requests
+/**
+ * DB Query for patch requests
+ */
 export function myQueryDB<T extends Table>(
   req: Request,
   res: Response,
@@ -91,7 +98,9 @@ export function myQueryDB<T extends Table>(
     }
   });
 }
-//DB Query for general requests
+/**
+ * DB Query for general requests
+ */
 export function QDB(
   res: Response,
   querytxt: string,

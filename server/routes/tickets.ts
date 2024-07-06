@@ -1,111 +1,48 @@
 import { type Express } from "express";
 import { Comment, MyQuery, Ticket } from "../DB/QueryBuilder";
-import { QDB, getCache, getDB, myQueryDB } from "../utils";
+import { QDB, getDB, myQueryDB } from "../utils";
+import * as ticketController from "../Controllers/ticketsController";
 
 const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
   //get all the tickets
   const allTickets = basePath;
   const allTicketsQuery = 'SELECT * FROM "Ticket"';
-  app.get(allTickets, getCache(), getDB(allTicketsQuery));
+  app.get(allTickets, getDB(allTicketsQuery));
   //TODO this is decoupled from the project route
   // in this case, ensure the user has access to the ticket by checking if the user is part of the ticket's project
   //get a specific ticket
   const ticket = `${basePath}/:tickid`;
-  app.get(ticket, getCache(), (req, res) => {
-    const tick_id = req.params.tickid;
-    const query = new MyQuery<Ticket>("Ticket").Select("*").Where({ tick_id });
-    console.log(query.toString());
-    myQueryDB(req, res, query);
-  });
+
+  app
+    .route(ticket)
+    .get(ticketController.getTicket)
+    //update a specific ticket
+    .post(ticketController.updateTicket)
+    //delete a specific ticket
+    .delete(ticketController.deleteTicket);
 
   //create a new ticket
-  app.post(basePath, (req, res) => {
-    const { title, description, priority, project_id } = req.body;
+  app.post(basePath, ticketController.addTicket);
 
-    const addTicketQuery = new MyQuery<Ticket>("Ticket")
-      .Insert({
-        ticket_title: title,
-        ticket_description: description,
-        ticket_priority: priority,
-        proj_id: project_id,
-      })
-      .Returning("*");
-    myQueryDB<Ticket>(req, res, addTicketQuery);
-  });
-
-  //get the assignees of a specific ticket
   const ticketAssignees = `${ticket}/users`;
-  const ticketAssigneesQuery =
-    'SELECT * FROM "User_Ticket" join "User" on "User_Ticket".user_id = "User".user_id WHERE tick_id = $1';
-  app.get(ticketAssignees, getCache(), getDB(ticketAssigneesQuery, "tickid"));
-
-  //add an assignee to a specific ticket
-  const addAssigneeQuery =
-    'INSERT INTO "User_Ticket" (user_id, tick_id) VALUES ($1, $2) RETURNING *';
-  app.post(ticketAssignees, (req, res) => {
-    const tick_id = req.params.tickid;
-    const { user_id } = req.body;
-    const values = [user_id, tick_id];
-    QDB(res, addAssigneeQuery, values as string[]);
-  });
+  app
+    .route(ticketAssignees)
+    //get the assignees of a specific ticket
+    .get(ticketController.getAssignees)
+    //add an assignee to a specific ticket
+    .post(ticketController.addAssignee);
 
   //remove an assignee from a specific ticket
   const ticketAssignee = `${ticketAssignees}/:userid`;
-  const removeAssigneeQuery =
-    'DELETE FROM "User_Ticket" WHERE user_id = $1 AND tick_id = $2';
-  app.delete(ticketAssignee, (req, res) => {
-    const { tickid, userid } = req.params;
-    const values = [userid, tickid];
-    QDB(res, removeAssigneeQuery, values as string[]);
-  });
+  app.delete(ticketAssignee, ticketController.removeAssignee);
 
-  //get the comments of a specific ticket
   const ticketComments = `${ticket}/comments`;
-  app.get(ticketComments, getCache(), (req, res) => {
-    const tick_id = req.params.tickid;
-    const query = new MyQuery<Comment>("Comment")
-      .Select("*")
-      .Where({ tick_id });
-    myQueryDB(req, res, query);
-  });
-
-  //add a comment to a specific ticket
-  app.post(ticketComments, (req, res) => {
-    //TODO add type and data validation (make sure fields exists, is a string, etc.)
-    const tick_id = req.params.tickid;
-    const { user_id, comment }: { user_id: number; comment: string } = req.body;
-    const addCommentQuery = new MyQuery<Comment>("Comment")
-      .Insert({ comment, tick_id, user_id })
-      .Returning("*");
-    myQueryDB(req, res, addCommentQuery);
-  });
-
-  //update a specific ticket
-  app.patch(ticket, (req, res) => {
-    const tick_id = req.params.tickid;
-    const {
-      title: ticket_title,
-      description: ticket_description,
-      priority: ticket_priority,
-    } = req.body;
-
-    const Query = new MyQuery<Ticket>("Ticket")
-      .Update({ ticket_title, ticket_description, ticket_priority })
-      .Where({ tick_id })
-      .Returning("*");
-
-    myQueryDB(req, res, Query);
-  });
-
-  //delete a specific ticket
-  app.delete(ticket, (req, res) => {
-    const tick_id = req.params.tickid;
-    const deleteTicketQuery = new MyQuery<Ticket>("Ticket")
-      .Delete()
-      .Where({ tick_id });
-
-    myQueryDB(req, res, deleteTicketQuery);
-  });
+  app
+    .route(ticketComments)
+    //get the comments of a specific ticket
+    .get(ticketController.getComments)
+    //add a comment to a specific ticket
+    .post(ticketController.addComment);
 };
 
 export default ticketRoutes;

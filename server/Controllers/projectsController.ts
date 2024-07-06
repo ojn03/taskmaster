@@ -42,18 +42,18 @@ function getProjectUserTickets(req: Request, res: Response) {
   const userTicketsQuery =
     'SELECT * FROM "Ticket" WHERE proj_id = $1 AND tick_id IN (SELECT tick_id FROM "User_Ticket" WHERE user_id = $2)';
 
-  getDB(userTicketsQuery, "projid", "userid");
+  getDB(userTicketsQuery, "projid", "userid")(req, res);
 }
 
 function getProjectUsers(req: Request, res: Response) {
   const usersQuery =
     'SELECT u.*, r.role_id, role_title, role_description FROM "User" u join "Role_User_Project" rup on u.user_id = rup.user_id join "Role" r on r.proj_id = rup.proj_id and r.proj_id = $1';
-  getDB(usersQuery, "projid");
+  getDB(usersQuery, "projid")(req, res);
 }
 
 function getProjectUserTeam(req: Request, res: Response) {
   const userTeamQuery = "SELECT * FROM getTeam($1, $2)";
-  getDB(userTeamQuery, "userid", "projid");
+  getDB(userTeamQuery, "userid", "projid")(req, res);
 }
 
 function getProjectTeams(req: Request, res: Response) {
