@@ -263,30 +263,6 @@ END
 $$;
 
 -- end loginUsername
-CREATE OR REPLACE FUNCTION emailToHash(em varchar(100))
-  RETURNS varchar (
-    250
-)
-    AS $$
-DECLARE
-  id integer;
-BEGIN
-  SELECT
-    user_id
-  FROM
-    "User"
-  WHERE
-    email = em INTO id;
-  RETURN (
-    SELECT
-      "hash"
-    FROM
-      "UserInfo"
-    WHERE
-      user_id = id);
-END
-$$
-LANGUAGE plpgsql;
 
 --to test query speed and efficiency
 CREATE OR REPLACE FUNCTION "runtime"(PAR_sql text, OUT sql_runtime real)

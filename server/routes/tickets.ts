@@ -1,7 +1,6 @@
 import { type Express } from "express";
-import { Comment, MyQuery, Ticket } from "../DB/QueryBuilder";
-import { QDB, getDB, myQueryDB } from "../utils";
 import * as ticketController from "../Controllers/ticketsController";
+import { getDB } from "../utils";
 
 const ticketRoutes = (app: Express, basePath: string = "/tickets") => {
   //get all the tickets

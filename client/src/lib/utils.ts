@@ -126,10 +126,8 @@ export async function getAssert<T>({
   schemas: TSchema | TSchema[];
   isArray?: boolean;
 }): Promise<T> {
-  // console.log("schema: ", schemas);
   const data = await get(route);
 
-  // console.log(data);
   assertIs<T>(schemas, data, isArray);
   return data;
 }

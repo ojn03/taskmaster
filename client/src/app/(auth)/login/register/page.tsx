@@ -47,9 +47,8 @@ const Register = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       }).then((res) => res.json());
-      if (response.error) {
-        toastError(response.error);
-        return;
+      if (!response.ok) {
+        return toastError(response.status + " " + response.statusText);
       }
       toastSuccess("account created");
     } catch (err) {
