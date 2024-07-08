@@ -71,7 +71,7 @@ export async function patch({
   body,
 }: {
   route: string;
-  body: Record<string, unknown>; //TODO maybe change unknown to string | number | boolean | Date
+  body: Object;
 }): Promise<unknown> {
   return await fetch(`${base}/${route}`, {
     method: "PATCH",
@@ -101,9 +101,7 @@ export async function post({
     body: JSON.stringify(data),
     cache: "no-store",
   }).then((res) => {
-    if (!res.ok) {
-      throw new Error(res.status + " " + res.statusText);
-    }
+    if (!res.ok) throw new Error(res.status + " " + res.statusText);
     return res.json();
   });
 }

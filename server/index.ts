@@ -2,7 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import { Redis } from "ioredis";
-import "reflect-metadata"; // required for class-transformer
+import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth";
 import commentRoutes from "./routes/comments";
 import projectRoutes from "./routes/projects";
@@ -26,6 +26,7 @@ console.log("redis connected at", redisUrl);
 // middleware
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser(process.env.COOKIE_SECRET));
 authRoutes(app);
 app.use(getCache()); //cache middleware for get requests not in auth
 //ROUTES//

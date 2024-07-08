@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toastError, toastSuccess } from "@/lib/functions";
-import { ensureError } from "@/lib/utils";
+import { ensureError, post } from "@/lib/utils";
 
 //TODO add icons to inputs
 //TODO use tailwindcomponents and fowbite
@@ -41,19 +41,12 @@ const Register = () => {
 
   const onSubmit: SubmitHandler<registrationFormInput> = async (data) => {
     try {
-      //response is an array
-      const response = await fetch("http://localhost:5001/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }).then((res) => res.json());
-      if (!response.ok) {
-        return toastError(response.status + " " + response.statusText);
-      }
-      toastSuccess("account created");
+      const response = await post({ route: "auth/register", data });
+      // console.log(response);
     } catch (err) {
       const error = ensureError(err);
-      console.error(error.message);
+      toastError(error.message);
+      console.error(error);
     }
     console.log(data);
   };
