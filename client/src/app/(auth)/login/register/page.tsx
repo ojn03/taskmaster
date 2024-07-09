@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toastError, toastSuccess } from "@/lib/functions";
-import { ensureError, post } from "@/lib/utils";
+import { ensureError, get, post } from "@/lib/utils";
 
 //TODO add icons to inputs
 //TODO use tailwindcomponents and fowbite
@@ -48,6 +48,7 @@ const Register = () => {
       toastError(error.message);
       console.error(error);
     }
+    toastSuccess("registered");
     console.log(data);
   };
 

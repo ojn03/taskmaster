@@ -92,7 +92,6 @@ export function myQueryDB<T extends Table>(
           break;
         default:
           break;
-        // code block
       }
       res.json(data);
     }

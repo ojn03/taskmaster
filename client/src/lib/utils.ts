@@ -89,24 +89,28 @@ export async function patch({
 export async function post({
   route,
   data,
+  options,
 }: {
   route: string;
-  data: Object;
+  data?: Object;
+  options?: RequestInit;
 }): Promise<unknown> {
   return await fetch(`${base}/${route}`, {
     method: "POST",
     headers: {
+      Accept: "application/json",
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
     cache: "no-store",
+    ...options,
   }).then((res) => {
     if (!res.ok) throw new Error(res.status + " " + res.statusText);
     return res.json();
   });
 }
 
-export async function get(route: string) {
+export async function get(route: string): Promise<unknown> {
   return await fetch(`${base}/${route}`, { cache: "no-store" }).then((res) => {
     if (!res.ok) {
       throw new Error(res.status + " " + res.statusText);

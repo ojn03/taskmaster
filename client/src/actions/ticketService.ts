@@ -14,7 +14,6 @@ export async function getTicketInfo({
     schemas: Ticket,
     isArray: true,
   });
-  console.log("data: ", data);
   return data;
 }
 

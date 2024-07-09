@@ -24,7 +24,12 @@ console.log("redis connected at", redisUrl);
 //TODO create readme
 
 // middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 authRoutes(app);

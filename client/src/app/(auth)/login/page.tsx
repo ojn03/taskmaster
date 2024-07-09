@@ -4,7 +4,8 @@ import React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toastError, toastSuccess } from "@/lib/functions";
-import { ensureError, post } from "@/lib/utils";
+import { ensureError, get, post } from "@/lib/utils";
+import { toast } from "react-toastify";
 //TODO implement without usestate
 //TODO add icons to inputs
 //TODO add forgot password
@@ -38,8 +39,13 @@ const Login = () => {
 
   const onSubmit = async (data: LoginData) => {
     try {
-      const response = await post({ route: "auth/login", data });
-      // console.log(response);
+      const response = await post({
+        route: "auth/login",
+        data,
+        options: {
+          credentials: "include",
+        },
+      });
       toastSuccess("logged in");
     } catch (err) {
       const error = ensureError(err);

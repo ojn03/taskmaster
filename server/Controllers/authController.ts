@@ -8,7 +8,6 @@ import jwt from "jsonwebtoken";
 async function login(req: Request, res: Response) {
   try {
     const { username, email, password } = req.body;
-    console.log(username, email, password);
     const queryLogin =
       // if username provided with no email, use username
       username && !email
@@ -30,7 +29,7 @@ async function login(req: Request, res: Response) {
     if (queryLogin && password) {
       const response = await pool.query(queryLogin);
       if (response.rows.length === 0) {
-        return res.status(400).json("invalid credentials");
+        return res.status(401).json("invalid credentials");
       }
       const { hash, user_id } = response.rows[0];
       if (hash && user_id) {
@@ -55,16 +54,17 @@ async function login(req: Request, res: Response) {
             .cookie("refreshToken", refreshToken, {
               httpOnly: true,
               secure: true,
-              sameSite: "strict",
+              // sameSite: "lax",
               path: "/",
               maxAge: 24 * 60 * 60 * 1000,
+              // domain:"localhost",
               signed: true,
             })
             .json({ accessToken });
         }
       }
     }
-    res.status(400).json("invalid credentials");
+    res.status(401).json("invalid credentials");
     return;
   } catch (err) {
     console.error(err);
@@ -151,7 +151,7 @@ async function register(req: Request, res: Response) {
     return res.status(200).send("successfully registered");
   } catch (err) {
     const error = ensureError(err);
-    console.log(error.message);
+    console.error(error);
 
     //TODO send this as a message rather than a json object, and update the client to handle it
     return res.status(500).send(error.message);
