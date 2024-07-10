@@ -1,9 +1,9 @@
 "use client";
-
-import * as React from "react";
+import { cn } from "@/lib/serverUtils";
+import { CommandList } from "cmdk";
 import { Check, ChevronsUpDown } from "lucide-react";
+import * as React from "react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -17,7 +17,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CommandList } from "cmdk";
 
 type ProjectNames = { value: string; label: string };
 

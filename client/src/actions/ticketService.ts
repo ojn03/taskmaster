@@ -1,7 +1,8 @@
-"use server";
+"use client";
 // import typia from "typia";
+import { getAssert } from "@/lib/clientUtils";
+import { patch } from "@/lib/serverUtils";
 import { AtLeast, Ticket } from "../lib/schemas";
-import { getAssert, patch } from "@/lib/utils";
 
 export async function getTicketInfo({
   tick_id,

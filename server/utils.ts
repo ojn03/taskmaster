@@ -26,20 +26,20 @@ export function ensureError(value: unknown): Error {
  */
 export function getCache() {
   return function (req: Request, res: Response, next: NextFunction): void {
+    return next();
     if (req.method !== "GET") {
       return next();
     }
     red.get(`${req.path}`, (err, data) => {
       if (err) {
         console.error(err.message);
-        res.json({ error: "error 500: " + err.message });
+        return res.json({ error: "error 500: " + err.message });
       } else if (data != null) {
         console.log("cache hit");
-        res.json(JSON.parse(data));
+        return res.json(JSON.parse(data));
       } else {
-        next();
+        return next();
       }
-      return;
     });
   };
 }

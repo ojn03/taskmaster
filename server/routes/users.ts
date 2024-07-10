@@ -15,7 +15,7 @@ const userRoutes = (app: Express, basePath: string = "/users") => {
   //get all the project info for a given user. returns (proj_id, name, description, userid, roleid)
   const UserProjects = `${basePath}/:userid/projects`;
   const projectsQuery =
-    'select p.proj_id, proj_name, proj_description, role_id from "Project" p join "Role_User_Project" rup on p.proj_id = rup.proj_id and rup.user_id = $1';
+    'select p.proj_id, proj_name, proj_description from "Project" p join "Role_User_Project" rup on p.proj_id = rup.proj_id and rup.user_id = $1';
   app.get(UserProjects, getDB(projectsQuery, "userid"));
 
   //create a new project for a given user

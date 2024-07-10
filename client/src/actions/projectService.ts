@@ -1,6 +1,6 @@
-"use server";
+"use client";
+import { getAssert } from "@/lib/clientUtils";
 import * as schemas from "../lib/schemas";
-import { get, getAssert } from "@/lib/utils";
 
 type UserRole = schemas.User & schemas.Role;
 
@@ -92,7 +92,7 @@ export async function getTeamMembers({
   userid,
   projid,
 }: {
-  userid: number;
+  userid: number | string;
   projid: number;
 }): Promise<UserRole[]> {
   const data = await getAssert<UserRole[]>({

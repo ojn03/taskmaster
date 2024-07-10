@@ -1,9 +1,8 @@
 "use client";
+import { clientPost, toastError, toastSuccess } from "@/lib/clientUtils";
+import { ensureError } from "@/lib/serverUtils";
 import Link from "next/link";
-import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { toastError, toastSuccess } from "@/lib/functions";
-import { ensureError, get, post } from "@/lib/utils";
 
 //TODO add icons to inputs
 //TODO use tailwindcomponents and fowbite
@@ -41,8 +40,7 @@ const Register = () => {
 
   const onSubmit: SubmitHandler<registrationFormInput> = async (data) => {
     try {
-      const response = await post({ route: "auth/register", data });
-      // console.log(response);
+      const response = await clientPost({ route: "auth/register", data });
     } catch (err) {
       const error = ensureError(err);
       toastError(error.message);
