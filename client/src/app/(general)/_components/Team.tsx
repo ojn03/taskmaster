@@ -1,18 +1,16 @@
 "use client";
 //TODO skeleton loading
 import { getTeamMembers } from "@/actions/projectService";
-import DataTable from "@/components/data-table";
 import { userRoleColumns } from "@/components/Columns";
+import DataTable from "@/components/data-table";
+import { ProjectStore, SessionStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
-import { ProjectStateStore } from "@/state";
 
-interface Props {
-  userid: number;
-}
+interface Props {}
 
-export default function Team({ userid }: Props) {
-  const { currentProject: projid } = ProjectStateStore();
-
+export default function Team({}: Props) {
+  const { currentProject: projid } = ProjectStore();
+  const { user_id: userid } = SessionStore();
   const {
     refetch: server_getTeam,
     isPending,

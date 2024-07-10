@@ -1,16 +1,16 @@
 "use client";
-import DataTable from "@/components/data-table";
 import { getHistory } from "@/actions/projectService";
-import { ProjectStateStore } from "@/state";
-import { useQuery } from "@tanstack/react-query";
 import { historyColumns } from "@/components/Columns";
+import DataTable from "@/components/data-table";
+import { ProjectStore } from "@/store";
+import { useQuery } from "@tanstack/react-query";
 
 interface props {
   userid: number;
 }
 
-export default function History({ userid }: props) {
-  const { currentProject: projid } = ProjectStateStore();
+export default function History() {
+  const { currentProject: projid } = ProjectStore();
 
   const {
     refetch: server_getHistory,

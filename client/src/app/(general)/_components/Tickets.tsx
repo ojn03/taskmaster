@@ -1,17 +1,16 @@
 "use client";
 //TODO skeleton loading
 import { getProjectUserTickets as getTickets } from "@/actions/projectService";
-import DataTable from "@/components/data-table";
 import { ticketColumns } from "@/components/Columns";
+import DataTable from "@/components/data-table";
+import { ProjectStore, SessionStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
-import { ProjectStateStore } from "@/state";
 
-interface TicketsProps {
-  userid: number;
-}
+interface TicketsProps {}
 
-export default function Tickets({ userid }: TicketsProps) {
-  const { currentProject: projid } = ProjectStateStore();
+export default function Tickets({}: TicketsProps) {
+  const { currentProject: projid } = ProjectStore();
+  const { user_id: userid } = SessionStore();
 
   const {
     refetch: server_getTickets,
@@ -20,7 +19,8 @@ export default function Tickets({ userid }: TicketsProps) {
     data: tickets,
   } = useQuery({
     queryKey: ["getTickets", { projid, userid }],
-    queryFn: async () => await getTickets({ projid: Number(projid), userid }),
+    queryFn: async () =>
+      await getTickets({ projid: Number(projid), userid: Number(userid) }),
   });
 
   if (isPending) {

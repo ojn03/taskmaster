@@ -2,14 +2,15 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import { Redis } from "ioredis";
+import authRouter from "./routes/auth";
 import cookieParser from "cookie-parser";
-import authRoutes from "./routes/auth";
 import commentRoutes from "./routes/comments";
 import projectRoutes from "./routes/projects";
 import teamRoutes from "./routes/teams";
 import ticketRoutes from "./routes/tickets";
 import userRoutes from "./routes/users";
 import roleRoutes from "./routes/roles";
+import { verifyToken } from "./Controllers/authController";
 import { getCache } from "./utils";
 dotenv.config({ path: "../.env.local" });
 const app = express();
@@ -24,16 +25,18 @@ console.log("redis connected at", redisUrl);
 //TODO create readme
 
 // middleware
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    credentials: true,
-  }),
-);
-app.use(express.json());
-app.use(cookieParser(process.env.COOKIE_SECRET));
-authRoutes(app);
-app.use(getCache()); //cache middleware for get requests not in auth
+app
+  .use(
+    cors({
+      origin: "http://localhost:3000",
+      credentials: true,
+    }),
+  )
+  .use(express.json())
+  .use(cookieParser(process.env.COOKIE_SECRET))
+  .use(authRouter)
+  .use(verifyToken)
+  .use(getCache()); //cache middleware for get requests not in auth
 //ROUTES//
 projectRoutes(app);
 userRoutes(app);

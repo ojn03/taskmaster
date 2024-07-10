@@ -1,21 +1,16 @@
 import { Type, Static } from "@sinclair/typebox";
 
-export type User = {
-  user_id: number;
-  first: string;
-  last: string;
-  email: string;
-};
-
 export const User = Type.Object(
   {
-    user_id: Type.Number(),
+    user_id: Type.Number(), //TODO convert all ids to strings or uuids
     first: Type.String(),
     last: Type.String(),
     email: Type.String(),
   },
   { additionalProperties: false },
 );
+
+export type User = Static<typeof User>;
 
 export const Project = Type.Object(
   {

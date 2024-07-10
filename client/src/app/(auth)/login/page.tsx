@@ -1,11 +1,10 @@
 "use client";
+import { clientPost, toastError, toastSuccess } from "@/lib/clientUtils";
+import { ensureError } from "@/lib/serverUtils";
+import { SessionStore } from "@/store";
 import Link from "next/link";
-import React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toastError, toastSuccess } from "@/lib/functions";
-import { ensureError, get, post } from "@/lib/utils";
-import { toast } from "react-toastify";
 //TODO implement without usestate
 //TODO add icons to inputs
 //TODO add forgot password
@@ -28,24 +27,24 @@ interface LoginEmail extends Login {
 }
 type LoginData = LoginUsername | LoginEmail;
 
-const testdata: LoginData = {
-  username: "",
-  password: "",
-  // email:""
+type LoginResponse = {
+  accessToken: string;
+  user_id: string;
 };
+
 const Login = () => {
   const { resetField, register, handleSubmit } = useForm<LoginData>();
   const [usernameLogin, setUsernameLogin] = useState(true);
 
+  const { setAccessToken, setCurrentUser } = SessionStore();
   const onSubmit = async (data: LoginData) => {
     try {
-      const response = await post({
+      const response = (await clientPost({
         route: "auth/login",
         data,
-        options: {
-          credentials: "include",
-        },
-      });
+      })) as LoginResponse;
+      setAccessToken(response.accessToken);
+      setCurrentUser(response.user_id);
       toastSuccess("logged in");
     } catch (err) {
       const error = ensureError(err);
@@ -128,7 +127,9 @@ const Login = () => {
             {...register("email", { required: true })}
           />
         )}
-
+        <Link href="/" className="block w-fit text-center mx-auto underline">
+          go to dashboard
+        </Link>
         {/* USERNAME INPUT */}
         {usernameLogin && (
           <input

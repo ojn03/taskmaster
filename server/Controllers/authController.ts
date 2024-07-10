@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
+import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import { pool } from "../pool";
 import { ensureError } from "../utils";
-import jwt from "jsonwebtoken";
 //regex patterns for input validation
 //TODO use uuids instead of auto incrementing ids
 async function login(req: Request, res: Response) {
@@ -36,7 +36,7 @@ async function login(req: Request, res: Response) {
         const match = await bcrypt.compare(password, hash);
         if (match) {
           const accessToken = jwt.sign(
-            { user_id },
+            { user_id, username, email },
             process.env.ACCESS_TOKEN_SECRET!,
 
             { expiresIn: "15m" },
@@ -54,13 +54,10 @@ async function login(req: Request, res: Response) {
             .cookie("refreshToken", refreshToken, {
               httpOnly: true,
               secure: true,
-              // sameSite: "lax",
-              path: "/",
-              maxAge: 24 * 60 * 60 * 1000,
-              // domain:"localhost",
               signed: true,
+              maxAge: 24 * 60 * 60 * 1000,
             })
-            .json({ accessToken });
+            .json({ accessToken, user_id, username, email });
         }
       }
     }
@@ -73,6 +70,9 @@ async function login(req: Request, res: Response) {
   }
 }
 
+async function refresh(req: Request, res: Response) {
+  const refreshToken = req.signedCookies.refreshToken;
+}
 /*todo
  *  logout
  *  blacklist access token
@@ -82,18 +82,18 @@ async function login(req: Request, res: Response) {
 
 //
 function verifyToken(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers["authorization"]?.split(" ")[1];
-  if (!token) {
-    //TODO fix response messages
-    return res.status(401).send("access denied");
+  const accessToken = req.headers["authorization"]?.split(" ")[1];
+  if (!accessToken) {
+    console.log("no access token");
+    return res.sendStatus(401);
   }
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!, (err, user) => {
+  jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!, (err, user) => {
     if (err) {
-      return res.status(403).send("invalid token");
+      console.error(err);
+      return res.sendStatus(401);
     }
-
-    //TODO add userid to req object
-    req.body.user = user;
+    //@ts-ignore
+    req.user = user;
     next();
   });
 }
@@ -158,4 +158,4 @@ async function register(req: Request, res: Response) {
   }
 }
 
-export { login, register };
+export { login, refresh, register, verifyToken };

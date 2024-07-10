@@ -1,16 +1,16 @@
 "use client";
 import { getProjects } from "@/actions/userService";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ProjectStore, SessionStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
 import { Combobox } from "./combobox";
-import { ProjectStateStore } from "@/state";
-import { Skeleton } from "@/components/ui/skeleton";
 
 interface UserProjectsProps {
-  userid: number;
   className?: string;
 }
 
-export default function UserProjects({ userid, className }: UserProjectsProps) {
+export default function UserProjects({ className }: UserProjectsProps) {
+  const { user_id: userid } = SessionStore();
   const {
     refetch: server_getProjects,
     isPending,
@@ -18,10 +18,10 @@ export default function UserProjects({ userid, className }: UserProjectsProps) {
     data: projects,
   } = useQuery({
     queryKey: ["getProjects"],
-    queryFn: async () => await getProjects({ userid }),
+    queryFn: async () => await getProjects({ userid: Number(userid) }),
   });
 
-  const { currentProject, setProject } = ProjectStateStore();
+  const { currentProject, setProject } = ProjectStore();
 
   if (isError) {
     return <div>error...</div>;
