@@ -1,6 +1,5 @@
-"use client";
-// import typia from "typia";
-import { getAssert } from "@/lib/clientUtils";
+"use server";
+import { getAssert } from "@/lib/serverUtils";
 import { patch } from "@/lib/serverUtils";
 import { AtLeast, Ticket } from "../lib/schemas";
 

@@ -1,6 +1,6 @@
 "use client";
-import { clientPost, toastError, toastSuccess } from "@/lib/clientUtils";
-import { ensureError } from "@/lib/serverUtils";
+import { toastError, toastSuccess } from "@/lib/clientUtils";
+import { post, ensureError } from "@/lib/serverUtils";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -40,14 +40,13 @@ const Register = () => {
 
   const onSubmit: SubmitHandler<registrationFormInput> = async (data) => {
     try {
-      const response = await clientPost({ route: "auth/register", data });
+      const response = await post({ route: "auth/register", data });
     } catch (err) {
       const error = ensureError(err);
       toastError(error.message);
       console.error(error);
     }
     toastSuccess("registered");
-    console.log(data);
   };
 
   const inputStyle =

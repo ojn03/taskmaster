@@ -1,5 +1,5 @@
-"use client";
-import { getAssert } from "@/lib/clientUtils";
+"use server";
+import { getAssert } from "@/lib/serverUtils";
 import { Project, User } from "../lib/schemas";
 
 export const getUser = async (user_id: number): Promise<User> => {

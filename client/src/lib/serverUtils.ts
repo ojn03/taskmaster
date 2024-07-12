@@ -66,20 +66,29 @@ export async function del(route: string): Promise<void> {
   });
 }
 
+const baseHeaders: HeadersInit = {
+  "Content-Type": "application/json",
+  Accept: "application/json",
+  credentials: "include",
+};
+
 //TODO creat client patch to inject headers
 export async function patch({
   route,
   body,
+  options,
 }: {
   route: string;
   body: Object;
+  options?: RequestInit;
 }): Promise<unknown> {
   return await fetch(`${base}/${route}`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: baseHeaders,
     body: JSON.stringify(body),
+    cache: "no-store",
+    credentials: "include",
+    ...options,
   }).then((res) => {
     if (!res.ok) {
       throw new Error(res.status + " " + res.statusText);
@@ -89,39 +98,59 @@ export async function patch({
 
 export async function post({
   route,
+  data,
   options,
 }: {
   route: string;
-  options: RequestInit;
+  data?: Object;
+  options?: RequestInit;
 }): Promise<unknown> {
-  console.log("server post options:", options);
-  console.log("server post route:", route);
-  return await fetch(`${base}/${route}`, options).then(async (res) => {
-    if (!res.ok) {
-      console.log("post res not ok");
-      throw new Error(res.status + " " + res.statusText);
-    }
-    const data = await res.json();
-    console.log("post res ok");
-    console.log("post res data: ", data);
-    return data;
+  const postoptions: RequestInit = {
+    method: "POST",
+    headers: baseHeaders,
+    body: JSON.stringify(data),
+    cache: "no-store",
+    credentials: "include",
+    ...options,
+  };
+  return await fetch(`${base}/${route}`, postoptions).then((res) => {
+    if (!res.ok) throw new Error(res.status + " " + res.statusText);
+    return res.json();
   });
+}
+
+export async function getAssert<T>({
+  route,
+  schemas,
+  isArray = false,
+  options,
+}: {
+  route: string;
+  schemas: TSchema | TSchema[];
+  isArray?: boolean;
+  options?: RequestInit;
+}): Promise<T> {
+  const data = await get(route, options);
+  assertIs<T>(schemas, data, isArray);
+  return data;
 }
 
 export async function get(
   route: string,
-  options: RequestInit,
+  options?: RequestInit,
 ): Promise<unknown> {
-  console.log("server get options:", options);
-  console.log("server get route:", route);
-  return await fetch(`${base}/${route}`, options).then(async (res) => {
+  const getOptions: RequestInit = {
+    method: "GET",
+    headers: baseHeaders,
+    cache: "no-store",
+    credentials: "include",
+    ...options,
+  };
+  return await fetch(`${base}/${route}`, getOptions).then(async (res) => {
     if (!res.ok) {
-      console.log("get res not ok");
       throw new Error(res.status + " " + res.statusText);
     }
     const data = await res.json();
-    console.log("get res ok");
-    console.log(`get res data for route ${base}/${route}:`, data);
     return data;
   });
 }

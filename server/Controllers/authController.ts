@@ -35,13 +35,13 @@ async function login(req: Request, res: Response) {
       if (hash && user_id) {
         const match = await bcrypt.compare(password, hash);
         if (match) {
-          const accessToken = jwt.sign(
+          const access_token = jwt.sign(
             { user_id, username, email },
             process.env.ACCESS_TOKEN_SECRET!,
 
             { expiresIn: "1h" },
           );
-          const refreshToken = jwt.sign(
+          const refresh_token = jwt.sign(
             { user_id },
             process.env.REFRESH_TOKEN_SECRET!,
             { expiresIn: "1d" },
@@ -51,13 +51,15 @@ async function login(req: Request, res: Response) {
           //TODO maybe encrypt tokens
           return res
             .status(200)
-            .cookie("refreshToken", refreshToken, {
-              httpOnly: true,
-              secure: true,
-              signed: true,
+            .cookie("refreshToken", refresh_token, {
+              // httpOnly: true,
+              // secure: true,
+              // signed: true,
               maxAge: 24 * 60 * 60 * 1000,
+              path: "/auth/refresh",
             })
-            .json({ accessToken, user_id, username, email });
+            .cookie("accessToken", access_token)
+            .json({ user_id, username, email });
         }
       }
     }
@@ -72,6 +74,8 @@ async function login(req: Request, res: Response) {
 
 async function refresh(req: Request, res: Response) {
   const refreshToken = req.signedCookies.refreshToken;
+
+  res.sendStatus(200);
 }
 /*todo
  *  logout
@@ -82,9 +86,9 @@ async function refresh(req: Request, res: Response) {
 
 //
 function verifyToken(req: Request, res: Response, next: NextFunction) {
-  const accessToken = req.headers["authorization"]?.split(" ")[1];
+  const accessToken = req.cookies.access_token as string;
   if (!accessToken) {
-    console.log("no access token");
+    console.error("no access token");
     return res.sendStatus(401);
   }
   jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!, (err, user) => {

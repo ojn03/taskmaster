@@ -1,6 +1,6 @@
 "use client";
-import { clientPost, toastError, toastSuccess } from "@/lib/clientUtils";
-import { ensureError } from "@/lib/serverUtils";
+import { toastError, toastSuccess } from "@/lib/clientUtils";
+import { post, ensureError } from "@/lib/serverUtils";
 import { SessionStore } from "@/store";
 import Link from "next/link";
 import { useState } from "react";
@@ -28,7 +28,6 @@ interface LoginEmail extends Login {
 type LoginData = LoginUsername | LoginEmail;
 
 type LoginResponse = {
-  accessToken: string;
   user_id: string;
 };
 
@@ -36,14 +35,13 @@ const Login = () => {
   const { resetField, register, handleSubmit } = useForm<LoginData>();
   const [usernameLogin, setUsernameLogin] = useState(true);
 
-  const { setAccessToken, setCurrentUser } = SessionStore();
+  const { setCurrentUser } = SessionStore();
   const onSubmit = async (data: LoginData) => {
     try {
-      const response = (await clientPost({
+      const response = (await post({
         route: "auth/login",
         data,
       })) as LoginResponse;
-      setAccessToken(response.accessToken);
       setCurrentUser(response.user_id);
       toastSuccess("logged in");
     } catch (err) {
