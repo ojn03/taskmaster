@@ -1,6 +1,6 @@
 "use client";
-import { toastError, toastSuccess } from "@/lib/clientUtils";
-import { post, ensureError } from "@/lib/serverUtils";
+import { post } from "@/lib/serverUtils";
+import { ensureError, toastError, toastSuccess } from "@/lib/utils";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 

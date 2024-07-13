@@ -52,13 +52,18 @@ async function login(req: Request, res: Response) {
           return res
             .status(200)
             .cookie("refreshToken", refresh_token, {
-              // httpOnly: true,
-              // secure: true,
-              // signed: true,
+              httpOnly: true,
+              secure: true,
+              signed: true,
               maxAge: 24 * 60 * 60 * 1000,
               path: "/auth/refresh",
             })
-            .cookie("accessToken", access_token)
+            .cookie("accessToken", access_token, {
+              httpOnly: true,
+              secure: true,
+              signed: true,
+              maxAge: 60 * 60 * 1000,
+            })
             .json({ user_id, username, email });
         }
       }

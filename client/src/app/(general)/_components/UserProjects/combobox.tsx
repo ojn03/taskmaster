@@ -1,5 +1,5 @@
 "use client";
-import { cn } from "@/lib/serverUtils";
+import { cn } from "@/lib/utils";
 import { CommandList } from "cmdk";
 import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";

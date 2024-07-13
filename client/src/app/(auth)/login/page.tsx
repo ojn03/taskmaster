@@ -1,6 +1,6 @@
 "use client";
-import { toastError, toastSuccess } from "@/lib/clientUtils";
-import { post, ensureError } from "@/lib/serverUtils";
+import { login, type LoginData } from "@/actions/authService";
+import { ensureError, toastError, toastSuccess } from "@/lib/utils";
 import { SessionStore } from "@/store";
 import Link from "next/link";
 import { useState } from "react";
@@ -13,24 +13,6 @@ import { useForm } from "react-hook-form";
 //TODO make username and email radio buttons
 //TODO use tailwindcomponents and fowbite
 
-interface Login {
-  password: string;
-}
-interface LoginUsername extends Login {
-  email?: never;
-  username: string;
-}
-
-interface LoginEmail extends Login {
-  username?: never;
-  email: string;
-}
-type LoginData = LoginUsername | LoginEmail;
-
-type LoginResponse = {
-  user_id: string;
-};
-
 const Login = () => {
   const { resetField, register, handleSubmit } = useForm<LoginData>();
   const [usernameLogin, setUsernameLogin] = useState(true);
@@ -38,10 +20,7 @@ const Login = () => {
   const { setCurrentUser } = SessionStore();
   const onSubmit = async (data: LoginData) => {
     try {
-      const response = (await post({
-        route: "auth/login",
-        data,
-      })) as LoginResponse;
+      const response = await login(data);
       setCurrentUser(response.user_id);
       toastSuccess("logged in");
     } catch (err) {

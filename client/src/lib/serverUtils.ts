@@ -1,27 +1,7 @@
-import { TSchema, Type } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-import { assert } from "tsafe";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
-export function ensureError(value: unknown): Error {
-  if (value instanceof Error) return value;
-
-  let stringified = "[Unable to stringify the thrown value]";
-  try {
-    stringified = JSON.stringify(value);
-  } catch {}
-
-  const error = new Error(
-    `This value was thrown as is, not through an Error: ${stringified}`,
-  );
-  return error;
-}
-
+"use server";
+import { cookies } from "next/headers";
+import { TSchema } from "@sinclair/typebox";
+import { assertIs } from "./utils";
 type IfEquals<X, Y, t = unknown, N = never> =
   (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? t : N;
 
@@ -30,31 +10,7 @@ export declare const exactType: <T, U>(
   expected: U & IfEquals<T, U>,
 ) => IfEquals<T, U>;
 
-export function assertIs<T>(
-  schemas: TSchema | TSchema[],
-  data: unknown,
-  //if isArray is true, the data is expected to be an array of the given schema
-  isArray = false,
-): asserts data is T {
-  //TODO for performance, call Value.Errors only if Value.check is false
-
-  const schema = Array.isArray(schemas)
-    ? Type.Composite(schemas, { additionalProperties: false })
-    : schemas;
-
-  const errors = isArray
-    ? Value.Errors(Type.Array(schema), data)
-    : Value.Errors(schema, data);
-
-  const firstError = errors.First();
-
-  assert(
-    firstError === undefined,
-    `error while validating schema ${schema.title && schema.title}: ${firstError?.message}: with data: ${JSON.stringify(data)}`,
-  );
-} //TODO fix caching
-
-export const base = process.env.NEXT_BASE || "http://localhost:5001";
+const base = process.env.NEXT_BASE || "http://localhost:5001";
 
 export async function del(route: string): Promise<void> {
   return await fetch(`${base}/${route}`, {
@@ -72,7 +28,6 @@ const baseHeaders: HeadersInit = {
   credentials: "include",
 };
 
-//TODO creat client patch to inject headers
 export async function patch({
   route,
   body,
@@ -115,6 +70,15 @@ export async function post({
   };
   return await fetch(`${base}/${route}`, postoptions).then((res) => {
     if (!res.ok) throw new Error(res.status + " " + res.statusText);
+    const cookies = res.headers.getSetCookie();
+    cookies.forEach((cookie) => {
+      console.log("a split");
+      console.log(cookie.split(";"));
+    });
+    console.log(cookies);
+
+    console.log(res.headers.getSetCookie()[0]);
+
     return res.json();
   });
 }
