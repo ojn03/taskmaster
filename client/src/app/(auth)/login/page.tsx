@@ -1,6 +1,6 @@
 "use client";
-import { login, type LoginData } from "@/actions/authService";
 import { ensureError, toastError, toastSuccess } from "@/lib/utils";
+import { login, type LoginData } from "@/services/authService";
 import { SessionStore } from "@/store";
 import Link from "next/link";
 import { useState } from "react";

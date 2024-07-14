@@ -1,7 +1,7 @@
 "use client";
-import { getHistory } from "@/actions/projectService";
 import { historyColumns } from "@/components/Columns";
 import DataTable from "@/components/data-table";
+import { getHistory } from "@/services/projectService";
 import { ProjectStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
 

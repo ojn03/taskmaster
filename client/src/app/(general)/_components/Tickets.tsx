@@ -1,8 +1,8 @@
 "use client";
 //TODO skeleton loading
-import { getProjectUserTickets as getTickets } from "@/actions/projectService";
 import { ticketColumns } from "@/components/Columns";
 import DataTable from "@/components/data-table";
+import { getProjectUserTickets as getTickets } from "@/services/projectService";
 import { ProjectStore, SessionStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
 

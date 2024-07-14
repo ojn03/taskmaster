@@ -1,4 +1,3 @@
-"use server";
 import { getAssert } from "@/lib/serverUtils";
 import { patch } from "@/lib/serverUtils";
 import { AtLeast, Ticket } from "../lib/schemas";

@@ -1,4 +1,3 @@
-"use server";
 import { getAssert } from "@/lib/serverUtils";
 import { Project, User } from "../lib/schemas";
 

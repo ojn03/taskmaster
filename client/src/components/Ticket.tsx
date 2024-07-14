@@ -1,14 +1,7 @@
 "use client";
 
-import {
-  getProjectInfo,
-  getProjectMembers,
-  getProjectRoles,
-  getProjectTickets,
-} from "@/actions/projectService";
-import { getTicketInfo } from "@/actions/ticketService";
+import { getProjectRoles } from "@/services/projectService";
 import { useMutation } from "@tanstack/react-query";
-import React from "react";
 
 export default function Ticket() {
   const {

@@ -1,4 +1,3 @@
-"use server";
 import { post } from "@/lib/serverUtils";
 
 interface Login {
@@ -26,6 +25,13 @@ async function login(data: LoginData) {
   })) as LoginResponse;
 
   return response;
+}
+
+async function refresh(data: { refresh_token: string }) {
+  return await post({
+    route: "auth/refresh",
+    data,
+  });
 }
 
 export { login };

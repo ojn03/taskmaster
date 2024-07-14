@@ -1,8 +1,8 @@
 "use client";
 //TODO skeleton loading
-import { getTeamMembers } from "@/actions/projectService";
 import { userRoleColumns } from "@/components/Columns";
 import DataTable from "@/components/data-table";
+import { getTeamMembers } from "@/services/projectService";
 import { ProjectStore, SessionStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
 

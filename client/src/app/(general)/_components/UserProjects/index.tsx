@@ -1,6 +1,6 @@
 "use client";
-import { getProjects } from "@/actions/userService";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getProjects } from "@/services/userService";
 import { ProjectStore, SessionStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
 import { Combobox } from "./combobox";
