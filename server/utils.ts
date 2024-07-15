@@ -24,24 +24,25 @@ export function ensureError(value: unknown): Error {
  * middleware that caches db query results for get requests.
 //TODO implement cache logic for post,patch,delete requests, and rename this function accordingly (getCache -> cache)
  */
-export function getCache() {
-  return function (req: Request, res: Response, next: NextFunction): void {
+export function getCache(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  if (req.method !== "GET") {
     return next();
-    if (req.method !== "GET") {
+  }
+  red.get(`${req.path}`, (err, data) => {
+    if (err) {
+      console.error(err.message);
+      return res.json({ error: "error 500: " + err.message });
+    } else if (data != null) {
+      console.log("cache hit");
+      return res.json(JSON.parse(data));
+    } else {
       return next();
     }
-    red.get(`${req.path}`, (err, data) => {
-      if (err) {
-        console.error(err.message);
-        return res.json({ error: "error 500: " + err.message });
-      } else if (data != null) {
-        console.log("cache hit");
-        return res.json(JSON.parse(data));
-      } else {
-        return next();
-      }
-    });
-  };
+  });
 }
 
 //DB Middlware for get requests

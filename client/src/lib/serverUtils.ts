@@ -1,5 +1,3 @@
-"use server";
-import { cookies } from "next/headers";
 import { TSchema } from "@sinclair/typebox";
 import { assertIs } from "./utils";
 type IfEquals<X, Y, t = unknown, N = never> =
@@ -13,7 +11,7 @@ export declare const exactType: <T, U>(
 const base = process.env.NEXT_BASE || "http://localhost:5001";
 
 export async function del(route: string): Promise<void> {
-  return await fetch(`${base}/${route}`, {
+  return await fetchWithRetry(`${base}/${route}`, {
     method: "DELETE",
   }).then((res) => {
     if (!res.ok) {
@@ -25,7 +23,6 @@ export async function del(route: string): Promise<void> {
 const baseHeaders: HeadersInit = {
   "Content-Type": "application/json",
   Accept: "application/json",
-  credentials: "include",
 };
 
 export async function patch({
@@ -37,7 +34,7 @@ export async function patch({
   body: Object;
   options?: RequestInit;
 }): Promise<unknown> {
-  return await fetch(`${base}/${route}`, {
+  return await fetchWithRetry(`${base}/${route}`, {
     method: "PATCH",
     headers: baseHeaders,
     body: JSON.stringify(body),
@@ -49,6 +46,25 @@ export async function patch({
       throw new Error(res.status + " " + res.statusText);
     }
   });
+}
+
+export async function fetchWithRetry(input: RequestInfo, init?: RequestInit) {
+  let response = await fetch(`${base}/${input}`);
+  if (response.status === 401) {
+    //refresh token
+    await fetch(`${base}/auth/refresh`, {
+      method: "POST",
+      headers: baseHeaders,
+      credentials: "include",
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to refresh token");
+      }
+    });
+    //retry original request
+    response = await fetch(`${base}/${input}`, init);
+  }
+  return response;
 }
 
 export async function post({
@@ -68,7 +84,7 @@ export async function post({
     credentials: "include",
     ...options,
   };
-  return await fetch(`${base}/${route}`, postoptions).then((res) => {
+  return await fetchWithRetry(`${base}/${route}`, postoptions).then((res) => {
     if (!res.ok) throw new Error(res.status + " " + res.statusText);
     const cookies = res.headers.getSetCookie();
     cookies.forEach((cookie) => {
@@ -110,11 +126,13 @@ export async function get(
     credentials: "include",
     ...options,
   };
-  return await fetch(`${base}/${route}`, getOptions).then(async (res) => {
-    if (!res.ok) {
-      throw new Error(res.status + " " + res.statusText);
-    }
-    const data = await res.json();
-    return data;
-  });
+  return await fetchWithRetry(`${base}/${route}`, getOptions).then(
+    async (res) => {
+      if (!res.ok) {
+        throw new Error(res.status + " " + res.statusText);
+      }
+      const data = await res.json();
+      return data;
+    },
+  );
 }

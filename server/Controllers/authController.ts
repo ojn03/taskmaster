@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { pool } from "../pool";
 import { ensureError } from "../utils";
+import { red } from "../index";
 //regex patterns for input validation
 //TODO use uuids instead of auto incrementing ids
 async function login(req: Request, res: Response) {
@@ -48,17 +49,18 @@ async function login(req: Request, res: Response) {
           );
 
           //TODO store refresh token in db/redis
+          red.setex(`refresh:${user_id}`, 24 * 60 * 60, refresh_token);
           //TODO maybe encrypt tokens
           return res
             .status(200)
-            .cookie("refreshToken", refresh_token, {
+            .cookie("refresh_token", refresh_token, {
               httpOnly: true,
               secure: true,
               signed: true,
               maxAge: 24 * 60 * 60 * 1000,
               path: "/auth/refresh",
             })
-            .cookie("accessToken", access_token, {
+            .cookie("access_token", access_token, {
               httpOnly: true,
               secure: true,
               signed: true,
@@ -78,7 +80,52 @@ async function login(req: Request, res: Response) {
 }
 
 async function refresh(req: Request, res: Response) {
-  const refreshToken = req.signedCookies.refreshToken;
+  const refresh_token = req.signedCookies.refresh_tokenrefresh_token as string;
+  if (!refresh_token) {
+    return res.sendStatus(401);
+  }
+
+  jwt.verify(
+    refresh_token,
+    process.env.REFRESH_TOKEN_SECRET!,
+    (err, decoded) => {
+      if (err) {
+        console.error(err);
+        return res.sendStatus(401);
+      }
+
+      //@ts-ignore
+      red.get(`refresh:${decoded?.user_id}`, (err, token) => {
+        if (err || !token) {
+          err && console.error(err);
+          return res.sendStatus(401);
+        }
+        if (token !== refresh_token) {
+          return res.sendStatus(401);
+        }
+      });
+    },
+  );
+
+  //TODO rotate refresh token and send new access token
+
+  // jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!, (err, user) => {
+  //   if (err) {
+  //     console.error(err);
+  //     return res.sendStatus(403);
+  //   }
+  //   const accessToken = jwt.sign(
+  //     { user_id: user.user_id },
+  //     process.env.ACCESS_TOKEN_SECRET!,
+  //     { expiresIn: "1h" }
+  //   );
+  //   res.cookie("accessToken", accessToken, {
+  //     httpOnly: true,
+  //     secure: true,
+  //     signed: true,
+  //     maxAge: 60 * 60 * 1000,
+  //   });
+  // });
 
   res.sendStatus(200);
 }
@@ -89,14 +136,13 @@ async function refresh(req: Request, res: Response) {
  *
  */
 
-//
 function verifyToken(req: Request, res: Response, next: NextFunction) {
-  const accessToken = req.cookies.access_token as string;
-  if (!accessToken) {
+  const access_token = req.cookies.access_token as string;
+  if (!access_token) {
     console.error("no access token");
     return res.sendStatus(401);
   }
-  jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!, (err, user) => {
+  jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET!, (err, user) => {
     if (err) {
       console.error(err);
       return res.sendStatus(401);

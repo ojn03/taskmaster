@@ -36,7 +36,7 @@ app
   .use(cookieParser(process.env.COOKIE_SECRET))
   .use(authRouter)
   .use(verifyToken)
-  .use(getCache()); //cache middleware for get requests not in auth
+  .use(getCache); //cache middleware for get requests not in auth
 //ROUTES//
 projectRoutes(app);
 userRoutes(app);
