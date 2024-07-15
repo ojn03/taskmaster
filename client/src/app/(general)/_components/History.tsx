@@ -19,7 +19,9 @@ export default function History() {
     data: historyData,
   } = useQuery({
     queryKey: ["getHistory", { projid }],
-    queryFn: async () => await getHistory({ projid: Number(projid) }),
+    queryFn: async () => {
+      return !projid ? [] : await getHistory({ projid });
+    },
   });
 
   if (isPending) {

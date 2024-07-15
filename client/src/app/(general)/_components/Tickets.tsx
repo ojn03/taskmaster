@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 
 interface TicketsProps {}
 
-export default function Tickets({}: TicketsProps) {
+export default function Tickets() {
   const { currentProject: projid } = ProjectStore();
   const { user_id: userid } = SessionStore();
 
@@ -19,8 +19,11 @@ export default function Tickets({}: TicketsProps) {
     data: tickets,
   } = useQuery({
     queryKey: ["getTickets", { projid, userid }],
-    queryFn: async () =>
-      await getTickets({ projid: Number(projid), userid: Number(userid) }),
+    queryFn: async () => {
+      return !!projid && !!userid
+        ? await getTickets({ projid: projid, userid: userid })
+        : [];
+    },
   });
 
   if (isPending) {

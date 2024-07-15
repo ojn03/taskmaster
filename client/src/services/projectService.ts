@@ -6,7 +6,7 @@ type UserRole = schemas.User & schemas.Role;
 export async function getProjectMembers({
   projid,
 }: {
-  projid: number;
+  projid: string;
 }): Promise<UserRole[]> {
   const data = await getAssert<UserRole[]>({
     route: `projects/${projid}/users`,
@@ -20,7 +20,7 @@ export async function getProjectMembers({
 export async function getProjectTickets({
   projid,
 }: {
-  projid: number;
+  projid: string;
 }): Promise<schemas.Ticket[]> {
   const data = await getAssert<schemas.Ticket[]>({
     route: `projects/${projid}/tickets`,
@@ -34,8 +34,8 @@ export async function getProjectUserTickets({
   projid,
   userid,
 }: {
-  projid: number;
-  userid: number;
+  projid: string;
+  userid: string;
 }): Promise<schemas.Ticket[]> {
   const data = await getAssert<schemas.Ticket[]>({
     route: `projects/${projid}/users/${userid}/tickets`,
@@ -48,7 +48,7 @@ export async function getProjectUserTickets({
 export async function getProjectInfo({
   projid,
 }: {
-  projid: number;
+  projid: string;
 }): Promise<schemas.Project[]> {
   const data = await getAssert<schemas.Project[]>({
     route: `projects/${projid}`,
@@ -62,7 +62,7 @@ export async function getProjectInfo({
 export async function getProjectRoles({
   projid,
 }: {
-  projid: number;
+  projid: string;
 }): Promise<schemas.Role[]> {
   const data = await getAssert<schemas.Role[]>({
     route: `projects/${projid}/roles`,
@@ -77,7 +77,7 @@ export async function getProjectRoles({
 export async function getHistory({
   projid,
 }: {
-  projid: number;
+  projid: string;
 }): Promise<schemas.History[]> {
   const data = await getAssert<schemas.History[]>({
     route: `projects/${projid}/history`,
@@ -91,8 +91,8 @@ export async function getTeamMembers({
   userid,
   projid,
 }: {
-  userid: number | string;
-  projid: number;
+  userid: string;
+  projid: string;
 }): Promise<UserRole[]> {
   const data = await getAssert<UserRole[]>({
     route: `projects/${projid}/users/${userid}/team`,
@@ -106,7 +106,7 @@ export async function getTeamMembers({
 export async function getRoles({
   projid,
 }: {
-  projid: number;
+  projid: string;
 }): Promise<schemas.Role[]> {
   const data = await getAssert<schemas.Role[]>({
     route: `projects/${projid}/roles`,

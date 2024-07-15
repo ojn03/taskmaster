@@ -48,9 +48,9 @@ export async function patch({
   });
 }
 
-export async function fetchWithRetry(input: RequestInfo, init?: RequestInit) {
-  let response = await fetch(`${base}/${input}`);
-  if (response.status === 401) {
+export async function fetchWithRetry(input: string, init?: RequestInit) {
+  let response = await fetch(input, init);
+  if (response.status === 401 && !input.includes("/auth")) {
     //refresh token
     await fetch(`${base}/auth/refresh`, {
       method: "POST",
@@ -62,7 +62,7 @@ export async function fetchWithRetry(input: RequestInfo, init?: RequestInit) {
       }
     });
     //retry original request
-    response = await fetch(`${base}/${input}`, init);
+    response = await fetch(input, init);
   }
   return response;
 }
@@ -86,14 +86,6 @@ export async function post({
   };
   return await fetchWithRetry(`${base}/${route}`, postoptions).then((res) => {
     if (!res.ok) throw new Error(res.status + " " + res.statusText);
-    const cookies = res.headers.getSetCookie();
-    cookies.forEach((cookie) => {
-      console.log("a split");
-      console.log(cookie.split(";"));
-    });
-    console.log(cookies);
-
-    console.log(res.headers.getSetCookie()[0]);
 
     return res.json();
   });
@@ -110,9 +102,14 @@ export async function getAssert<T>({
   isArray?: boolean;
   options?: RequestInit;
 }): Promise<T> {
-  const data = await get(route, options);
-  assertIs<T>(schemas, data, isArray);
-  return data;
+  try {
+    const data = await get(route, options);
+    assertIs<T>(schemas, data, isArray);
+    return data;
+  } catch (err) {
+    console.error(err);
+    return [] as T;
+  }
 }
 
 export async function get(

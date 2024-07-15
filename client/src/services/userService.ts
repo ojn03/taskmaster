@@ -1,7 +1,7 @@
 import { getAssert } from "@/lib/serverUtils";
 import { Project, User } from "../lib/schemas";
 
-export const getUser = async (user_id: number): Promise<User> => {
+export const getUser = async (user_id: string): Promise<User> => {
   const data = await getAssert<User>({
     route: `users/${user_id}`,
     schemas: User,
@@ -10,7 +10,7 @@ export const getUser = async (user_id: number): Promise<User> => {
   return data;
 };
 
-export const getProjects = async ({ userid }: { userid: number }) => {
+export const getProjects = async ({ userid }: { userid: string }) => {
   const data = await getAssert<Project[]>({
     route: `users/${userid}/projects`,
     schemas: Project,

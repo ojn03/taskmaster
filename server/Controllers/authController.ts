@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { pool } from "../pool";
 import { ensureError } from "../utils";
 import { red } from "../index";
+
 //regex patterns for input validation
 //TODO use uuids instead of auto incrementing ids
 async function login(req: Request, res: Response) {
@@ -80,7 +81,7 @@ async function login(req: Request, res: Response) {
 }
 
 async function refresh(req: Request, res: Response) {
-  const refresh_token = req.signedCookies.refresh_tokenrefresh_token as string;
+  const refresh_token = req.signedCookies.refresh_token as string;
   if (!refresh_token) {
     return res.sendStatus(401);
   }
@@ -90,14 +91,16 @@ async function refresh(req: Request, res: Response) {
     process.env.REFRESH_TOKEN_SECRET!,
     (err, decoded) => {
       if (err) {
-        console.error(err);
         return res.sendStatus(401);
       }
 
       //@ts-ignore
       red.get(`refresh:${decoded?.user_id}`, (err, token) => {
-        if (err || !token) {
-          err && console.error(err);
+        if (err) {
+          console.error(err);
+          return res.sendStatus(401);
+        }
+        if (!token) {
           return res.sendStatus(401);
         }
         if (token !== refresh_token) {
@@ -137,7 +140,7 @@ async function refresh(req: Request, res: Response) {
  */
 
 function verifyToken(req: Request, res: Response, next: NextFunction) {
-  const access_token = req.cookies.access_token as string;
+  const access_token = req.signedCookies.access_token as string;
   if (!access_token) {
     console.error("no access token");
     return res.sendStatus(401);
@@ -147,6 +150,7 @@ function verifyToken(req: Request, res: Response, next: NextFunction) {
       console.error(err);
       return res.sendStatus(401);
     }
+
     //@ts-ignore
     req.user = user;
     next();

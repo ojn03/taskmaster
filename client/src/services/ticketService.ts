@@ -5,7 +5,7 @@ import { AtLeast, Ticket } from "../lib/schemas";
 export async function getTicketInfo({
   tick_id,
 }: {
-  tick_id: number;
+  tick_id: string;
 }): Promise<Ticket[]> {
   //TODO should not be returning an array
   const data = await getAssert<Ticket[]>({

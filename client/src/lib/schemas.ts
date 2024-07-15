@@ -2,7 +2,7 @@ import { Type, Static } from "@sinclair/typebox";
 
 export const User = Type.Object(
   {
-    user_id: Type.Number(), //TODO convert all ids to strings or uuids
+    user_id: Type.Union([Type.String(), Type.Number()]), //TODO convert all ids to strings or uuids
     first: Type.String(),
     last: Type.String(),
     email: Type.String(),
@@ -14,7 +14,7 @@ export type User = Static<typeof User>;
 
 export const Project = Type.Object(
   {
-    proj_id: Type.Number(),
+    proj_id: Type.Union([Type.String(), Type.Number()]),
     proj_name: Type.String(),
     proj_description: Type.String(),
   },
@@ -25,8 +25,8 @@ export type Project = Static<typeof Project>;
 
 export const Ticket = Type.Object(
   {
-    proj_id: Type.Number(),
-    tick_id: Type.Number(),
+    proj_id: Type.Union([Type.String(), Type.Number()]),
+    tick_id: Type.Union([Type.String(), Type.Number()]),
     ticket_title: Type.String(),
     ticket_description: Type.String(),
     ticket_priority: Type.Number(),
@@ -42,26 +42,26 @@ Ticket.title = "Ticket";
 export type Ticket = Static<typeof Ticket>;
 
 export type Team = {
-  user_id: number;
-  proj_id: number;
-  role_id: number;
+  user_id: string;
+  proj_id: string;
+  role_id: string;
 };
 
 export const Role = Type.Object(
   {
-    role_id: Type.Number(),
+    role_id: Type.Union([Type.String(), Type.Number()]),
     role_title: Type.String(),
     role_description: Type.String(),
-    proj_id: Type.Number(),
+    proj_id: Type.Union([Type.String(), Type.Number()]),
   },
   { additionalProperties: false },
 );
 
 export const History = Type.Object(
   {
-    history_id: Type.Number(),
-    proj_id: Type.Number(),
-    user_id: Type.Number(),
+    history_id: Type.Union([Type.String(), Type.Number()]),
+    proj_id: Type.Union([Type.String(), Type.Number()]),
+    user_id: Type.Union([Type.String(), Type.Number()]),
     event_title: Type.String(),
     created_at: Type.String(),
   },

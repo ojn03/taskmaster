@@ -18,8 +18,9 @@ export default function Team({}: Props) {
     data: teamMembers,
   } = useQuery({
     queryKey: ["getTeamMembers", { projid }],
-    queryFn: async () =>
-      await getTeamMembers({ projid: Number(projid), userid }),
+    queryFn: async () => {
+      return !projid || !userid ? [] : await getTeamMembers({ projid, userid });
+    },
   });
 
   if (isPending) {
