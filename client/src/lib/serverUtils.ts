@@ -108,7 +108,7 @@ export async function getAssert<T>({
     return data;
   } catch (err) {
     console.error(err);
-    return [] as T;
+    return [] as T; //TODO fix this
   }
 }
 

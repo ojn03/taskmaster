@@ -89,7 +89,7 @@ export function myQueryDB<T extends Table>(
           break;
 
         case "DELETE":
-          red.del(`${req.path}`); //TODO error handling
+          red.del(req.path); //TODO error handling
           break;
         default:
           break;

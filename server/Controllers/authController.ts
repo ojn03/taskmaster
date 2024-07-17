@@ -37,12 +37,6 @@ async function login(req: Request, res: Response) {
       if (hash && user_id) {
         const match = await bcrypt.compare(password, hash);
         if (match) {
-          const access_token = jwt.sign(
-            { user_id, username, email },
-            process.env.ACCESS_TOKEN_SECRET!,
-
-            { expiresIn: "1h" },
-          );
           const refresh_token = jwt.sign(
             { user_id },
             process.env.REFRESH_TOKEN_SECRET!,
@@ -52,22 +46,21 @@ async function login(req: Request, res: Response) {
           //TODO store refresh token in db/redis
           red.setex(`refresh:${user_id}`, 24 * 60 * 60, refresh_token);
           //TODO maybe encrypt tokens
-          return res
-            .status(200)
-            .cookie("refresh_token", refresh_token, {
-              httpOnly: true,
-              secure: true,
-              signed: true,
-              maxAge: 24 * 60 * 60 * 1000,
-              path: "/auth/refresh",
-            })
-            .cookie("access_token", access_token, {
-              httpOnly: true,
-              secure: true,
-              signed: true,
-              maxAge: 60 * 60 * 1000,
-            })
-            .json({ user_id, username, email });
+
+          addNewAccessToken(res, { user_id });
+          addNewRefreshToken(res, { user_id });
+          return (
+            res
+              .status(200)
+              // .cookie("refresh_token", refresh_token, {
+              //   httpOnly: true,
+              //   secure: true,
+              //   signed: true,
+              //   maxAge: 24 * 60 * 60 * 1000,
+              //   path: "/auth/refresh",
+              // })
+              .json({ user_id, username, email })
+          );
         }
       }
     }
@@ -83,16 +76,24 @@ async function login(req: Request, res: Response) {
 async function refresh(req: Request, res: Response) {
   const refresh_token = req.signedCookies.refresh_token as string;
   if (!refresh_token) {
+    console.error("no refresh token");
     return res.sendStatus(401);
   }
+
+  let user_id: string = "";
 
   jwt.verify(
     refresh_token,
     process.env.REFRESH_TOKEN_SECRET!,
     (err, decoded) => {
-      if (err) {
+      if (err || !decoded) {
         return res.sendStatus(401);
       }
+
+      console.log(req.path, "decoded", decoded);
+
+      //@ts-ignore
+      user_id = decoded.user_id;
 
       //@ts-ignore
       red.get(`refresh:${decoded?.user_id}`, (err, token) => {
@@ -130,7 +131,44 @@ async function refresh(req: Request, res: Response) {
   //   });
   // });
 
-  res.sendStatus(200);
+  return addNewAccessToken(res, { user_id }).sendStatus(200);
+}
+
+function addNewAccessToken(
+  res: Response,
+  { user_id }: { user_id: string },
+): Response {
+  const access_token = jwt.sign(
+    { user_id },
+    process.env.ACCESS_TOKEN_SECRET!,
+
+    { expiresIn: "2s" },
+  );
+  return res.cookie("access_token", access_token, {
+    httpOnly: true,
+    secure: true,
+    signed: true,
+    // expires: new Date(Date.now() + 60 * 60 * 1000),
+    maxAge: 60 * 60 * 1000,
+  });
+}
+
+function addNewRefreshToken(
+  res: Response,
+  { user_id }: { user_id: string },
+): Response {
+  const refresh_token = jwt.sign(
+    { user_id },
+    process.env.REFRESH_TOKEN_SECRET!,
+    { expiresIn: "1m" },
+  );
+  red.setex(`refresh:${user_id}`, 24 * 60 * 60, refresh_token);
+  return res.cookie("refresh_token", refresh_token, {
+    httpOnly: true,
+    secure: true,
+    signed: true,
+    maxAge: 24 * 60 * 60 * 1000,
+  });
 }
 /*todo
  *  logout
