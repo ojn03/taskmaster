@@ -7,6 +7,7 @@ import { red } from "../index";
 
 //regex patterns for input validation
 //TODO use uuids instead of auto incrementing ids
+//TODO enable multiple client sessions
 async function login(req: Request, res: Response) {
   try {
     const { username, email, password } = req.body;
@@ -49,18 +50,7 @@ async function login(req: Request, res: Response) {
 
           addNewAccessToken(res, { user_id });
           addNewRefreshToken(res, { user_id });
-          return (
-            res
-              .status(200)
-              // .cookie("refresh_token", refresh_token, {
-              //   httpOnly: true,
-              //   secure: true,
-              //   signed: true,
-              //   maxAge: 24 * 60 * 60 * 1000,
-              //   path: "/auth/refresh",
-              // })
-              .json({ user_id, username, email })
-          );
+          return res.status(200).json({ user_id, username, email });
         }
       }
     }
@@ -74,6 +64,7 @@ async function login(req: Request, res: Response) {
 }
 
 async function refresh(req: Request, res: Response) {
+  console.info("refreshing access token");
   const refresh_token = req.signedCookies.refresh_token as string;
   if (!refresh_token) {
     console.error("no refresh token");
@@ -82,56 +73,43 @@ async function refresh(req: Request, res: Response) {
 
   let user_id: string = "";
 
-  jwt.verify(
-    refresh_token,
-    process.env.REFRESH_TOKEN_SECRET!,
-    (err, decoded) => {
-      if (err || !decoded) {
-        return res.sendStatus(401);
-      }
-
-      console.log(req.path, "decoded", decoded);
-
-      //@ts-ignore
-      user_id = decoded.user_id;
-
-      //@ts-ignore
-      red.get(`refresh:${decoded?.user_id}`, (err, token) => {
-        if (err) {
-          console.error(err);
-          return res.sendStatus(401);
+  try {
+    console.info("verifying refresh token");
+    jwt.verify(
+      refresh_token,
+      process.env.REFRESH_TOKEN_SECRET!,
+      (err, decoded) => {
+        if (err || !decoded) {
+          throw new Error("error while verifying refresh token");
         }
-        if (!token) {
-          return res.sendStatus(401);
-        }
-        if (token !== refresh_token) {
-          return res.sendStatus(401);
-        }
-      });
-    },
-  );
 
-  //TODO rotate refresh token and send new access token
+        //@ts-ignore
+        user_id = decoded.user_id;
 
-  // jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!, (err, user) => {
-  //   if (err) {
-  //     console.error(err);
-  //     return res.sendStatus(403);
-  //   }
-  //   const accessToken = jwt.sign(
-  //     { user_id: user.user_id },
-  //     process.env.ACCESS_TOKEN_SECRET!,
-  //     { expiresIn: "1h" }
-  //   );
-  //   res.cookie("accessToken", accessToken, {
-  //     httpOnly: true,
-  //     secure: true,
-  //     signed: true,
-  //     maxAge: 60 * 60 * 1000,
-  //   });
-  // });
+        //@ts-ignore
+        red.get(`refresh:${decoded?.user_id}`, (err, token) => {
+          if (err) {
+            throw new Error("error while checking redis");
+          }
+          if (!token) {
+            throw new Error("no refresh token found in redis");
+          }
+          if (token !== refresh_token) {
+            throw new Error("refresh token mismatch");
+          }
+        });
+      },
+    );
+    console.info("refresh token verified, sending new access token");
+    addNewAccessToken(res, { user_id }).sendStatus(200);
+    return;
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(401);
+    return;
+  }
 
-  return addNewAccessToken(res, { user_id }).sendStatus(200);
+  //TODO maybe rotate refresh token and send new access token
 }
 
 function addNewAccessToken(
@@ -142,7 +120,7 @@ function addNewAccessToken(
     { user_id },
     process.env.ACCESS_TOKEN_SECRET!,
 
-    { expiresIn: "2s" },
+    { expiresIn: "15s" },
   );
   return res.cookie("access_token", access_token, {
     httpOnly: true,
@@ -160,7 +138,7 @@ function addNewRefreshToken(
   const refresh_token = jwt.sign(
     { user_id },
     process.env.REFRESH_TOKEN_SECRET!,
-    { expiresIn: "1m" },
+    { expiresIn: "20m" },
   );
   red.setex(`refresh:${user_id}`, 24 * 60 * 60, refresh_token);
   return res.cookie("refresh_token", refresh_token, {
@@ -177,22 +155,32 @@ function addNewRefreshToken(
  *
  */
 
-function verifyToken(req: Request, res: Response, next: NextFunction) {
+function verifyToken(req: Request, res: Response, next: NextFunction): void {
+  console.info("verifying accessToken");
   const access_token = req.signedCookies.access_token as string;
   if (!access_token) {
     console.error("no access token");
-    return res.sendStatus(401);
+    res.sendStatus(401);
+    return;
   }
-  jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET!, (err, user) => {
-    if (err) {
-      console.error(err);
-      return res.sendStatus(401);
-    }
 
-    //@ts-ignore
-    req.user = user;
-    next();
-  });
+  try {
+    jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET!, (err, user) => {
+      if (err) {
+        console.error(err);
+        throw new Error("error while verifying access token");
+      }
+
+      console.info("setting user in req");
+      //@ts-ignore
+      req.user = user;
+    });
+
+    return next();
+  } catch (error) {
+    res.sendStatus(401);
+    return;
+  }
 }
 
 async function register(req: Request, res: Response) {
