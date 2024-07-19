@@ -5,57 +5,59 @@ import { pool } from "../pool";
 import { ensureError } from "../utils";
 import { red } from "../index";
 
-//regex patterns for input validation
+function parseLoginInfo(username: string, email: string, password: string) {
+  if (!password) {
+    return null;
+  }
+  return username && !email
+    ? {
+        text: 'SELECT user_id, hash FROM "UserInfo" WHERE username = $1',
+        values: [username],
+      }
+    : !username && email
+      ? {
+          text: 'select ui.user_id, ui.hash from "UserInfo" ui join "User" u on ui.user_id = u.user_id and u.email = ($1)',
+          values: [email],
+        }
+      : null;
+  // if username provided with no email, use username
+  // if email provided with no username, use email
+  // if both username and email provided, or neither, return null
+  // only time both are provided is if user is outside of client which is not currently allowed
+}
+
 //TODO use uuids instead of auto incrementing ids
 //TODO enable multiple client sessions
 async function login(req: Request, res: Response) {
   try {
     const { username, email, password } = req.body;
-    const queryLogin =
-      // if username provided with no email, use username
-      username && !email
-        ? {
-            text: 'SELECT user_id, hash FROM "UserInfo" WHERE username = $1',
-            values: [username],
-          }
-        : // if email provided with no username, use email
-          !username && email
-          ? {
-              //TODO use join instead of subquery
-              text: 'select user_id, hash from "UserInfo" where user_id = (select user_id from "User" where email = ($1))',
-              values: [email],
-            }
-          : // if both username and email provided, or neither, return null
-            // only time both are provided is if user is outside of client which is not currently allowed
-            null;
-    //TODO check user exists first
-    if (queryLogin && password) {
-      const response = await pool.query(queryLogin);
-      if (response.rows.length === 0) {
-        return res.status(401).json("invalid credentials");
-      }
-      const { hash, user_id } = response.rows[0];
-      if (hash && user_id) {
-        const match = await bcrypt.compare(password, hash);
-        if (match) {
-          const refresh_token = jwt.sign(
-            { user_id },
-            process.env.REFRESH_TOKEN_SECRET!,
-            { expiresIn: "1d" },
-          );
+    const queryLogin = parseLoginInfo(username, email, password);
 
-          //TODO store refresh token in db/redis
-          red.setex(`refresh:${user_id}`, 24 * 60 * 60, refresh_token);
-          //TODO maybe encrypt tokens
-
-          addNewAccessToken(res, { user_id });
-          addNewRefreshToken(res, { user_id });
-          return res.status(200).json({ user_id, username, email });
-        }
-      }
+    if (!queryLogin || !password) {
+      return res.status(400).json("invalid credentials");
     }
-    res.status(401).json("invalid credentials");
-    return;
+    //TODO check user exists first
+
+    const response = await pool.query(queryLogin);
+    if (response.rows.length === 0) {
+      return res.status(401).json("invalid credentials");
+    }
+    const { hash, user_id } = response.rows[0];
+
+    if (!hash || !user_id) {
+      return res.status(401).json("invalid credentials}");
+    }
+
+    const match = await bcrypt.compare(password, hash);
+    if (!match) {
+      return res.status(401).json("invalid credentials}");
+    }
+
+    //TODO maybe encrypt tokens
+
+    addNewAccessToken(res, { user_id });
+    addNewRefreshToken(res, { user_id });
+    return res.status(200).json({ user_id, username, email });
   } catch (err) {
     console.error(err);
     const error = ensureError(err);
@@ -120,7 +122,7 @@ function addNewAccessToken(
     { user_id },
     process.env.ACCESS_TOKEN_SECRET!,
 
-    { expiresIn: "15s" },
+    { expiresIn: "30m" },
   );
   return res.cookie("access_token", access_token, {
     httpOnly: true,
@@ -138,7 +140,7 @@ function addNewRefreshToken(
   const refresh_token = jwt.sign(
     { user_id },
     process.env.REFRESH_TOKEN_SECRET!,
-    { expiresIn: "20m" },
+    { expiresIn: "1d" },
   );
   red.setex(`refresh:${user_id}`, 24 * 60 * 60, refresh_token);
   return res.cookie("refresh_token", refresh_token, {
