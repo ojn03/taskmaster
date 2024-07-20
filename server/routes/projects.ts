@@ -28,7 +28,11 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
 
   //add a user to a project
   const ProjectUser = `${ProjectUsers}/:userid`;
-  app.post(ProjectUser, projectController.createProjectUser);
+  app
+    .use(ProjectUser, (req, res) => {
+      //TODO query user's allowed priveleges and add to req object
+    })
+    .post(ProjectUser, projectController.createProjectUser);
 
   //gets first, last, email and roles of all members of a team given user in the team and the project id
   const ProjectUserTeam = `${ProjectUsers}/:userid/team/`;

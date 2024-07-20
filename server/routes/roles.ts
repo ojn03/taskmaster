@@ -4,14 +4,23 @@ import { MyQuery, Role } from "../DB/QueryBuilder";
 
 export default function roleRoutes(app: Express, base: string = "/roles") {
   const role = `${base}/:role_id`;
-  //get,edit a specific role's info
-  app.get(role, (req, res) => {
-    //TODO
-    const role_id = req.params.role_id;
-    const Query = new MyQuery<Role>("Role").Select().Where({ role_id });
+  app
+    .route(role)
+    .get((req, res) => {
+      const role_id = req.params.role_id;
+      const Query = new MyQuery<Role>("Role").Select().Where({ role_id });
 
-    myQueryDB(req, res, Query);
-  });
+      myQueryDB(req, res, Query);
+    })
+    .patch((req, res) => {
+      const role_id = req.params.role_id;
+      const { title: role_title, description: role_description } = req.body;
+      const Query = new MyQuery<Role>("Role")
+        .Update({ role_title, role_description })
+        .Where({ role_id })
+        .Returning("*");
+      myQueryDB(req, res, Query);
+    });
 
   app.post(base, (req, res) => {
     const { role_title, role_description } = req.body;
