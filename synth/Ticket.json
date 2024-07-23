@@ -1,47 +1,46 @@
 {
-    "type": "array",
-    "length": 2000,
-    "content": {
-        "type": "object",
-        "tick_id": {
-            "type": "number",
-            "id": {},
-            "subtype": "i32"
-        },
-        "ticket_title": {
-            "type": "string",
-            "faker": {
-                "generator": "first_name"
-            }
-        },
-        "ticket_description": {
-            "type": "string",
-            "faker": {
-                "generator": "bs"
-            }
-        },
-        "ticket_priority": {
-            "type": "number",
-            "range": {
-                "low": 0,
-                "high": 5,
-                "step": 1
-            },
-            "subtype": "i32"
-
-        },
-        "proj_id": {
-            "type": "same_as",
-            "ref": "Project.content.proj_id"
-        },
-        "ticket_progress": {
-            "type": "number",
-            "range": {
-                "low": 0,
-                "high": 3,
-                "step": 1
-            },
-            "subtype": "i32"
-          }
+  "type": "array",
+  "length": 2000,
+  "content": {
+    "type": "object",
+    "tick_id": {
+      "type": "string",
+      "uuid": {},
+      "subtype": "i32"
+    },
+    "ticket_title": {
+      "type": "string",
+      "faker": {
+        "generator": "first_name"
+      }
+    },
+    "ticket_description": {
+      "type": "string",
+      "faker": {
+        "generator": "bs"
+      }
+    },
+    "ticket_priority": {
+      "type": "number",
+      "range": {
+        "low": 0,
+        "high": 5,
+        "step": 1
+      },
+      "subtype": "i32"
+    },
+    "proj_id": {
+      "type": "same_as",
+      "ref": "Project.content.proj_id"
+    },
+    "ticket_progress": {
+      "type": "number",
+      "range": {
+        "low": 0,
+        "high": 3,
+        "step": 1
+      },
+      "subtype": "i32"
     }
+  }
 }

@@ -1,25 +1,24 @@
 {
-    "type": "array",
-    "length": 50,
-    "content": {
-        "type": "object",
-        "proj_id": {
-            "type": "number",
-            "id":{},
-            "subtype": "i32"
-        },
-        "proj_name": {
-            "type": "string",
-            "faker": {
-                "generator": "company_name"
-            }
-        },
-        "proj_description": {
-            "type": "string",
-            "faker": {
-                "generator": "catch_phrase"
-            }
-        }
-
+  "type": "array",
+  "length": 50,
+  "content": {
+    "type": "object",
+    "proj_id": {
+      "type": "string",
+      "uuid": {},
+      "subtype": "i32"
+    },
+    "proj_name": {
+      "type": "string",
+      "faker": {
+        "generator": "company_name"
+      }
+    },
+    "proj_description": {
+      "type": "string",
+      "faker": {
+        "generator": "catch_phrase"
+      }
     }
+  }
 }

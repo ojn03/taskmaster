@@ -1,29 +1,29 @@
 {
-    "type": "array",
-    "length":250,
+  "type": "array",
+  "length": 250,
 
-    "content": {
-        "type": "object",
-        "team_id": {
-            "type": "number",
-            "id":{},
-            "subtype": "i32"
-        },
-        "team_name": {
-            "type": "string",
-            "faker": {
-                "generator": "profession"
-            }
-        },
-        "team_description": {
-            "type": "string",
-            "faker": {
-                "generator": "bs"
-            }
-        },
-        "proj_id": {
-            "type": "same_as",
-            "ref": "Project.content.proj_id"
-        }
+  "content": {
+    "type": "object",
+    "team_id": {
+      "type": "string",
+      "uuid": {},
+      "subtype": "i32"
+    },
+    "team_name": {
+      "type": "string",
+      "faker": {
+        "generator": "profession"
+      }
+    },
+    "team_description": {
+      "type": "string",
+      "faker": {
+        "generator": "bs"
+      }
+    },
+    "proj_id": {
+      "type": "same_as",
+      "ref": "Project.content.proj_id"
     }
+  }
 }

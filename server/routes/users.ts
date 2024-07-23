@@ -1,6 +1,4 @@
 import type { Express } from "express";
-import { MyQuery, User } from "../DB/QueryBuilder";
-import { QDB, getDB, myQueryDB } from "../utils";
 import * as usersController from "../Controllers/usersController";
 
 const userRoutes = (app: Express, basePath: string = "/users") => {
@@ -14,9 +12,7 @@ const userRoutes = (app: Express, basePath: string = "/users") => {
   app.get(UserProjects, usersController.getProjects);
 
   //create a new project for a given user
-  app.post(basePath, (req, res) => {
-    usersController.createProject;
-  });
+  app.post(basePath, usersController.createProject);
 
   //get all the tickets for a given user
   const UserTickets = `${basePath}/:userid/tickets`;

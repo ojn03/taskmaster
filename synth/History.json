@@ -1,24 +1,24 @@
 {
-	"type": "array",
-	"length": 1500,
-	"content": {
-		"type": "object",
-		"history_id": {
-			"type": "number",
-			"id": {},
-			"subtype": "i32"
-		},
-		"event_title": {
-			"type": "same_as",
-			"ref": "Event.content.event_title"
-		},
-		"user_id": {
-			"type": "same_as",
-			"ref": "User.content.user_id"
-		},
-		"proj_id": {
-			"type": "same_as",
-			"ref": "Project.content.proj_id"
-		}
-	}
+  "type": "array",
+  "length": 1500,
+  "content": {
+    "type": "object",
+    "history_id": {
+      "type": "string",
+      "uuid": {},
+      "subtype": "i32"
+    },
+    "event_title": {
+      "type": "same_as",
+      "ref": "Event.content.event_title"
+    },
+    "user_id": {
+      "type": "same_as",
+      "ref": "User.content.user_id"
+    },
+    "proj_id": {
+      "type": "same_as",
+      "ref": "Project.content.proj_id"
+    }
+  }
 }

@@ -1,28 +1,28 @@
 {
-	"type": "array",
-	"length": 400,
-	"content": {
-		"type": "object",
-		"sprint_id": {
-			"type": "number",
-			"id": {},
-			"subtype": "i32"
-		},
-		"sprint_name": {
-			"type": "string",
-			"faker": {
-				"generator": "color"
-			}
-		},
-		"sprint_description": {
-			"type": "string",
-			"faker": {
-				"generator": "bs"
-			}
-		},
-		"proj_id": {
-			"type": "same_as",
-			"ref": "Project.content.proj_id"
-		}
-	}
+  "type": "array",
+  "length": 400,
+  "content": {
+    "type": "object",
+    "sprint_id": {
+      "type": "string",
+      "uuid": {},
+      "subtype": "i32"
+    },
+    "sprint_name": {
+      "type": "string",
+      "faker": {
+        "generator": "color"
+      }
+    },
+    "sprint_description": {
+      "type": "string",
+      "faker": {
+        "generator": "bs"
+      }
+    },
+    "proj_id": {
+      "type": "same_as",
+      "ref": "Project.content.proj_id"
+    }
+  }
 }

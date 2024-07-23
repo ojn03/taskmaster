@@ -1,29 +1,29 @@
 {
-    "type": "array",
-    "length":250,
+  "type": "array",
+  "length": 250,
 
-    "content": {
-        "type": "object",
-        "role_id": {
-            "type": "number",
-            "id":{},
-            "subtype": "i32"
-        },
-        "role_title": {
-            "type": "string",
-            "faker": {
-                "generator": "profession"
-            }
-        },
-        "role_description": {
-            "type": "string",
-            "faker": {
-                "generator": "bs"
-            }
-        },
-        "proj_id": {
-            "type": "same_as",
-            "ref": "Project.content.proj_id"
-        }
+  "content": {
+    "type": "object",
+    "role_id": {
+      "type": "string",
+      "uuid": {},
+      "subtype": "i32"
+    },
+    "role_title": {
+      "type": "string",
+      "faker": {
+        "generator": "profession"
+      }
+    },
+    "role_description": {
+      "type": "string",
+      "faker": {
+        "generator": "bs"
+      }
+    },
+    "proj_id": {
+      "type": "same_as",
+      "ref": "Project.content.proj_id"
     }
+  }
 }

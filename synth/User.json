@@ -1,36 +1,36 @@
 {
-    "type": "array",
-    "length": 1000,
-    "content": {
-        "type": "object",
-        "user_id": {
-            "type": "unique",
-            "content": {
-                "type": "number",
-                "id": {},
-                "subtype": "i32"
-            }
-        },
-        "first": {
-            "type": "string",
-            "faker": {
-                "generator": "first_name"
-            }
-        },
-        "last": {
-            "type": "string",
-            "faker": {
-                "generator": "last_name"
-            }
-        },
-        "email": {
-            "type": "unique",
-            "content": {
-                "type": "string",
-                "faker": {
-                    "generator": "safe_email"
-                }
-            }
+  "type": "array",
+  "length": 1000,
+  "content": {
+    "type": "object",
+    "user_id": {
+      "type": "unique",
+      "content": {
+        "type": "string",
+        "uuid": {},
+        "subtype": "i32"
+      }
+    },
+    "first": {
+      "type": "string",
+      "faker": {
+        "generator": "first_name"
+      }
+    },
+    "last": {
+      "type": "string",
+      "faker": {
+        "generator": "last_name"
+      }
+    },
+    "email": {
+      "type": "unique",
+      "content": {
+        "type": "string",
+        "faker": {
+          "generator": "safe_email"
         }
+      }
     }
+  }
 }

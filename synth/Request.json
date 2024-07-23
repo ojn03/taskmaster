@@ -1,28 +1,26 @@
 {
-    "type": "array",
-    "length": 2000,
-    "content": {
-        "type": "object",
-        "req_id": {
-            "type": "number",
-            "id": {},
-            "subtype": "i32"
-        },
-        "to_user": {
-            "type": "same_as",
-            "ref": "User.content.user_id"
-        },
-        "from_user": {
-            "type": "same_as",
-            "ref": "User.content.user_id"
-        },
-        "req_description": {
-            "type": "string",
-            "faker": {
-                "generator": "bs"
-            }
-        }
-
-
+  "type": "array",
+  "length": 2000,
+  "content": {
+    "type": "object",
+    "req_id": {
+      "type": "string",
+      "uuid": {},
+      "subtype": "i32"
+    },
+    "to_user": {
+      "type": "same_as",
+      "ref": "User.content.user_id"
+    },
+    "from_user": {
+      "type": "same_as",
+      "ref": "User.content.user_id"
+    },
+    "req_description": {
+      "type": "string",
+      "faker": {
+        "generator": "bs"
+      }
     }
+  }
 }

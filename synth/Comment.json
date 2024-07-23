@@ -10,8 +10,8 @@
       }
     },
     "comment_id": {
-      "type": "number",
-      "id": {},
+      "type": "string",
+      "uuid": {},
       "subtype": "i32"
     },
     "datePosted": {

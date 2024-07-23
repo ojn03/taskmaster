@@ -1,6 +1,6 @@
 -- sql schema
 CREATE TABLE "User"(
-  "user_id" serial PRIMARY KEY,
+  "user_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "first" varchar(50) NOT NULL,
   "last" varchar(50) NOT NULL,
   "email" varchar(100) UNIQUE NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE "User"(
 --TODO sync with synthDB
 --TODO add createdAt and updatedAt for all tables
 CREATE TABLE "UserInfo"(
-  "user_id" int PRIMARY KEY REFERENCES "User"(user_id) on delete cascade,
+  "user_id" uuid PRIMARY KEY REFERENCES "User"(user_id) on delete cascade,
   "username" varchar(50) UNIQUE NOT NULL,
   "hash" varchar(250) NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -18,14 +18,14 @@ CREATE TABLE "UserInfo"(
 );
 
 CREATE TABLE "Request"(
-  "req_id" serial PRIMARY KEY,
+  "req_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "req_description" varchar(100) NOT NULL,
-  "from_user" int NOT NULL REFERENCES "User"(user_id) on delete cascade,
-  "to_user" int NOT NULL REFERENCES "User"(user_id) on delete cascade
+  "from_user" uuid NOT NULL REFERENCES "User"(user_id) on delete cascade,
+  "to_user" uuid NOT NULL REFERENCES "User"(user_id) on delete cascade
 );
 
 CREATE TABLE "Project"(
-  "proj_id" serial PRIMARY KEY,
+  "proj_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "proj_name" varchar(50) NOT NULL,
   "proj_description" varchar(250) NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -33,25 +33,25 @@ CREATE TABLE "Project"(
 );
 
 CREATE TABLE "Role"(
-  "role_id" serial PRIMARY KEY,
+  "role_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "role_title" varchar(50) NOT NULL,
   --rename to role_title
   "role_description" varchar(100) NOT NULL,
   -- TODO create trigger to disable updates on proj_id and all other foreign keys
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade
+  "proj_id" uuid NOT NULL REFERENCES "Project"(proj_id) on delete cascade
 );
 
 CREATE TABLE "Role_User_Project"(
-  "role_id" int NOT NULL REFERENCES "Role"(role_id) on delete cascade,
-  "user_id" int NOT NULL REFERENCES "User"(user_id) on delete cascade,
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade,
+  "role_id" uuid NOT NULL REFERENCES "Role"(role_id) on delete cascade,
+  "user_id" uuid NOT NULL REFERENCES "User"(user_id) on delete cascade,
+  "proj_id" uuid NOT NULL REFERENCES "Project"(proj_id) on delete cascade,
   PRIMARY KEY ("proj_id", "user_id")
   --TODO fix duplication of proj_id. Roleid already has proj_id
 );
 
 --static table
 CREATE TABLE "Permission"(
-  "permission_id" serial PRIMARY KEY,
+  "permission_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "permission_name" varchar(50) NOT NULL,
   "permission_description" varchar(100) NOT NULL
 );
@@ -65,43 +65,43 @@ CREATE TYPE "perm" AS enum(
 );
 
 CREATE TABLE "Role_Permission"(
-  "role_id" int NOT NULL REFERENCES "Role"(role_id) on delete cascade,
-  -- "permission_id" int NOT NULL REFERENCES "Permission"(Permission_id),
+  "role_id" uuid NOT NULL REFERENCES "Role"(role_id) on delete cascade,
+  -- "permission_id" uuid NOT NULL REFERENCES "Permission"(Permission_id),
   "Permission" "perm" NOT NULL,
   PRIMARY KEY ("role_id", "Permission")
 );
 
 CREATE TABLE "Team"(
-  "team_id" serial PRIMARY KEY,
+  "team_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "team_name" varchar(50) NOT NULL,
   "team_description" varchar(100) NOT NULL,
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade
+  "proj_id" uuid NOT NULL REFERENCES "Project"(proj_id) on delete cascade
 );
 
 CREATE TABLE "Team_User_Project"(
-  "team_id" int NOT NULL REFERENCES "Team"(team_id) on delete cascade,
-  "user_id" int NOT NULL REFERENCES "User"(user_id) on delete cascade,
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade,
+  "team_id" uuid NOT NULL REFERENCES "Team"(team_id) on delete cascade,
+  "user_id" uuid NOT NULL REFERENCES "User"(user_id) on delete cascade,
+  "proj_id" uuid NOT NULL REFERENCES "Project"(proj_id) on delete cascade,
   PRIMARY KEY ("user_id", "proj_id")
   --TODO dupliation of proj_id
 );
 
 CREATE TABLE "Sprint"(
-  "sprint_id" serial PRIMARY KEY,
+  "sprint_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "sprint_name" varchar(50) NOT NULL,
   "sprint_description" varchar(100) NOT NULL,
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade
+  "proj_id" uuid NOT NULL REFERENCES "Project"(proj_id) on delete cascade
 );
 
 CREATE TABLE "User_Sprint"(
-  "user_id" int NOT NULL REFERENCES "User"(user_id) on delete cascade,
-  "sprint_id" int NOT NULL REFERENCES "Sprint"(sprint_id) on delete cascade,
+  "user_id" uuid NOT NULL REFERENCES "User"(user_id) on delete cascade,
+  "sprint_id" uuid NOT NULL REFERENCES "Sprint"(sprint_id) on delete cascade,
   PRIMARY KEY ("user_id", "sprint_id")
 );
 
 --static table
 CREATE TABLE "Event"(
-  "event_id" serial PRIMARY KEY,
+  "event_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "event_title" varchar(50) UNIQUE NOT NULL
   -- TODO consider enum
 );
@@ -115,43 +115,43 @@ CREATE TYPE "ev" AS enum(
 );
 
 CREATE TABLE "History"(
-  "history_id" serial PRIMARY KEY,
+  "history_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "event" "ev" NOT NULL,
-  -- "event_title" int NOT NULL REFERENCES "Event"(event_title),
-  "user_id" int NOT NULL REFERENCES "User"(user_id),
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id),
+  -- "event_title" uuid NOT NULL REFERENCES "Event"(event_title),
+  "user_id" uuid NOT NULL REFERENCES "User"(user_id),
+  "proj_id" uuid NOT NULL REFERENCES "Project"(proj_id),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- TODO maybe make ticket_project composite key
 CREATE TABLE "Ticket"(
-  "tick_id" serial PRIMARY KEY,
+  "tick_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "ticket_title" varchar(50) NOT NULL,
   "ticket_description" varchar(250) NOT NULL,
   "ticket_progress" int NOT NULL CHECK ("progress" BETWEEN 0 AND 2) default 0,
   "ticket_priority" int NOT NULL CHECK ("priority" BETWEEN 0 AND 4) default 0, 
-  "proj_id" int NOT NULL REFERENCES "Project"(proj_id) on delete cascade,
+  "proj_id" uuid NOT NULL REFERENCES "Project"(proj_id) on delete cascade,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "User_Ticket"(
-  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id) on delete cascade,
-  "user_id" int NOT NULL REFERENCES "User"(user_id) on delete cascade,
+  "tick_id" uuid NOT NULL REFERENCES "Ticket"(tick_id) on delete cascade,
+  "user_id" uuid NOT NULL REFERENCES "User"(user_id) on delete cascade,
   PRIMARY KEY ("tick_id", "user_id")
 );
 
 CREATE TABLE "Sprint_Ticket"(
-  "sprint_id" int NOT NULL REFERENCES "Sprint"(sprint_id) on delete cascade,
-  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id) on delete cascade,
+  "sprint_id" uuid NOT NULL REFERENCES "Sprint"(sprint_id) on delete cascade,
+  "tick_id" uuid NOT NULL REFERENCES "Ticket"(tick_id) on delete cascade,
   PRIMARY KEY ("sprint_id", "tick_id")
 );
 
 CREATE TABLE "Comment"(
-  "comment_id" serial PRIMARY KEY,
+  "comment_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "comment" varchar(250) NOT NULL,
-  "user_id" int NOT NULL REFERENCES "User"(user_id) on delete cascade,
-  "tick_id" int NOT NULL REFERENCES "Ticket"(tick_id) on delete cascade,
+  "user_id" uuid NOT NULL REFERENCES "User"(user_id) on delete cascade,
+  "tick_id" uuid NOT NULL REFERENCES "Ticket"(tick_id) on delete cascade,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -173,7 +173,7 @@ out error text --error message
 LANGUAGE plpgsql
 AS $$
 DECLARE
-  id integer;
+  id uuid;
 BEGIN
   IF EXISTS (
     SELECT
@@ -214,7 +214,7 @@ CREATE OR REPLACE PROCEDURE loginEmail(em varchar(100), hsh varchar(250), out er
 LANGUAGE plpgsql
 AS $$
 DECLARE
-  id integer;
+  id uuid;
 BEGIN
   IF EXISTS (
     SELECT
@@ -242,7 +242,7 @@ out error text --error message
 LANGUAGE plpgsql
 AS $$
 DECLARE
-  id integer;
+  id uuid;
 BEGIN
   IF EXISTS (
     SELECT
@@ -283,12 +283,12 @@ $$
 LANGUAGE plpgsql
 VOLATILE;
 
-CREATE OR REPLACE FUNCTION createProject(user_id INT, project_name varchar(50),project_description varchar(250) )
+CREATE OR REPLACE FUNCTION createProject(user_id uuid, project_name varchar(50),project_description varchar(250) )
 -- TODO add error handling
-RETURNS TABLE(roleid INT, userid INT, projid INT) AS $$
+RETURNS TABLE(roleid uuid, userid uuid, projid uuid) AS $$
 DECLARE
-    new_project_id INT;
-    new_role_id INT;
+    new_project_id uuid;
+    new_role_id uuid;
 BEGIN
     -- Create a new project
     INSERT INTO "Project" ("proj_name", "proj_description")
@@ -309,11 +309,11 @@ END;
 $$ LANGUAGE plpgsql;
 
 --gets first, last, email and roles of all members of a team given a user in the team and the project id
-CREATE OR REPLACE FUNCTION getTeam(u_id integer, p_id integer)
+CREATE OR REPLACE FUNCTION getTeam(u_id uuid, p_id uuid)
   RETURNS TABLE(
-    proj_id integer,
-    role_id integer,
-    user_id integer,
+    proj_id uuid,
+    role_id uuid,
+    user_id uuid,
     FIRST varchar(50),
     LAST varchar(50),
     email varchar(100),
@@ -322,7 +322,7 @@ CREATE OR REPLACE FUNCTION getTeam(u_id integer, p_id integer)
   )
   AS $$
 DECLARE
-  t_id integer;
+  t_id uuid;
 BEGIN
   SELECT
     team_id

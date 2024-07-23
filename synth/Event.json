@@ -1,24 +1,24 @@
 {
-	"type": "array",
-	"length": 10,
-	"content": {
-		"type": "object",
-		"event_id": {
-			"type": "number",
-			"id": {},
-			"subtype": "i32"
-		},
-		"event_title": {
-			"type": "string",
-			"format": {
-				"format": "event {num}",
-				"arguments": {
-					"num": {
-						"type": "number",
-						"id": {}
-					}
-				}
-			}
-		}
-	}
+  "type": "array",
+  "length": 10,
+  "content": {
+    "type": "object",
+    "event_id": {
+      "type": "string",
+      "uuid": {},
+      "subtype": "i32"
+    },
+    "event_title": {
+      "type": "string",
+      "format": {
+        "format": "event {num}",
+        "arguments": {
+          "num": {
+            "type": "string",
+            "uuid": {}
+          }
+        }
+      }
+    }
+  }
 }
