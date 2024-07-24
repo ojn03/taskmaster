@@ -6,8 +6,7 @@
     "type": "object",
     "team_id": {
       "type": "string",
-      "uuid": {},
-      "subtype": "i32"
+      "uuid": {}
     },
     "team_name": {
       "type": "string",

@@ -5,8 +5,7 @@
     "type": "object",
     "proj_id": {
       "type": "string",
-      "uuid": {},
-      "subtype": "i32"
+      "uuid": {}
     },
     "proj_name": {
       "type": "string",

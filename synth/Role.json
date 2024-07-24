@@ -6,8 +6,7 @@
     "type": "object",
     "role_id": {
       "type": "string",
-      "uuid": {},
-      "subtype": "i32"
+      "uuid": {}
     },
     "role_title": {
       "type": "string",

@@ -5,8 +5,7 @@
     "type": "object",
     "history_id": {
       "type": "string",
-      "uuid": {},
-      "subtype": "i32"
+      "uuid": {}
     },
     "event_title": {
       "type": "same_as",

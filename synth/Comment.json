@@ -11,8 +11,7 @@
     },
     "comment_id": {
       "type": "string",
-      "uuid": {},
-      "subtype": "i32"
+      "uuid": {}
     },
     "datePosted": {
       "type": "date_time",

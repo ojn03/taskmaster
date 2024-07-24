@@ -5,8 +5,7 @@
     "type": "object",
     "req_id": {
       "type": "string",
-      "uuid": {},
-      "subtype": "i32"
+      "uuid": {}
     },
     "to_user": {
       "type": "same_as",

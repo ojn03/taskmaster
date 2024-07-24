@@ -5,8 +5,7 @@
     "type": "object",
     "tick_id": {
       "type": "string",
-      "uuid": {},
-      "subtype": "i32"
+      "uuid": {}
     },
     "ticket_title": {
       "type": "string",

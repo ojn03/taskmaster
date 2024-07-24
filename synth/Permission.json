@@ -5,8 +5,7 @@
     "type": "object",
     "permission_id": {
       "type": "string",
-      "uuid": {},
-      "subtype": "i32"
+      "uuid": {}
     },
     "permission_name": {
       "type": "string",

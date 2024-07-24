@@ -5,8 +5,7 @@
     "type": "object",
     "sprint_id": {
       "type": "string",
-      "uuid": {},
-      "subtype": "i32"
+      "uuid": {}
     },
     "sprint_name": {
       "type": "string",
