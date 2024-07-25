@@ -13,11 +13,6 @@
       "type": "string",
       "uuid": {}
     },
-    "datePosted": {
-      "type": "date_time",
-      "format": "%Y-%m-%d",
-      "subtype": "naive_date"
-    },
     "tick_id": {
       "type": "same_as",
       "ref": "Ticket.content.tick_id"
