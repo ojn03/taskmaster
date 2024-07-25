@@ -31,6 +31,17 @@ const projectRoutes = (app: Express, basePath: string = "/projects") => {
   app
     .use(ProjectUser, (req, res) => {
       //TODO query user's allowed priveleges and add to req object
+
+      const { projid, userid } = req.params;
+      //TODO
+      const getPermissionsQuery = `select * from "Role_User_Project" rup where rup.proj_id = $1 and rup.user_id = $2 
+      join "Role" r on r.role_id = rup.role_id
+      join "Role_Permission" rp on rp.role_id = r.role_id
+      join "Permission" p on p.permission_id = rp.permission_id
+      `;
+
+      //@ts-ignore
+      req.permissions = [];
     })
     .post(ProjectUser, projectController.createProjectUser);
 
