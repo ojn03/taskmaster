@@ -1,4 +1,4 @@
-import { getAssert } from "@/lib/serverUtils";
+import { getAssert } from "@/lib/utils";
 import * as schemas from "../lib/schemas";
 
 type UserRole = schemas.User & schemas.Role;
@@ -56,7 +56,7 @@ export async function getProjectInfo({
     isArray: true,
   });
 
-  return await data;
+  return data;
 }
 
 export async function getProjectRoles({

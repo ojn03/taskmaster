@@ -1,5 +1,4 @@
-import { getAssert } from "@/lib/serverUtils";
-import { patch } from "@/lib/serverUtils";
+import { getAssert, patch } from "@/lib/utils";
 import { AtLeast, Ticket } from "../lib/schemas";
 
 export async function getTicketInfo({

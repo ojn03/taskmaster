@@ -1,5 +1,6 @@
-import { post } from "@/lib/serverUtils";
+import { post } from "@/lib/utils";
 
+//TODO parse uuids
 interface Login {
   password: string;
 }

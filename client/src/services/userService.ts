@@ -1,4 +1,4 @@
-import { getAssert } from "@/lib/serverUtils";
+import { getAssert } from "@/lib/utils";
 import { Project, User } from "../lib/schemas";
 
 export const getUser = async (user_id: string): Promise<User> => {

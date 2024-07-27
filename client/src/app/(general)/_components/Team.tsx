@@ -1,10 +1,10 @@
 "use client";
-//TODO skeleton loading
 import { userRoleColumns } from "@/components/Columns";
 import DataTable from "@/components/data-table";
 import { getTeamMembers } from "@/services/projectService";
 import { ProjectStore, SessionStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {}
 
@@ -24,10 +24,14 @@ export default function Team({}: Props) {
   });
 
   if (isPending) {
-    return <div>loading...</div>;
+    return <TeamSkeleton />;
   }
   if (isError) {
     return <div>error...</div>;
   }
   return <DataTable columns={userRoleColumns} data={teamMembers} />;
+}
+
+function TeamSkeleton() {
+  return <Skeleton className="w-[200px] h-10 bg-gray-200" />;
 }
