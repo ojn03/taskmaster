@@ -46,6 +46,7 @@ function getProjectUserTickets(req: Request, res: Response) {
 }
 
 function getProjectUsers(req: Request, res: Response) {
+  console.log("getting project users");
   const usersQuery =
     'SELECT u.*, r.role_id, role_title, role_description FROM "User" u join "Role_User_Project" rup on u.user_id = rup.user_id join "Role" r on r.proj_id = rup.proj_id and r.proj_id = $1';
   getDB(usersQuery, "projid")(req, res);
@@ -53,6 +54,7 @@ function getProjectUsers(req: Request, res: Response) {
 
 function getProjectUserTeam(req: Request, res: Response) {
   const userTeamQuery = "SELECT * FROM getTeam($1, $2)";
+  console.log("gettting team ", req.params);
   getDB(userTeamQuery, "userid", "projid")(req, res);
 }
 

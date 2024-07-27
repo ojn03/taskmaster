@@ -67,6 +67,6 @@ export function assertIs<T>(
 
   assert(
     firstError === undefined,
-    `error while validating schema ${schema.title && schema.title}: ${firstError?.message}: with data: ${JSON.stringify(data)}`,
+    `error while validating schema ${firstError?.message}: with data: ${JSON.stringify(data)}`,
   );
 } //TODO fix caching

@@ -105,9 +105,10 @@ export async function getAssert<T>({
   try {
     const data = await get(route, options);
     assertIs<T>(schemas, data, isArray);
+    console.log(`getAssert for route ${route} successful. data: `, data);
     return data;
   } catch (err) {
-    console.error(err);
+    console.error(`error in route ${route}`, err);
     return [] as T; //TODO fix this
   }
 }

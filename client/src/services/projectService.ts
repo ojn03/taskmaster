@@ -94,6 +94,7 @@ export async function getTeamMembers({
   userid: string;
   projid: string;
 }): Promise<UserRole[]> {
+  console.log("getting team for ", { userid, projid });
   const data = await getAssert<UserRole[]>({
     route: `projects/${projid}/users/${userid}/team`,
     schemas: [schemas.User, schemas.Role],

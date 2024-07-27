@@ -1,43 +1,36 @@
-import { Type, Static } from "@sinclair/typebox";
+import { Type, type Static, type TProperties } from "@sinclair/typebox";
 
-export const User = Type.Object(
-  {
-    user_id: Type.Union([Type.String(), Type.Number()]), //TODO convert all ids to strings or uuids
-    first: Type.String(),
-    last: Type.String(),
-    email: Type.String(),
-  },
-  { additionalProperties: false },
-);
+function StrictObject<T extends TProperties>(properties: T) {
+  return Type.Object(properties, { additionalProperties: false });
+}
+
+export const User = StrictObject({
+  user_id: Type.String(),
+  first: Type.String(),
+  last: Type.String(),
+  email: Type.String(),
+});
 
 export type User = Static<typeof User>;
 
-export const Project = Type.Object(
-  {
-    proj_id: Type.Union([Type.String(), Type.Number()]),
-    proj_name: Type.String(),
-    proj_description: Type.String(),
-  },
-  { additionalProperties: false },
-);
+export const Project = StrictObject({
+  proj_id: Type.String(),
+  proj_name: Type.String(),
+  proj_description: Type.String(),
+});
 
 export type Project = Static<typeof Project>;
 
-export const Ticket = Type.Object(
-  {
-    proj_id: Type.Union([Type.String(), Type.Number()]),
-    tick_id: Type.Union([Type.String(), Type.Number()]),
-    ticket_title: Type.String(),
-    ticket_description: Type.String(),
-    ticket_priority: Type.Number(),
-    ticket_progress: Type.Number(),
-    created_at: Type.Optional(Type.String()),
-    updated_at: Type.Optional(Type.String()),
-  },
-  { additionalProperties: false },
-);
-
-Ticket.title = "Ticket";
+export const Ticket = StrictObject({
+  proj_id: Type.String(),
+  tick_id: Type.String(),
+  ticket_title: Type.String(),
+  ticket_description: Type.String(),
+  ticket_priority: Type.Number(),
+  ticket_progress: Type.Number(),
+  created_at: Type.Optional(Type.String()),
+  updated_at: Type.Optional(Type.String()),
+});
 
 export type Ticket = Static<typeof Ticket>;
 
@@ -47,26 +40,20 @@ export type Team = {
   role_id: string;
 };
 
-export const Role = Type.Object(
-  {
-    role_id: Type.Union([Type.String(), Type.Number()]),
-    role_title: Type.String(),
-    role_description: Type.String(),
-    proj_id: Type.Union([Type.String(), Type.Number()]),
-  },
-  { additionalProperties: false },
-);
+export const Role = StrictObject({
+  role_id: Type.String(),
+  role_title: Type.String(),
+  role_description: Type.String(),
+  proj_id: Type.String(),
+});
 
-export const History = Type.Object(
-  {
-    history_id: Type.Union([Type.String(), Type.Number()]),
-    proj_id: Type.Union([Type.String(), Type.Number()]),
-    user_id: Type.Union([Type.String(), Type.Number()]),
-    event_title: Type.String(),
-    created_at: Type.String(),
-  },
-  { additionalProperties: false },
-);
+export const History = StrictObject({
+  history_id: Type.String(),
+  proj_id: Type.String(),
+  user_id: Type.String(),
+  event_title: Type.String(),
+  created_at: Type.String(),
+});
 
 export type History = Static<typeof History>;
 

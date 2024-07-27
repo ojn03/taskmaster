@@ -18,7 +18,8 @@ export default function UserProjects({ className }: UserProjectsProps) {
     data: projects,
   } = useQuery({
     queryKey: ["getProjects"],
-    queryFn: async () => await getProjects({ userid: Number(userid) }),
+    queryFn: async () =>
+      !!userid ? await getProjects({ userid: userid }) : [],
   });
 
   const { currentProject, setProject } = ProjectStore();

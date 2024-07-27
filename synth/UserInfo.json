@@ -1,24 +1,24 @@
 {
-    "type": "array",
-    "length": 1000,
-    "content": {
-        "type": "object",
-        "user_id": {
-            "type": "unique",
-            "content": {
-                "type": "same_as",
-                "ref": "User.content.user_id"
-            }
-        },
-        "username": {
-            "type": "unique",
-            "content": {
-                "type": "string",
-                "faker": {
-                    "generator": "username"
-                }
-            }
-        },
-        "hash": "$2b$10$XpFrXLdqz8jXXSzAFuOj2ee/LaXFb2htUg9nRDrU2I5vZjevnjkDK"
-    }
+  "type": "array",
+  "length": 1000,
+  "content": {
+    "type": "object",
+    "user_id": {
+      "type": "unique",
+      "content": {
+        "type": "same_as",
+        "ref": "User.content.user_id"
+      }
+    },
+    "username": {
+      "type": "unique",
+      "content": {
+        "type": "string",
+        "faker": {
+          "generator": "username"
+        }
+      }
+    },
+    "hash": "$2a$12$WGOOdA1rwbBhhY034EULAO6x6hF96YMVJcydGUv2URZTwhBWmtpty"
+  }
 }

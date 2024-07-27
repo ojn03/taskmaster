@@ -8,6 +8,7 @@ interface ProjectState {
 export const ProjectStore = create<ProjectState>((set) => ({
   currentProject: "",
   setProject(id) {
+    console.log("setting current proj_id to ", id);
     set({ currentProject: id });
   },
 }));
@@ -23,6 +24,7 @@ export const SessionStore = create<sessionState>((set) => ({
   user_id: "",
   access_token: "",
   setCurrentUser(user_id) {
+    console.log("setting current user_id to ", user_id);
     set({ user_id });
   },
   erase() {

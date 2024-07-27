@@ -19,7 +19,13 @@ export default function Ticket() {
 
   return (
     <div className="w-24 h-24 bg-pink-900 text-pretty">
-      <button onClick={() => server_getTicket({ projid: 1 })}>get info</button>
+      <button
+        onClick={() =>
+          server_getTicket({ projid: "e662e6ec-ed5d-8bec-629c-f15dd9ffa4cd" })
+        }
+      >
+        get info
+      </button>
       {data && (
         <div>
           {Object.entries(data[0]).map(([key, val]) => `${key}: ${val}`)}
