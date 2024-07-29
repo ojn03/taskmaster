@@ -3,6 +3,7 @@ import { ensureError, toastError, toastSuccess } from "@/lib/utils";
 import { login, type LoginData } from "@/services/authService";
 import { SessionStore } from "@/store";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 //TODO implement without usestate
@@ -18,15 +19,17 @@ const Login = () => {
   const [usernameLogin, setUsernameLogin] = useState(true);
 
   const { setCurrentUser } = SessionStore();
+  const router = useRouter();
   const onSubmit = async (data: LoginData) => {
     try {
       const response = await login(data);
       setCurrentUser(response.user_id);
+      router.push("/");
       toastSuccess("logged in");
     } catch (err) {
       const error = ensureError(err);
       toastError(error.message);
-      console.error(error);
+      console.error(error.message);
     }
   };
 

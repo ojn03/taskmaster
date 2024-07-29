@@ -134,5 +134,49 @@ CREATE TABLE "User_Proj"(
   PRIMARY KEY ("user_id", "proj_id")
 );
 
+CREATE OR REPLACE FUNCTION getTeam(u_id varchar(36), p_id varchar(36))
+  RETURNS TABLE(
+    proj_id varchar(36),
+    role_id varchar(36),
+    user_id varchar(36),
+    FIRST varchar(50),
+    LAST varchar(50),
+    email varchar(100),
+    role_title varchar(50),
+    role_description varchar(100)
+  )
+  AS $$
+DECLARE
+  t_id varchar(36);
+BEGIN
+  SELECT
+    team_id
+  FROM
+    "Team_User_Project" tup
+  WHERE
+    tup.user_id = u_id
+    AND tup.proj_id = p_id INTO t_id;
+  RETURN Query
+  SELECT
+    rup.proj_id,
+    r.role_id,
+    u.user_id,
+    u.first,
+    u.last,
+    u.email,
+    r.role_title,
+    r.role_description
+  FROM
+    "User" u
+    JOIN "Role_User_Project" rup ON u.user_id = rup.user_id
+    JOIN "Role" r ON rup.role_id = r.role_id
+    JOIN "Team_User_Project" tup ON u.user_id = tup.user_id
+  WHERE
+    tup.team_id = t_id
+    AND tup.proj_id = p_id;
+END;
+$$
+LANGUAGE plpgsql;
+
 -- command to generate synth data: synth generate synth --size 30 --to 'postgresql://postgres@localhost:5432/synth' --random
 -- to set sequence values: select setval('sequence_name', some_value)
