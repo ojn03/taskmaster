@@ -1,4 +1,5 @@
 import { post } from "@/lib/utils";
+import { SessionStore } from "@/store";
 
 //TODO parse uuids
 interface Login {
@@ -28,11 +29,18 @@ async function login(data: LoginData) {
   return response;
 }
 
-async function refresh(data: { refresh_token: string }) {
-  return await post({
-    route: "auth/refresh",
-    data,
+async function logout() {
+  const { user_id, eraseSessionStore } = SessionStore.getState();
+  eraseSessionStore();
+  console.log("user_id", user_id);
+
+  await post({
+    route: "auth/logout",
+    data: { user_id },
   });
+
+  //TODO get this to work. needs to be in a server action
+  // revalidatePath("/");
 }
 
-export { login };
+export { login, logout };

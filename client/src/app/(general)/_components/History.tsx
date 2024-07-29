@@ -2,7 +2,7 @@
 import { historyColumns } from "@/components/Columns";
 import DataTable from "@/components/data-table";
 import { getHistory } from "@/services/projectService";
-import { ProjectStore } from "@/store";
+import { SessionStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
 
 interface props {
@@ -10,7 +10,7 @@ interface props {
 }
 
 export default function History() {
-  const { currentProject: projid } = ProjectStore();
+  const { currentProject: projid } = SessionStore();
 
   const {
     refetch: server_getHistory,

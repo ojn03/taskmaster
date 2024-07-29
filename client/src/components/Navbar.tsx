@@ -1,22 +1,26 @@
+"use client";
 import React from "react";
-
-const buttonStyle = "bg-dark text-light w-full";
+import { logout } from "@/services/authService";
 import Link from "next/link";
+import { Button } from "./ui/button";
 
 const Navbar = () => {
+  const buttonStyle = "bg-dark text-light w-full";
   return (
     <nav className={"flex flex-col gap-3 h-full w-full p-3 bg-light"}>
       <Link href="/">
-        <button className={buttonStyle}>DashBoard</button>
+        <Button className={buttonStyle}>DashBoard</Button>
       </Link>
-      <button className={buttonStyle}>My tickets</button>
-      <button className={buttonStyle}>Inbox</button>
+      <Button className={buttonStyle}>My tickets</Button>
+      <Button className={buttonStyle}>Inbox</Button>
       <Link href="/manage-projects">
-        <button className={buttonStyle}>Manage Projects</button>
+        <Button className={buttonStyle}>Manage Projects</Button>
       </Link>
 
-      <button className={buttonStyle}>Profile</button>
-      <button>logout</button>
+      <Button className={buttonStyle}>Profile</Button>
+      <Button onClick={() => logout()} className={buttonStyle}>
+        Logout
+      </Button>
     </nav>
   );
 };

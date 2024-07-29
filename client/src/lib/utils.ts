@@ -163,6 +163,7 @@ export async function post({
   };
   return await fetchWithRetry(`${base}/${route}`, postoptions).then((res) => {
     if (!res.ok) throw new Error(res.status + " " + res.statusText);
+    if (res.status === 204) return;
 
     return res.json();
   });

@@ -2,14 +2,14 @@
 import { userRoleColumns } from "@/components/Columns";
 import DataTable from "@/components/data-table";
 import { getTeamMembers } from "@/services/projectService";
-import { ProjectStore, SessionStore } from "@/store";
+import { SessionStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {}
 
 export default function Team({}: Props) {
-  const { currentProject: projid } = ProjectStore();
+  const { currentProject: projid } = SessionStore();
   const { user_id: userid } = SessionStore();
   const {
     refetch: server_getTeam,

@@ -19,11 +19,16 @@ const router = express.Router();
 const registerPath = `${basePath}/register`;
 router.post(registerPath, authController.register);
 
+//REFRESH
 const refreshPath = `${basePath}/refresh`;
 router.post(refreshPath, authController.refresh);
 
 //LOGIN
 const loginPath = `${basePath}/login`;
 router.post(loginPath, authController.login);
+
+//LOGOUT
+const logoutPath = `${basePath}/logout`;
+router.post(logoutPath, authController.logout);
 
 export default router;

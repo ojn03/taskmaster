@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { red } from "../index";
 import { pool } from "../pool";
 import { ensureError } from "../utils";
-import { red } from "../index";
 
 function parseLoginInfo(username: string, email: string, password: string) {
   if (!password) {
@@ -26,8 +26,30 @@ function parseLoginInfo(username: string, email: string, password: string) {
   // only time both are provided is if user is outside of client which is not currently allowed
 }
 
+async function logout(req: Request, res: Response) {
+  const { user_id } = req.body;
+  red.del(`refresh:${user_id}`);
+
+  clearCookies(res);
+  res.sendStatus(204);
+}
+
+function clearCookies(res: Response) {
+  res.clearCookie("access_token", {
+    httpOnly: true,
+    secure: true,
+    signed: true,
+    maxAge: 60 * 60 * 1000,
+  });
+  res.clearCookie("refresh_token", {
+    httpOnly: true,
+    secure: true,
+    signed: true,
+    maxAge: 24 * 60 * 60 * 1000,
+  });
+}
 //TODO use uuids instead of auto incrementing ids
-//TODO enable multiple client sessions
+//TODO enable multiple client sessions. This will need a device identification field to be added to each refresh token
 async function login(req: Request, res: Response) {
   try {
     const { username, email, password } = req.body;
@@ -245,4 +267,4 @@ async function register(req: Request, res: Response) {
   }
 }
 
-export { login, refresh, register, verifyToken };
+export { login, logout, refresh, register, verifyToken };

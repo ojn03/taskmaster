@@ -42,7 +42,7 @@ export function Combobox({ projects, store }: props) {
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {value
+          {value && projects.length > 0
             ? shortenLabel(
                 projects.find((project) => project.value === value)!.label,
               )

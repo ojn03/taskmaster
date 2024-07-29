@@ -1,30 +1,38 @@
 "use client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getProjects } from "@/services/userService";
-import { ProjectStore, SessionStore } from "@/store";
+import { SessionStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
 import { Combobox } from "./combobox";
+import { Project } from "@/lib/schemas";
 
 interface UserProjectsProps {
   className?: string;
 }
 
 export default function UserProjects({ className }: UserProjectsProps) {
-  const { user_id: userid } = SessionStore();
+  const { currentProject, setProject, user_id: userid } = SessionStore();
   const {
     refetch: server_getProjects,
     isPending,
     isError,
     data: projects,
-  } = useQuery({
+  } = useQuery<Project[]>({
     queryKey: ["getProjects"],
-    queryFn: async () =>
-      !!userid ? await getProjects({ userid: userid }) : [],
+    queryFn: async () => {
+      if (!!userid) {
+        const projects = await getProjects({ userid: userid });
+        if (projects.length > 0) {
+          setProject(projects[0].proj_id);
+        }
+        return projects;
+      } else {
+        return [];
+      }
+    },
   });
 
-  const { currentProject, setProject } = ProjectStore();
-
-  if (isError) {
+  if (isError || !projects) {
     return <div>error...</div>;
   }
 
@@ -35,7 +43,7 @@ export default function UserProjects({ className }: UserProjectsProps) {
       ) : (
         <Combobox
           projects={projects.map((proj) => {
-            return { value: String(proj.proj_id), label: proj.proj_name };
+            return { value: proj.proj_id, label: proj.proj_name };
           })}
           store={{ state: currentProject, setState: setProject }}
         />

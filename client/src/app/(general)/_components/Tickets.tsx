@@ -3,15 +3,14 @@
 import { ticketColumns } from "@/components/Columns";
 import DataTable from "@/components/data-table";
 import { getProjectUserTickets as getTickets } from "@/services/projectService";
-import { ProjectStore, SessionStore } from "@/store";
+import { SessionStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface TicketsProps {}
 
 export default function Tickets() {
-  const { currentProject: projid } = ProjectStore();
-  const { user_id: userid } = SessionStore();
+  const { currentProject: projid, user_id: userid } = SessionStore();
 
   const {
     refetch: server_getTickets,
