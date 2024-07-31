@@ -1,9 +1,8 @@
-import Test from "@/components/Ticket";
 import Tickets from "@/app/(general)/_components/Tickets";
-import UserProjects from "./_components/UserProjects";
+import Link from "next/link";
 import History from "./_components/History";
 import Team from "./_components/Team";
-import Link from "next/link";
+import UserProjects from "./_components/UserProjects";
 
 export default async function Home() {
   return (
@@ -27,7 +26,6 @@ export default async function Home() {
 
           {/* row 3: history info */}
           <History />
-          <Test />
           <Link href="/login">to login page</Link>
         </div>
       </div>

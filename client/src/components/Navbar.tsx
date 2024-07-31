@@ -11,10 +11,12 @@ const Navbar = () => {
       <Link href="/">
         <Button className={buttonStyle}>DashBoard</Button>
       </Link>
-      <Button className={buttonStyle}>My tickets</Button>
+      <Link href="/tickets">
+        <Button className={buttonStyle}>Tickets</Button>
+      </Link>
       <Button className={buttonStyle}>Inbox</Button>
-      <Link href="/manage-projects">
-        <Button className={buttonStyle}>Manage Projects</Button>
+      <Link href="/projects">
+        <Button className={buttonStyle}>Projects</Button>
       </Link>
 
       <Button className={buttonStyle}>Profile</Button>
